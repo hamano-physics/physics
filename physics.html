@@ -2779,30 +2779,46 @@
         ctx.textAlign='left'; ctx.textBaseline='middle';
         ctx.fillText('mg',bx+6,by+mgLen);
 
-        /* \u5f35\u529b S\uff08\u7269\u4f53\u2192\u540a\u308a\u70b9\u5411\u304d\uff09 */
-        var sdx=PX-bx, sdy=PY-by;
-        var sm=Math.hypot(sdx,sdy)||1;
-        var sLen=tension()*Fscale;
-        arrow(bx,by,bx+sdx/sm*sLen,by+sdy/sm*sLen,'#15807a',3);
+        /* \u5f35\u529b S\uff1a\u7cf8\u306b\u6cbf\u3063\u305f\u5411\u304d\u3002
+           \u6c34\u5e73\u6210\u5206 Ssin\u03b8\uff08\u4e2d\u5fc3\u5411\u304d\u30fb\u8ecc\u9053\u5e73\u9762\uff09\u3092\u6955\u5186\u5c04\u5f71\u3057\u3001
+           \u9244\u76f4\u6210\u5206 Scos\u03b8\uff08\u4e0a\u5411\u304d\uff09\u3092\u305d\u306e\u307e\u307e\u8db3\u3059\u3002
+           Hmag/Vmag=cos\u03b8/sin\u03b8 \u306a\u306e\u3067\u7cf8\u3068\u5b8c\u5168\u306b\u4e00\u81f4\u3059\u308b\u3002 */
+        var sH=tension()*Math.sin(th)*Fscale;
+        var sV=tension()*cosTheta()*Fscale;
+        var sex2=bx - Math.cos(st.angle)*sH;
+        var sey2=by + Math.sin(st.angle)*sH*squash - sV;
+        arrow(bx,by,sex2,sey2,'#15807a',3);
         ctx.fillStyle='#15807a';
-        ctx.fillText('S',bx+sdx/sm*sLen-(bx>PX?-6:14),by+sdy/sm*sLen);
+        ctx.fillText('S',sex2+(sex2<bx?-14:6),sey2-4);
 
         if(st.showSplit){
-          /* \u5f35\u529b\u306e\u925b\u76f4\u6210\u5206\uff08\u4e0a\u5411\u304d\u3001mg\u3068\u6253\u3061\u6d88\u3057\u5408\u3046\uff09 */
-          var svy=tension()*cosTheta()*Fscale;
-          arrow(bx,by,bx,by-svy,'rgba(21,128,122,.5)',2);
-          /* \u5f35\u529b\u306e\u6c34\u5e73\u6210\u5206\uff08\u4e2d\u5fc3\u5411\u304d\uff1d\u5411\u5fc3\u529b\uff09 */
-          var shx=tension()*Math.sin(th)*Fscale*(bx>PX?-1:1);
-          arrow(bx,by,bx+shx,by,'#bf3b2b',3);
+          /* \u5f35\u529b S \u3092\u300c\u9244\u76f4\u6210\u5206\u300d\u3068\u300c\u6c34\u5e73\u6210\u5206\uff08\uff1d\u5411\u5fc3\u529b\uff09\u300d\u306b\u5206\u89e3\u3002
+             \u5f35\u529b\u77e2\u5370\uff08bx,by\uff09\u2192\uff08sex2,sey2\uff09\u3092\u3001\u9244\u76f4\u3068\u6c34\u5e73\u306e2\u8fba\u306b\u5206\u3051\u308b\u3002
+             2\u3064\u3092\u5408\u308f\u305b\u308b\u3068\u5f35\u529b\u77e2\u5370\u306b\u306a\u308b\uff08\u5e73\u884c\u56db\u8fba\u5f62\uff09\u3002 */
+          /* \u9244\u76f4\u6210\u5206\uff1a\u4e0a\u5411\u304d\u3001mg\u3068\u6253\u3061\u6d88\u3057\u5408\u3046 */
+          arrow(bx,by,bx,sey2,'rgba(21,128,122,.55)',2);
+          /* \u6c34\u5e73\u6210\u5206\uff1d\u5411\u5fc3\u529b\uff1a\u4e2d\u5fc3\u5411\u304d */
+          arrow(bx,by,sex2,by,'#bf3b2b',3);
           ctx.fillStyle='#bf3b2b';
-          ctx.fillText('F',bx+shx-(bx>PX?14:-6),by-9);
+          ctx.fillText('F',sex2+(sex2<bx?-12:6),by-8);
+          /* \u88dc\u52a9\u7dda\uff08\u5e73\u884c\u56db\u8fba\u5f62\u3092\u70b9\u7dda\u3067\uff09 */
+          ctx.strokeStyle='rgba(35,34,29,.25)'; ctx.lineWidth=1;
+          ctx.setLineDash([3,3]);
+          ctx.beginPath();
+          ctx.moveTo(sex2,by); ctx.lineTo(sex2,sey2);
+          ctx.moveTo(bx,sey2); ctx.lineTo(sex2,sey2);
+          ctx.stroke();
+          ctx.setLineDash([]);
         }else{
-          /* \u5411\u5fc3\u529b\uff08\u4e2d\u5fc3\u5411\u304d\u3001\u6c34\u5e73\uff09 */
-          var fLen=centripetal()*Fscale;
-          var fdir=(PX>bx)?1:-1;
-          arrow(bx,by,bx+fdir*fLen,by,'#bf3b2b',3);
+          /* \u5411\u5fc3\u529b\uff1a\u8ecc\u9053\u5e73\u9762\u3067\u4e00\u5b9a\u306e\u5927\u304d\u3055\u3092\u3082\u3061\u3001
+             \u305d\u308c\u3092\u3088\u305f\u30fc\u540c\u3058\u6955\u5186\u5c04\u5f71\uff08y\u306bsquash\uff09\u3067\u63cf\u304f\u3002
+             \u3060\u304b\u3089\u5de6\u53f3\u3067\u306f\u9577\u304f\u3001\u624b\u524d\u30fb\u5965\u3067\u306fsquash\u500d\u306b\u7e2e\u3093\u3067\u898b\u3048\u308b */
+          var fMag=Math.min(centripetal()*Fscale,96)+16;
+          var fex=bx-Math.cos(st.angle)*fMag;
+          var fey=by+Math.sin(st.angle)*fMag*squash;
+          arrow(bx,by,fex,fey,'#bf3b2b',3);
           ctx.fillStyle='#bf3b2b';
-          ctx.fillText('F',bx+fdir*fLen+(fdir>0?6:-14),by-9);
+          ctx.fillText('F',fex+(fex<bx?-14:6),fey-7);
         }
       }
 
