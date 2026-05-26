@@ -208,6 +208,40 @@
   .cell-formula{font-family:"JetBrains Mono",monospace;font-size:10px;
     color:var(--teal);margin-top:3px;font-weight:500;}
   .cell.input .cell-formula{color:var(--orange);}
+  .cell.answer{background:#fdf3d8;border-color:#d8b54f;}
+  .cell.answer .cell-formula{color:#a8801f;}
+  .cell.answer .cell-value{color:#7a5e10;}
+
+  .sim-title .tag.reidai-tag{background:var(--orange);border-color:var(--orange);}
+  .qbox{
+    margin:0 18px;padding:12px 14px;background:#fbf9f1;
+    border:1.4px solid var(--ink);box-shadow:4px 4px 0 rgba(35,34,29,.14);
+    font-size:12.5px;line-height:1.75;color:var(--ink);font-weight:500;
+  }
+  .qbox b{font-weight:700;}
+  .qbox .qask{display:block;margin-top:6px;font-weight:700;color:var(--orange);}
+  .solve{margin:14px 18px 4px;}
+  .solve-title{font-size:11px;font-weight:700;letter-spacing:.06em;
+    color:var(--ink-soft);margin-bottom:7px;}
+  details.step{
+    border:1.3px solid var(--ink);background:var(--paper);margin-bottom:7px;
+    box-shadow:3px 3px 0 rgba(35,34,29,.12);
+  }
+  details.step summary{
+    cursor:pointer;padding:9px 12px;font-size:12px;font-weight:700;
+    color:var(--ink);list-style:none;background:#f1ede0;
+  }
+  details.step summary::-webkit-details-marker{display:none;}
+  details.step summary::before{content:"\u25b8 ";color:var(--orange);}
+  details.step[open] summary::before{content:"\u25be ";}
+  .step-body{padding:10px 13px;font-size:12px;line-height:1.85;
+    color:var(--ink-soft);font-weight:500;}
+  .step-body .mono{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;
+    color:var(--ink);font-weight:700;background:#f4f0e3;
+    padding:2px 5px;display:inline-block;margin-top:2px;
+  }
+  button.ghost.book{border-color:var(--orange);color:var(--orange);}
 
   .controls{
     border-top:1.5px solid var(--ink);background:var(--paper-2);
@@ -301,6 +335,8 @@
   label.tg.v input{accent-color:var(--blue);}
   label.tg.a input{accent-color:var(--red);}
   label.tg.p input{accent-color:var(--teal);}
+  label.tg.path input{accent-color:var(--orange);}
+  label.tg.guide input{accent-color:var(--blue);}
   label.tg .sw{width:13px;height:13px;border:1.3px solid var(--ink);display:inline-block;}
   label.tg.k .sw{background:var(--teal);}
   label.tg.d .sw{background:var(--paper);}
@@ -308,6 +344,8 @@
   label.tg.a .sw{background:var(--red);}
   label.tg.vq .sw{background:var(--blue);border-style:dashed;}
   label.tg.p .sw{background:var(--teal);}
+  label.tg.path .sw{background:var(--orange);}
+  label.tg.guide .sw{background:var(--blue);border-style:dotted;}
 
   .sim-foot{
     padding:11px 18px 14px;font-size:11.5px;color:var(--ink-soft);
@@ -468,20 +506,36 @@
         </div>
       </div>
       <div class="ctl-row">
-        <div class="num-box full">
-          <div class="num-head" data-gloss="b:theta">
-            <span class="nm">角度 θ を決める<span class="mini-q">?</span></span>
-            <span class="rng">0.00 〜 6.28 rad</span>
+        <div class="num-box full" style="border-color:#b6cdbf;">
+          <div class="num-head" data-gloss="b:omegacalc">
+            <span class="nm">角速度 ω を計算で求める<span class="mini-q">?</span></span>
+            <span class="rng">ω = θ ÷ t</span>
           </div>
-          <div class="stepper">
-            <button data-bstep="TH" data-dir="-1">−</button>
-            <input type="number" id="bInpTh" min="0" max="6.28" step="0.1" value="0.0" inputmode="decimal">
-            <button data-bstep="TH" data-dir="1">+</button>
-            <span class="unit-tag">rad</span>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;">
+            <div style="flex:1 1 150px;min-width:140px;">
+              <div style="font-size:10.5px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;">回転した角度 θ〔rad〕</div>
+              <div class="stepper">
+                <button data-bcalc="TH" data-dir="-1">−</button>
+                <input type="number" id="bCalcTh" min="0" max="12.56" step="0.1" value="6.28" inputmode="decimal">
+                <button data-bcalc="TH" data-dir="1">+</button>
+                <span class="unit-tag">rad</span>
+              </div>
+            </div>
+            <div style="flex:1 1 150px;min-width:140px;">
+              <div style="font-size:10.5px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;">かかった時間 t〔s〕</div>
+              <div class="stepper">
+                <button data-bcalc="TT" data-dir="-1">−</button>
+                <input type="number" id="bCalcT" min="0.5" max="20" step="0.5" value="4.0" inputmode="decimal">
+                <button data-bcalc="TT" data-dir="1">+</button>
+                <span class="unit-tag">s</span>
+              </div>
+            </div>
           </div>
-          <div class="chips-label">よく使う角度をタップ（弧度法の代表値）</div>
-          <div class="chips" id="bChips"></div>
-          <div class="num-note" id="bNote">一時停止中に角度を決められます（再生中は現在値を表示）</div>
+          <div class="insight" style="margin:9px 0 0;" id="bCalcOut">ω = θ ÷ t = 6.28 ÷ 4.0 = <span class="mono">1.57 rad/s</span></div>
+          <button id="bCalcApply" class="primary" style="margin-top:9px;width:100%;">この角速度を使う（ωに反映）</button>
+          <div class="chips-label">よく使う角速度をタップ</div>
+          <div class="chips" id="bWChips"></div>
+          <div class="num-note">角速度は「回転した角度 ÷ かかった時間」。1回転は 2π≒6.28 rad です。</div>
         </div>
       </div>
       <div class="ctl-row toggles">
@@ -596,9 +650,361 @@
     </div>
   </div>
 
+  <!-- ===== シミュレーション：接線方向に飛ぶボール ===== -->
+  <div class="screen" id="screen-tangent">
+    <div class="sim-head">
+      <div class="sim-title"><span class="tag">CONCEPT</span>接線方向に飛ぶボール</div>
+      <p class="sim-sub">円運動中に手を離すと、ボールはどの向きに飛ぶ？ ── 速度は接線方向を向いている</p>
+    </div>
+    <div class="stage"><canvas id="cvT"></canvas></div>
+    <div class="insight" id="insightT">▶ 再生して、ボールを回しているときに「手を離す」を押してみよう</div>
+    <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
+    <div class="readout" id="readoutT">
+      <div class="cell input" data-gloss="t:R"><span class="qmark">?</span>
+        <div class="cell-label">半径 R</div>
+        <div class="cell-value"><span id="tR">2.00</span><span class="unit">m</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="t:omega"><span class="qmark">?</span>
+        <div class="cell-label">角速度 ω</div>
+        <div class="cell-value"><span id="tW">1.50</span><span class="unit">rad/s</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell derived" data-gloss="t:V"><span class="qmark">?</span>
+        <div class="cell-label">速さ v</div>
+        <div class="cell-value"><span id="tV">3.00</span><span class="unit">m/s</span></div>
+        <div class="cell-formula">v = Rω</div></div>
+      <div class="cell" data-gloss="t:theta"><span class="qmark">?</span>
+        <div class="cell-label">角度 θ</div>
+        <div class="cell-value"><span id="tTh">0.00</span><span class="unit">rad</span></div>
+        <div class="cell-formula"><span id="tDeg">0</span>°</div></div>
+      <div class="cell" data-gloss="t:state"><span class="qmark">?</span>
+        <div class="cell-label">状態</div>
+        <div class="cell-value" style="font-size:14px;"><span id="tState">円運動中</span></div>
+        <div class="cell-formula">─</div></div>
+      <div class="cell" data-gloss="t:flytime"><span class="qmark">?</span>
+        <div class="cell-label">飛行時間</div>
+        <div class="cell-value"><span id="tFly">0.00</span><span class="unit">s</span></div>
+        <div class="cell-formula">手を離してから</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl-row">
+        <button id="tPlay" class="primary">▶ 再生</button>
+        <button id="tRelease" class="ghost">✋ 手を離す</button>
+        <button id="tReset" class="ghost">■ リセット</button>
+      </div>
+      <div class="ctl-row">
+        <span class="ctl-label" style="margin-left:2px;">再生速度</span>
+        <div class="speed-group" id="tSpeed">
+          <button data-speed="1">×1</button>
+          <button data-speed="0.5" class="active">×½</button>
+          <button data-speed="0.25">×¼</button>
+          <button data-speed="0.125">×⅛</button>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box r">
+          <div class="num-head" data-gloss="t:R">
+            <span class="nm">半径 R<span class="mini-q">?</span></span>
+            <span class="rng">1.0 〜 3.0 / 0.5刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-tstep="R" data-dir="-1">−</button>
+            <input type="number" id="tInpR" min="1.0" max="3.0" step="0.5" value="2.0" inputmode="decimal">
+            <button data-tstep="R" data-dir="1">+</button>
+            <span class="unit-tag">m</span>
+          </div>
+        </div>
+        <div class="num-box w">
+          <div class="num-head" data-gloss="t:omega">
+            <span class="nm">角速度 ω<span class="mini-q">?</span></span>
+            <span class="rng">0.5 〜 3.0 / 0.5刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-tstep="W" data-dir="-1">−</button>
+            <input type="number" id="tInpW" min="0.5" max="3.0" step="0.5" value="1.5" inputmode="decimal">
+            <button data-tstep="W" data-dir="1">+</button>
+            <span class="unit-tag">rad/s</span>
+          </div>
+        </div>
+      </div>
+      <div class="ctl-row toggles">
+        <span class="ctl-label">表示</span>
+        <label class="tg v"><input type="checkbox" id="tChkV" checked><span class="sw"></span>速度ベクトル v（接線方向）</label>
+        <label class="tg path"><input type="checkbox" id="tChkPath" checked><span class="sw"></span>飛んだあとの軌跡</label>
+        <label class="tg guide"><input type="checkbox" id="tChkGuide"><span class="sw"></span>円の接線（点線ガイド）</label>
+        <label class="tg a"><input type="checkbox" id="tChkTarget" checked><span class="sw"></span>的を表示（当てて遊ぶ）</label>
+      </div>
+    </div>
+    <div class="sim-foot">
+      円運動する物体の速度は、つねに<b>円の接線方向</b>を向いています。だから手を離した瞬間、
+      物体はその時の速度のまま<b>まっすぐ</b>飛んでいきます（外向きではありません）。
+      ω が大きいほど速く、飛び出す速さ v＝Rω も大きくなります。
+    </div>
+  </div>
+
+  <!-- ===== 例題16：ばねによる等速円運動 ===== -->
+  <div class="screen" id="screen-reidai16">
+    <div class="sim-head">
+      <div class="sim-title"><span class="tag reidai-tag">例題16</span>ばねによる等速円運動</div>
+      <p class="sim-sub">ばねの弾性力が向心力になっている ── 周期と自然長を求める</p>
+    </div>
+    <div class="qbox">
+      ばね定数 <b>k</b>・自然長 <b>L₀</b> のばねの一端におもり（質量 <b>m</b>）をつけ、他端を固定して、
+      なめらかな水平面上で角速度 <b>ω</b> の等速円運動をさせる。ばねは伸びて長さ <b>r</b> で安定する。
+      <span class="qask">▶ 再生：ばねが自然長から「釣り合う長さ」まで伸びるようすを見よう</span>
+    </div>
+    <div class="stage"><canvas id="cvE16"></canvas></div>
+    <div class="insight" id="insightE16">▶ 再生でおもりが円運動します。下の「解き方」を順に開いてみよう</div>
+    <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
+    <div class="readout" id="readoutE16">
+      <div class="cell input" data-gloss="e:k"><span class="qmark">?</span>
+        <div class="cell-label">ばね定数 k</div>
+        <div class="cell-value"><span id="e16k">25.0</span><span class="unit">N/m</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="e:m"><span class="qmark">?</span>
+        <div class="cell-label">質量 m</div>
+        <div class="cell-value"><span id="e16m">0.10</span><span class="unit">kg</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="e:omega"><span class="qmark">?</span>
+        <div class="cell-label">角速度 ω</div>
+        <div class="cell-value"><span id="e16w">10.0</span><span class="unit">rad/s</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="e:L0"><span class="qmark">?</span>
+        <div class="cell-label">ばねの自然長 L₀</div>
+        <div class="cell-value"><span id="e16L0in">0.30</span><span class="unit">m</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell derived" data-gloss="e:T"><span class="qmark">?</span>
+        <div class="cell-label">周期 T</div>
+        <div class="cell-value"><span id="e16T">0.63</span><span class="unit">s</span></div>
+        <div class="cell-formula">T = 2π/ω</div></div>
+      <div class="cell derived" data-gloss="e:F"><span class="qmark">?</span>
+        <div class="cell-label">向心力 F</div>
+        <div class="cell-value"><span id="e16F">5.00</span><span class="unit">N</span></div>
+        <div class="cell-formula">F = mrω²</div></div>
+      <div class="cell derived" data-gloss="e:x"><span class="qmark">?</span>
+        <div class="cell-label">ばねの伸び x</div>
+        <div class="cell-value"><span id="e16x">0.20</span><span class="unit">m</span></div>
+        <div class="cell-formula">x = F/k</div></div>
+      <div class="cell answer" data-gloss="e:r"><span class="qmark">?</span>
+        <div class="cell-label">回るときの長さ r</div>
+        <div class="cell-value"><span id="e16r">0.50</span><span class="unit">m</span></div>
+        <div class="cell-formula">r = L₀ + x</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl-row">
+        <button id="e16Play" class="primary">▶ 再生</button>
+        <button id="e16Reset" class="ghost">■ リセット</button>
+        <button id="e16Book" class="ghost book">教科書の数値に戻す</button>
+      </div>
+      <div class="ctl-row">
+        <span class="ctl-label" style="margin-left:2px;">再生速度</span>
+        <div class="speed-group" id="e16Speed">
+          <button data-speed="1">×1</button>
+          <button data-speed="0.5" class="active">×½</button>
+          <button data-speed="0.25">×¼</button>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box">
+          <div class="num-head" data-gloss="e:k">
+            <span class="nm">ばね定数 k<span class="mini-q">?</span></span>
+            <span class="rng">10 〜 50 / 5刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e16step="K" data-dir="-1">−</button>
+            <input type="number" id="e16InpK" min="10" max="50" step="5" value="25" inputmode="decimal">
+            <button data-e16step="K" data-dir="1">+</button>
+            <span class="unit-tag">N/m</span>
+          </div>
+        </div>
+        <div class="num-box">
+          <div class="num-head" data-gloss="e:m">
+            <span class="nm">質量 m<span class="mini-q">?</span></span>
+            <span class="rng">0.05 〜 0.30 / 0.05刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e16step="M" data-dir="-1">−</button>
+            <input type="number" id="e16InpM" min="0.05" max="0.30" step="0.05" value="0.10" inputmode="decimal">
+            <button data-e16step="M" data-dir="1">+</button>
+            <span class="unit-tag">kg</span>
+          </div>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box">
+          <div class="num-head" data-gloss="e:omega">
+            <span class="nm">角速度 ω<span class="mini-q">?</span></span>
+            <span class="rng">4 〜 14 / 1刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e16step="W" data-dir="-1">−</button>
+            <input type="number" id="e16InpW" min="4" max="14" step="1" value="10" inputmode="decimal">
+            <button data-e16step="W" data-dir="1">+</button>
+            <span class="unit-tag">rad/s</span>
+          </div>
+        </div>
+        <div class="num-box">
+          <div class="num-head" data-gloss="e:L0">
+            <span class="nm">ばねの自然長 L₀<span class="mini-q">?</span></span>
+            <span class="rng">0.20 〜 0.45 / 0.05刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e16step="L0" data-dir="-1">−</button>
+            <input type="number" id="e16InpL0" min="0.20" max="0.45" step="0.05" value="0.30" inputmode="decimal">
+            <button data-e16step="L0" data-dir="1">+</button>
+            <span class="unit-tag">m</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="solve">
+      <div class="solve-title">考え方（タップで開く）</div>
+      <details class="step">
+        <summary>STEP 1　周期 T を求める</summary>
+        <div class="step-body">
+          周期は角速度から直接出せます。<br>
+          <span class="mono" id="e16sol1">T = 2π/ω = 2×3.14 / 10.0 = 0.63 s</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 2　つりあいの式を立てる</summary>
+        <div class="step-body">
+          ばねが伸びて長さ r になると、伸びは x＝r−L₀。
+          その弾性力 k(r−L₀) が、円運動に必要な向心力 mrω² と等しくなったところで安定します。<br>
+          <span class="mono" id="e16sol2">k(r − L₀) = m r ω²</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 3　釣り合う長さ r と伸び x</summary>
+        <div class="step-body">
+          STEP 2 の式を r について解くと、回るときの長さ r が求まります。
+          伸び x はそこから L₀ を引いた値です。<br>
+          <span class="mono" id="e16sol3">r = kL₀ /(k − mω²) = 0.50 m</span><br>
+          <span class="mono" id="e16sol4">x = r − L₀ = 0.50 − 0.30 = 0.20 m</span>
+        </div>
+      </details>
+    </div>
+    <div class="sim-foot">
+      この問題のかなめは「<b>弾性力＝向心力</b>」。ばねが自然長より x だけ伸びると弾性力 kx が生まれ、
+      それがちょうど円運動に必要な向心力 mrω² になっています。質量・角速度・半径を変えると必要な向心力が変わり、
+      ばねの伸び・自然長も連動して変わります。
+    </div>
+  </div>
+
+  <!-- ===== シミュレーション：円錐振り子 ===== -->
+  <div class="screen" id="screen-cone">
+    <div class="sim-head">
+      <div class="sim-title"><span class="tag">CONCEPT</span>円錐振り子（糸で吊るした物体）</div>
+      <p class="sim-sub">糸の張力と重力の合力が向心力 ── 質量や角速度を変えると張力はどう変わる？</p>
+    </div>
+    <div class="stage"><canvas id="cvCone"></canvas></div>
+    <div class="insight" id="insightCone">▶ 再生すると物体が水平面内で円を描きます。質量・角速度を変えてみよう</div>
+    <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
+    <div class="readout" id="readoutCone">
+      <div class="cell input" data-gloss="c:m"><span class="qmark">?</span>
+        <div class="cell-label">質量 m</div>
+        <div class="cell-value"><span id="cnM">0.20</span><span class="unit">kg</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="c:omega"><span class="qmark">?</span>
+        <div class="cell-label">角速度 ω</div>
+        <div class="cell-value"><span id="cnW">4.0</span><span class="unit">rad/s</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="c:L"><span class="qmark">?</span>
+        <div class="cell-label">糸の長さ ℓ</div>
+        <div class="cell-value"><span id="cnL">0.80</span><span class="unit">m</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell derived" data-gloss="c:theta"><span class="qmark">?</span>
+        <div class="cell-label">糸の傾き θ</div>
+        <div class="cell-value"><span id="cnTh">52</span><span class="unit">°</span></div>
+        <div class="cell-formula">cosθ = g/(ℓω²)</div></div>
+      <div class="cell derived" data-gloss="c:r"><span class="qmark">?</span>
+        <div class="cell-label">円の半径 r</div>
+        <div class="cell-value"><span id="cnR">0.63</span><span class="unit">m</span></div>
+        <div class="cell-formula">r = ℓ sinθ</div></div>
+      <div class="cell derived" data-gloss="c:S"><span class="qmark">?</span>
+        <div class="cell-label">糸の張力 S</div>
+        <div class="cell-value"><span id="cnS">2.56</span><span class="unit">N</span></div>
+        <div class="cell-formula">S = mℓω²</div></div>
+      <div class="cell" data-gloss="c:mg"><span class="qmark">?</span>
+        <div class="cell-label">重力 mg</div>
+        <div class="cell-value"><span id="cnMg">1.96</span><span class="unit">N</span></div>
+        <div class="cell-formula">下向き</div></div>
+      <div class="cell derived" data-gloss="c:F"><span class="qmark">?</span>
+        <div class="cell-label">向心力 F</div>
+        <div class="cell-value"><span id="cnF">1.65</span><span class="unit">N</span></div>
+        <div class="cell-formula">F = mrω²</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl-row">
+        <button id="cnPlay" class="primary">▶ 再生</button>
+        <button id="cnReset" class="ghost">■ リセット</button>
+      </div>
+      <div class="ctl-row">
+        <span class="ctl-label" style="margin-left:2px;">再生速度</span>
+        <div class="speed-group" id="cnSpeed">
+          <button data-speed="1">×1</button>
+          <button data-speed="0.5" class="active">×½</button>
+          <button data-speed="0.25">×¼</button>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box">
+          <div class="num-head" data-gloss="c:m">
+            <span class="nm">質量 m<span class="mini-q">?</span></span>
+            <span class="rng">0.10 〜 0.50 / 0.05刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-cnstep="M" data-dir="-1">−</button>
+            <input type="number" id="cnInpM" min="0.10" max="0.50" step="0.05" value="0.20" inputmode="decimal">
+            <button data-cnstep="M" data-dir="1">+</button>
+            <span class="unit-tag">kg</span>
+          </div>
+        </div>
+        <div class="num-box">
+          <div class="num-head" data-gloss="c:omega">
+            <span class="nm">角速度 ω<span class="mini-q">?</span></span>
+            <span class="rng">3.5 〜 8.0 / 0.5刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-cnstep="W" data-dir="-1">−</button>
+            <input type="number" id="cnInpW" min="3.5" max="8.0" step="0.5" value="4.0" inputmode="decimal">
+            <button data-cnstep="W" data-dir="1">+</button>
+            <span class="unit-tag">rad/s</span>
+          </div>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box full">
+          <div class="num-head" data-gloss="c:L">
+            <span class="nm">糸の長さ ℓ<span class="mini-q">?</span></span>
+            <span class="rng">0.50 〜 1.20 / 0.10刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-cnstep="L" data-dir="-1">−</button>
+            <input type="number" id="cnInpL" min="0.50" max="1.20" step="0.10" value="0.80" inputmode="decimal">
+            <button data-cnstep="L" data-dir="1">+</button>
+            <span class="unit-tag">m</span>
+          </div>
+        </div>
+      </div>
+      <div class="ctl-row toggles">
+        <span class="ctl-label">表示</span>
+        <label class="tg a"><input type="checkbox" id="cnChkForce" checked><span class="sw"></span>力のベクトル（張力・重力・向心力）</label>
+        <label class="tg guide"><input type="checkbox" id="cnChkSplit"><span class="sw"></span>張力を縦・横に分解</label>
+      </div>
+    </div>
+    <div class="sim-foot">
+      物体には<b>糸の張力 S</b>（糸に沿って斜め上）と<b>重力 mg</b>（下向き）の2つが働きます。
+      この2つの合力がちょうど水平・中心向きになり、<b>向心力</b>になります。
+      鉛直方向はつりあい（S cosθ＝mg）、水平方向が円運動の式（S sinθ＝mrω²）。
+      角速度を上げると糸はより外に開き、張力も大きくなります。
+    </div>
+  </div>
+
 </div>
 
 <div class="overlay" id="overlay">
+
+
   <div class="gloss-card" id="glossCard">
     <div class="gloss-head">
       <span class="gh-title" id="glossTitle">用語</span>
@@ -629,16 +1035,28 @@
     children:[
       { id:"mechanics", title:"\u529b\u5b66", desc:"\u904b\u52d5\u30fb\u529b\u30fb\u30a8\u30cd\u30eb\u30ae\u30fc\u306e\u3075\u308b\u307e\u3044", status:"open",
         children:[
-          { id:"circular", title:"\u5186\u904b\u52d5\u30fb\u5358\u632f\u52d5",
-            desc:"\u7b49\u901f\u5186\u904b\u52d5\uff0f\u5358\u632f\u52d5\uff0f\u4e07\u6709\u5f15\u529b\u306b\u3088\u308b\u904b\u52d5", status:"open",
+          { id:"projectile", title:"\u5e73\u9762\u904b\u52d5\u3068\u653e\u7269\u904b\u52d5",
+            desc:"\u5e73\u9762\u904b\u52d5\uff0f\u653e\u7269\u904b\u52d5", status:"soon" },
+          { id:"rigidbody", title:"\u525b\u4f53\u306e\u3064\u308a\u3042\u3044",
+            desc:"\u525b\u4f53\u306b\u306f\u305f\u3089\u304f\u529b\u3068\u5408\u529b\uff0f\u91cd\u5fc3\u3068\u3064\u308a\u3042\u3044", status:"soon" },
+          { id:"momentum", title:"\u904b\u52d5\u91cf\u306e\u4fdd\u5b58",
+            desc:"\u904b\u52d5\u91cf\u3068\u529b\u7a4d\uff0f\u904b\u52d5\u91cf\u4fdd\u5b58\u306e\u6cd5\u5247\uff0f\u53cd\u767a\u4fc2\u6570", status:"soon" },
+          { id:"circular", title:"\u5186\u904b\u52d5\u3068\u5358\u632f\u52d5",
+            desc:"\u5186\u904b\u52d5\uff0f\u6163\u6027\u529b\u3068\u9060\u5fc3\u529b\uff0f\u5358\u632f\u52d5\uff0f\u4e07\u6709\u5f15\u529b\u306b\u3088\u308b\u904b\u52d5", status:"open",
             children:[
               { type:"sim", cat:"concept", status:"open", screen:"screen-basics",
                 title:"\u7b49\u901f\u5186\u904b\u52d5\u306e\u57fa\u672c",
                 desc:"\u5f27\u5ea6\u6cd5\u30fb\u89d2\u901f\u5ea6\u30fb\u5468\u671f\u30fb\u56de\u8ee2\u6570\u3002\u534a\u5f84\u3084\u03b8\u306b\u6570\u5024\u3092\u5165\u308c\u3066\u78ba\u304b\u3081\u308b\u3002" },
+              { type:"sim", cat:"concept", status:"open", screen:"screen-tangent",
+                title:"\u63a5\u7dda\u65b9\u5411\u306b\u98db\u3076\u30dc\u30fc\u30eb",
+                desc:"\u56de\u8ee2\u4e2d\u306b\u624b\u3092\u96e2\u3059\u3068\u3001\u30dc\u30fc\u30eb\u306f\u63a5\u7dda\u65b9\u5411\u306b\u307e\u3063\u3059\u3050\u98db\u3076\u3002\u8ecc\u8de1\u3092\u898b\u3088\u3046\u3002" },
               { type:"sim", cat:"concept", status:"open", screen:"screen-shm",
                 title:"\u7b49\u901f\u5186\u904b\u52d5\u3068\u5358\u632f\u52d5\u30b7\u30df\u30e5\u30ec\u30fc\u30bf\u30fc",
                 desc:"\u5186\u904b\u52d5\u306e\u7e26\u6210\u5206\u304c\u5358\u632f\u52d5\u306b\u306a\u308b\u3057\u304f\u307f\u3092\u3001\u30b0\u30e9\u30d5\u3068\u4e26\u3079\u3066\u89b3\u5bdf\u3059\u308b\u3002" },
-              { type:"sim", cat:"reidai", num:"\u4f8b\u984c16", status:"soon",
+              { type:"sim", cat:"concept", status:"open", screen:"screen-cone",
+                title:"\u5186\u9310\u632f\u308a\u5b50\uff08\u7cf8\u3067\u5410\u308b\u3057\u305f\u7269\u4f53\uff09",
+                desc:"\u7cf8\u306e\u5f35\u529b\u3068\u91cd\u529b\u306e\u5408\u529b\u304c\u5411\u5fc3\u529b\u306b\u3002\u8cea\u91cf\u3084\u89d2\u901f\u5ea6\u3067\u5f35\u529b\u304c\u3069\u3046\u5909\u308f\u308b\u304b\u3002" },
+              { type:"sim", cat:"reidai", num:"\u4f8b\u984c16", status:"open", screen:"screen-reidai16",
                 title:"\u3070\u306d\u306b\u3088\u308b\u7b49\u901f\u5186\u904b\u52d5",
                 desc:"\u3070\u306d\u306e\u5f3e\u6027\u529b\u304c\u5411\u5fc3\u529b\u306b\u306a\u308b\u3057\u304f\u307f\u3002\u5468\u671f\u3068\u81ea\u7136\u9577\u3092\u6c42\u3081\u308b\u3002" },
               { type:"sim", cat:"reidai", num:"\u4f8b\u984c17", status:"soon",
@@ -664,9 +1082,8 @@
                 desc:"\u5730\u7403\u306e\u5f15\u529b\u3092\u632f\u308a\u5207\u308b\u306e\u306b\u5fc5\u8981\u306a\u901f\u3055\u3002" }
             ]
           },
-          { id:"newton",   title:"\u904b\u52d5\u306e\u6cd5\u5247", desc:"\u904b\u52d5\u65b9\u7a0b\u5f0f\u30fb\u6469\u64e6\u529b\u30fb\u7a7a\u6c17\u62b5\u6297", status:"soon" },
-          { id:"energy",   title:"\u4ed5\u4e8b\u3068\u30a8\u30cd\u30eb\u30ae\u30fc", desc:"\u4ed5\u4e8b\u30fb\u904b\u52d5\u30a8\u30cd\u30eb\u30ae\u30fc\u30fb\u529b\u5b66\u7684\u30a8\u30cd\u30eb\u30ae\u30fc\u4fdd\u5b58", status:"soon" },
-          { id:"momentum", title:"\u904b\u52d5\u91cf", desc:"\u904b\u52d5\u91cf\u4fdd\u5b58\u30fb\u529b\u7a4d\u30fb\u885d\u7a81", status:"soon" }
+          { id:"gas", title:"\u6c17\u4f53\u306e\u6027\u8cea\u3068\u5206\u5b50\u306e\u904b\u52d5",
+            desc:"\u6c17\u4f53\u306e\u6cd5\u5247\uff0f\u6c17\u4f53\u306e\u5206\u5b50\u904b\u52d5\uff0f\u5185\u90e8\u30a8\u30cd\u30eb\u30ae\u30fc\u3068\u4ed5\u4e8b", status:"soon" }
         ]
       },
       { id:"waves",  title:"\u6ce2\u52d5", desc:"\u6b63\u5f26\u6ce2\u30fb\u6ce2\u306e\u4f1d\u308f\u308a\u65b9\u30fb\u97f3\u30fb\u5149", status:"soon" },
@@ -683,6 +1100,7 @@
     "b:R":{t:"\u534a\u5f84 R",b:"\u5186\u904b\u52d5\u306e\u534a\u5f84\u3002\u4e2d\u5fc3 O \u304b\u3089\u7269\u4f53 P \u307e\u3067\u306e\u8ddd\u96e2\u3067\u3059\u3002\n\u3053\u306e\u30b7\u30df\u30e5\u30ec\u30fc\u30b7\u30e7\u30f3\u3067\u306f 0.5\u301c3.0 m \u306e\u7bc4\u56f2\uff080.5\u523b\u307f\uff09\u3067\u5165\u529b\u3067\u304d\u307e\u3059\u3002",rel:"\u5186\u5468 = 2\u03c0R"},
     "b:omega":{t:"\u89d2\u901f\u5ea6 \u03c9",b:"1\u79d2\u9593\u306b\u56de\u308b\u89d2\u5ea6\uff08rad\uff09\u3002\u300c\u56de\u308b\u901f\u3055\u300d\u3092\u89d2\u5ea6\u3067\u8868\u3057\u305f\u3082\u306e\u3067\u3059\u3002\n\u5927\u304d\u3044\u307b\u3069\u901f\u304f\u56de\u308a\u3001\u5468\u671f\u306f\u77ed\u304f\u306a\u308a\u307e\u3059\u3002",rel:"\u03b8 = \u03c9 t"},
     "b:theta":{t:"\u89d2\u5ea6 \u03b8\uff08\u5f27\u5ea6\u6cd5\uff09",b:"\u4e2d\u5fc3 O \u304b\u3089\u898b\u305f\u3001\u30b9\u30bf\u30fc\u30c8\u304b\u3089\u306e\u56de\u8ee2\u89d2\u3002\n\u5f27\u5ea6\u6cd5\uff08\u30e9\u30b8\u30a2\u30f3\uff09\u3067\u8868\u3057\u307e\u3059 \u2500\u2500 \u5f27\u306e\u9577\u3055\u3092\u534a\u5f84\u3067\u5272\u3063\u305f\u5024\u3067\u3059\u3002\n\u534a\u5f84\u3068\u540c\u3058\u9577\u3055\u306e\u5f27\u3092\u3064\u304f\u308b\u89d2\u304c 1 rad\u30011\u5468\u306f 2\u03c0 rad\u3002",rel:"\u03b8\u3014rad\u3015= \u5f27\u306e\u9577\u3055 \u00f7 R"},
+    "b:omegacalc":{t:"\u89d2\u901f\u5ea6 \u03c9 \u3092\u8a08\u7b97\u3067\u6c42\u3081\u308b",b:"\u89d2\u901f\u5ea6\u306f\u300c\u56de\u8ee2\u3057\u305f\u89d2\u5ea6 \u03b8 \u3092\u3001\u304b\u304b\u3063\u305f\u6642\u9593 t \u3067\u5272\u3063\u305f\u3082\u306e\u300d\u3067\u3059\u3002\n\u4f8b\uff1a1\u5468\uff082\u03c0\u22486.28 rad\uff09\u3092 4 \u79d2\u3067\u56de\u308b\u306a\u3089\u3001\u03c9 = 6.28 \u00f7 4.0 \u2248 1.57 rad/s\u3002\n\u8a08\u7b97\u3057\u305f\u5024\u306f\u300c\u3053\u306e\u89d2\u901f\u5ea6\u3092\u4f7f\u3046\u300d\u3067\u30b7\u30df\u30e5\u30ec\u30fc\u30b7\u30e7\u30f3\u306b\u53cd\u6620\u3067\u304d\u307e\u3059\u3002",rel:"\u03c9 = \u03b8 \u00f7 t"},
     "b:arc":{t:"\u5f27\u306e\u9577\u3055 \u2113",b:"\u5186\u5468\u306b\u305d\u3063\u3066 P \u304c\u9032\u3093\u3060\u9053\u306e\u308a\u3002\n\u89d2\u5ea6 \u03b8 \u3092\u5f27\u5ea6\u6cd5\u3067\u8868\u3059\u3068\u3001\u5f27\u306e\u9577\u3055\u306f\u300cR \u304b\u3051\u308b \u03b8\u300d\u3067\u6c42\u3081\u3089\u308c\u307e\u3059\u3002\n\u03b8 \u304c 2\u03c0 \u306b\u306a\u308b\u3068\u3001\u5f27\u306f\u3061\u3087\u3046\u3069\u5186\u5468 2\u03c0R \u3068\u7b49\u3057\u304f\u306a\u308a\u307e\u3059\u3002",rel:"\u2113 = R \u03b8"},
     "b:V":{t:"\u901f\u3055 v",b:"\u5186\u5468\u4e0a\u3092 P \u304c\u9032\u3080\u901f\u3055\u3002\n\u534a\u5f84\u304c\u5927\u304d\u3044\u307b\u3069\u3001\u307e\u305f\u89d2\u901f\u5ea6\u304c\u5927\u304d\u3044\u307b\u3069\u901f\u304f\u306a\u308a\u307e\u3059\u3002",rel:"v = R \u03c9"},
     "b:T":{t:"\u5468\u671f T",b:"P \u304c\u5186\u30921\u5468\u3059\u308b\u306e\u306b\u304b\u304b\u308b\u6642\u9593\u3002\n\u89d2\u901f\u5ea6 \u03c9 \u304c\u5927\u304d\u3044\u307b\u3069\u3001\u5468\u671f\u306f\u77ed\u304f\u306a\u308a\u307e\u3059\u3002",rel:"T = 2\u03c0 / \u03c9"},
@@ -698,7 +1116,29 @@
     "s:a":{t:"\u5411\u5fc3\u52a0\u901f\u5ea6 a\u3000[m/s\u00b2]",b:"\u7b49\u901f\u5186\u904b\u52d5\u3067\u306f\u901f\u3055\u306f\u4e00\u5b9a\u3067\u3059\u304c\u3001\u904b\u52d5\u306e\u5411\u304d\u306f\u3064\u306d\u306b\u5909\u308f\u308a\u7d9a\u3051\u307e\u3059\u3002\u305d\u306e\u305f\u3081\u7269\u4f53\u306f\u52a0\u901f\u5ea6\u3092\u3082\u3061\u3001\u305d\u306e\u5411\u304d\u306f\u3064\u306d\u306b\u5186\u306e\u4e2d\u5fc3\u3092\u5411\u304d\u307e\u3059\u3002\n\n\u3053\u308c\u3092\u5411\u5fc3\u52a0\u901f\u5ea6\u3068\u3044\u3044\u3001\u4e2d\u5fc3\u5411\u304d\u306e\u529b\uff08\u5411\u5fc3\u529b\uff09\u304c\u5fc5\u8981\u306b\u306a\u308b\u7406\u7531\u3067\u3059\u3002",relLabel:"\u95a2\u4fc2\u5f0f",rel:"a = R \u03c9\u00b2 = V\u00b2 / R"},
     "s:theta":{t:"\u89d2\u5ea6 \u03b8\u3000[rad]",b:"\u57fa\u6e96\u306e\u4f4d\u7f6e\uff08\u5186\u306e\u53f3\u7aef\uff09\u304b\u3089\u6e2c\u3063\u305f\u3001\u7269\u4f53 P \u306e\u56de\u8ee2\u89d2\u3067\u3059\u3002\u6642\u9593\u3068\u3068\u3082\u306b\u4e00\u5b9a\u306e\u5272\u5408\u3067\u5897\u3048\u3066\u3044\u304d\u307e\u3059\u3002",relLabel:"\u95a2\u4fc2\u5f0f",rel:"\u03b8 = \u03c9 t"},
     "s:y":{t:"\u5909\u4f4d y\u3000[m]",b:"\u5358\u632f\u52d5\u306e\u3001\u4e2d\u5fc3\u304b\u3089\u306e\u305a\u308c\u3067\u3059\u3002\u6b63\u5c04\u5f71\u306e\u70b9 Q \u306e\u4f4d\u7f6e\u305d\u306e\u3082\u306e\u3092\u8868\u3057\u307e\u3059\u3002\n\n\u5186\u904b\u52d5\u306e\u300c\u7e26\u65b9\u5411\u306e\u6210\u5206\u300d\u304c\u3001\u305d\u306e\u307e\u307e\u5358\u632f\u52d5\u306e\u5909\u4f4d\u306b\u306a\u308a\u307e\u3059\u3002",relLabel:"\u95a2\u4fc2\u5f0f",rel:"y = R sin \u03b8"},
-    "s:t":{t:"\u7d4c\u904e\u6642\u9593 t\u3000[s]",b:"\u518d\u751f\u3092\u59cb\u3081\u3066\u304b\u3089\u306e\u6642\u9593\u3067\u3059\u3002\u300c\u30ea\u30bb\u30c3\u30c8\u300d\u3092\u62bc\u3059\u3068 0 \u306b\u623b\u308a\u307e\u3059\u3002"}
+    "s:t":{t:"\u7d4c\u904e\u6642\u9593 t\u3000[s]",b:"\u518d\u751f\u3092\u59cb\u3081\u3066\u304b\u3089\u306e\u6642\u9593\u3067\u3059\u3002\u300c\u30ea\u30bb\u30c3\u30c8\u300d\u3092\u62bc\u3059\u3068 0 \u306b\u623b\u308a\u307e\u3059\u3002"},
+    "t:R":{t:"\u534a\u5f84 R",b:"\u5186\u904b\u52d5\u306e\u534a\u5f84\u3002\u4e2d\u5fc3\u304b\u3089\u7269\u4f53\u307e\u3067\u306e\u8ddd\u96e2\u3067\u3059\u3002\n\u624b\u3092\u96e2\u3057\u305f\u3042\u3068\u306e\u76f4\u9032\u904b\u52d5\u306b\u306f\u5f71\u97ff\u3057\u307e\u305b\u3093\u304c\u3001\u540c\u3058\u89d2\u901f\u5ea6\u306a\u3089 R \u304c\u5927\u304d\u3044\u307b\u3069\u901f\u3055 v=R\u03c9 \u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002",rel:"v = R \u03c9"},
+    "t:omega":{t:"\u89d2\u901f\u5ea6 \u03c9",b:"1\u79d2\u3042\u305f\u308a\u306b\u56de\u308b\u89d2\u5ea6\uff08rad\uff09\u3002\n\u03c9 \u304c\u5927\u304d\u3044\u307b\u3069\u901f\u304f\u56de\u308a\u3001\u624b\u3092\u96e2\u3057\u305f\u3068\u304d\u306b\u98db\u3073\u51fa\u3059\u901f\u3055\u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002",rel:"v = R \u03c9"},
+    "t:V":{t:"\u901f\u3055 v",b:"\u5186\u5468\u4e0a\u3092\u9032\u3080\u901f\u3055\u3002\u5411\u304d\u306f\u3064\u306d\u306b\u5186\u306e\u63a5\u7dda\u65b9\u5411\uff08\u9032\u884c\u65b9\u5411\uff09\u3067\u3059\u3002\n\u624b\u3092\u96e2\u3059\u3068\u3001\u7269\u4f53\u306f\u3053\u306e\u901f\u3055\u30fb\u3053\u306e\u5411\u304d\u306e\u307e\u307e\u3001\u307e\u3063\u3059\u3050\u98db\u3093\u3067\u3044\u304d\u307e\u3059\u3002",rel:"v = R \u03c9"},
+    "t:theta":{t:"\u89d2\u5ea6 \u03b8",b:"\u30b9\u30bf\u30fc\u30c8\u4f4d\u7f6e\u304b\u3089\u6e2c\u3063\u305f\u56de\u8ee2\u89d2\u3067\u3059\u3002\n\u300c\u624b\u3092\u96e2\u3059\u300d\u30dc\u30bf\u30f3\u3092\u62bc\u3057\u305f\u77ac\u9593\u306e \u03b8 \u306b\u3088\u3063\u3066\u3001\u30dc\u30fc\u30eb\u304c\u3069\u306e\u5411\u304d\u306b\u98db\u3076\u304b\u304c\u6c7a\u307e\u308a\u307e\u3059\u3002",rel:"\u03b8 = \u03c9 t"},
+    "t:state":{t:"\u72b6\u614b",b:"\u3044\u307e\u30dc\u30fc\u30eb\u304c\u300c\u5186\u904b\u52d5\u4e2d\u300d\u304b\u300c\u98db\u884c\u4e2d\uff08\u624b\u3092\u96e2\u3057\u305f\u3042\u3068\uff09\u300d\u304b\u3092\u8868\u3057\u307e\u3059\u3002\n\u5186\u904b\u52d5\u4e2d\u306b\u624b\u3092\u96e2\u3059\u3068\u3001\u98db\u884c\u4e2d\u306b\u5207\u308a\u66ff\u308f\u308a\u307e\u3059\u3002"},
+    "t:flytime":{t:"\u98db\u884c\u6642\u9593",b:"\u624b\u3092\u96e2\u3057\u3066\u304b\u3089\u306e\u7d4c\u904e\u6642\u9593\u3067\u3059\u3002\n\u624b\u3092\u96e2\u3059\u524d\u306f 0 \u306e\u307e\u307e\u3002\u96e2\u3057\u305f\u77ac\u9593\u304b\u3089\u30ab\u30a6\u30f3\u30c8\u304c\u59cb\u307e\u308a\u307e\u3059\u3002"},
+    "e:k":{t:"\u3070\u306d\u5b9a\u6570 k",b:"\u3070\u306d\u306e\u300c\u304b\u305f\u3055\u300d\u3092\u8868\u3059\u5024\u3067\u3059\u3002\\n\u3070\u306d\u304c x \u3060\u3051\u4f38\u3073\u308b\u3068\u3001\u5f3e\u6027\u529b F=kx \u304c\u751f\u307e\u308c\u307e\u3059\u3002k \u304c\u5927\u304d\u3044\u307b\u3069\u3001\u540c\u3058\u4f38\u3073\u3067\u3082\u5f37\u3044\u529b\u304c\u51fa\u307e\u3059\u3002",rel:"F = k x"},
+    "e:m":{t:"\u8cea\u91cf m",b:"\u304a\u3082\u308a\u306e\u8cea\u91cf\u3067\u3059\u3002\\n\u8cea\u91cf\u304c\u5927\u304d\u3044\u307b\u3069\u3001\u540c\u3058\u5186\u904b\u52d5\u3092\u3059\u308b\u306e\u306b\u5fc5\u8981\u306a\u5411\u5fc3\u529b mr\u03c9\u00b2 \u304c\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002",rel:"F = m r \u03c9\u00b2"},
+    "e:omega":{t:"\u89d2\u901f\u5ea6 \u03c9",b:"1\u79d2\u3042\u305f\u308a\u306b\u56de\u308b\u89d2\u5ea6\uff08rad\uff09\u3002\\n\u03c9 \u304c\u5927\u304d\u3044\u307b\u3069\u901f\u304f\u56de\u308a\u3001\u5fc5\u8981\u306a\u5411\u5fc3\u529b mr\u03c9\u00b2 \u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002",rel:"F = m r \u03c9\u00b2"},
+    "e:r":{t:"\u56de\u308b\u3068\u304d\u306e\u9577\u3055 r",b:"\u5186\u904b\u52d5\u3057\u3066\u3044\u308b\u3068\u304d\u306e\u3070\u306d\u306e\u9577\u3055\u3067\u3001\u3053\u308c\u304c\u305d\u306e\u307e\u307e\u5186\u306e\u534a\u5f84\u306b\u306a\u308a\u307e\u3059\u3002\n\u3070\u306d\u304c\u4f38\u3073\u3066\u3001\u5f3e\u6027\u529b k(r\u2212L\u2080) \u3068\u5411\u5fc3\u529b mr\u03c9\u00b2 \u304c\u91e3\u308a\u5408\u3046\u9577\u3055\u3067\u5b89\u5b9a\u3057\u307e\u3059\u3002\u3053\u308c\u304c\u6c42\u3081\u308b\u91cf\u3067\u3059\u3002",rel:"r = kL\u2080/(k\u2212m\u03c9\u00b2)"},
+    "e:T":{t:"\u5468\u671f T",b:"\u304a\u3082\u308a\u304c\u5186\u30921\u5468\u3059\u308b\u306e\u306b\u304b\u304b\u308b\u6642\u9593\u3067\u3059\u3002\\n\u89d2\u901f\u5ea6\u304b\u3089 T=2\u03c0/\u03c9 \u3067\u6c42\u3081\u3089\u308c\u307e\u3059\u3002\u6559\u79d1\u66f8\u306e\u4f8b\u984c\u3067\u306f \u03c0=3.14 \u3068\u3057\u3066\u8a08\u7b97\u3057\u307e\u3059\u3002",rel:"T = 2\u03c0 / \u03c9"},
+    "e:F":{t:"\u5411\u5fc3\u529b F",b:"\u5186\u904b\u52d5\u3092\u7d9a\u3051\u308b\u305f\u3081\u306b\u3001\u5186\u306e\u4e2d\u5fc3\u5411\u304d\u306b\u5fc5\u8981\u306a\u529b\u3067\u3059\u3002\\n\u3053\u306e\u554f\u984c\u3067\u306f\u3001\u3070\u306d\u306e\u5f3e\u6027\u529b\u304c\u3061\u3087\u3046\u3069\u3053\u306e\u5411\u5fc3\u529b\u306b\u306a\u3063\u3066\u3044\u307e\u3059\u3002",rel:"F = m r \u03c9\u00b2"},
+    "e:x":{t:"\u3070\u306d\u306e\u4f38\u3073 x",b:"\u3070\u306d\u304c\u81ea\u7136\u9577\u304b\u3089\u3069\u308c\u3060\u3051\u4f38\u3073\u305f\u304b\u3002\\n\u5f3e\u6027\u529b\uff1d\u5411\u5fc3\u529b\uff08kx = F\uff09\u306a\u306e\u3067\u3001x = F/k \u3067\u6c42\u3081\u3089\u308c\u307e\u3059\u3002",rel:"x = F / k"},
+    "e:L0":{t:"\u3070\u306d\u306e\u81ea\u7136\u9577 L\u2080",b:"\u529b\u304c\u304b\u304b\u3063\u3066\u3044\u306a\u3044\u3068\u304d\u306e\u3070\u306d\u672c\u6765\u306e\u9577\u3055\u3067\u3059\u3002\n\u518d\u751f\u3059\u308b\u3068\u3001\u3053\u306e\u9577\u3055\u304b\u3089\u300c\u91e3\u308a\u5408\u3046\u9577\u3055 r\u300d\u307e\u3067\u3070\u306d\u304c\u4f38\u3073\u307e\u3059\u3002",rel:"x = r \u2212 L\u2080"},
+    "c:m":{t:"\u8cea\u91cf m",b:"\u540a\u308b\u3057\u305f\u7269\u4f53\u306e\u8cea\u91cf\u3067\u3059\u3002\\n\u8cea\u91cf\u304c\u5927\u304d\u3044\u307b\u3069\u91cd\u529b mg \u304c\u5927\u304d\u304f\u306a\u308a\u3001\u305d\u308c\u3092\u652f\u3048\u308b\u7cf8\u306e\u5f35\u529b\u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002",rel:"mg = m \u00d7 9.8"},
+    "c:omega":{t:"\u89d2\u901f\u5ea6 \u03c9",b:"1\u79d2\u3042\u305f\u308a\u306b\u56de\u308b\u89d2\u5ea6\uff08rad\uff09\u3002\\n\u03c9 \u3092\u5927\u304d\u304f\u3059\u308b\u3068\u3001\u5fc5\u8981\u306a\u5411\u5fc3\u529b\u304c\u5897\u3048\u3066\u7cf8\u304c\u3088\u308a\u5916\u306b\u958b\u304d\uff08\u03b8 \u304c\u5927\u304d\u304f\u306a\u308a\uff09\u3001\u5f35\u529b\u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002",rel:"S = m \u2113 \u03c9\u00b2"},
+    "c:L":{t:"\u7cf8\u306e\u9577\u3055 \u2113",b:"\u7269\u4f53\u3092\u540a\u308b\u3057\u3066\u3044\u308b\u7cf8\u306e\u9577\u3055\u3067\u3059\u3002\\n\u7cf8\u304c\u9577\u3044\u307b\u3069\u3001\u540c\u3058\u50be\u304d\u3067\u3082\u5186\u306e\u534a\u5f84 r=\u2113sin\u03b8 \u304c\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002"},
+    "c:theta":{t:"\u7cf8\u306e\u50be\u304d \u03b8",b:"\u7cf8\u304c\u925b\u76f4\u65b9\u5411\u3068\u306a\u3059\u89d2\u5ea6\u3067\u3059\u3002\\n\u89d2\u901f\u5ea6\u304c\u5927\u304d\u3044\u307b\u3069\u7cf8\u306f\u5916\u306b\u958b\u3044\u3066 \u03b8 \u304c\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002cos\u03b8 = g/(\u2113\u03c9\u00b2) \u3067\u6c7a\u307e\u308a\u307e\u3059\u3002",rel:"cos\u03b8 = g / (\u2113 \u03c9\u00b2)"},
+    "c:r":{t:"\u5186\u306e\u534a\u5f84 r",b:"\u7269\u4f53\u304c\u63cf\u304f\u6c34\u5e73\u306a\u5186\u306e\u534a\u5f84\u3067\u3059\u3002\\n\u7cf8\u306e\u9577\u3055\u3068\u50be\u304d\u304b\u3089 r = \u2113 sin\u03b8 \u3067\u6c42\u307e\u308a\u307e\u3059\u3002",rel:"r = \u2113 sin\u03b8"},
+    "c:S":{t:"\u7cf8\u306e\u5f35\u529b S",b:"\u7cf8\u304c\u7269\u4f53\u3092\u5f15\u304f\u529b\u3067\u3001\u7cf8\u306b\u6cbf\u3063\u305f\u5411\u304d\u3067\u3059\u3002\\n\u925b\u76f4\u6210\u5206 Scos\u03b8 \u304c\u91cd\u529b\u3092\u652f\u3048\u3001\u6c34\u5e73\u6210\u5206 Ssin\u03b8 \u304c\u5411\u5fc3\u529b\u306b\u306a\u308a\u307e\u3059\u3002\u307e\u3068\u3081\u308b\u3068 S = m\u2113\u03c9\u00b2\u3002",rel:"S = m \u2113 \u03c9\u00b2"},
+    "c:mg":{t:"\u91cd\u529b mg",b:"\u7269\u4f53\u306b\u306f\u305f\u3089\u304f\u4e0b\u5411\u304d\u306e\u91cd\u529b\u3067\u3059\uff08g\u22489.8 m/s\u00b2\uff09\u3002\\n\u7cf8\u306e\u5f35\u529b\u306e\u925b\u76f4\u6210\u5206\u3068\u3064\u308a\u3042\u3063\u3066\u3044\u307e\u3059\uff08S cos\u03b8 = mg\uff09\u3002",rel:"S cos\u03b8 = mg"},
+    "c:F":{t:"\u5411\u5fc3\u529b F",b:"\u5186\u904b\u52d5\u3092\u7d9a\u3051\u308b\u305f\u3081\u4e2d\u5fc3\u5411\u304d\u306b\u5fc5\u8981\u306a\u529b\u3067\u3059\u3002\\n\u3053\u306e\u904b\u52d5\u3067\u306f\u3001\u5f35\u529b\u3068\u91cd\u529b\u306e\u5408\u529b\uff08\uff1d\u5f35\u529b\u306e\u6c34\u5e73\u6210\u5206\uff09\u304c\u305d\u308c\u306b\u3042\u305f\u308a\u307e\u3059\u3002",rel:"F = m r \u03c9\u00b2 = S sin\u03b8"}
   };
 
   /* =========================================================
@@ -756,6 +1196,9 @@
     backEl.disabled=false;
     if(screenId==='screen-basics') activeSim=SIM_BASICS;
     else if(screenId==='screen-shm') activeSim=SIM_SHM;
+    else if(screenId==='screen-tangent') activeSim=SIM_TANGENT;
+    else if(screenId==='screen-reidai16') activeSim=SIM_E16;
+    else if(screenId==='screen-cone') activeSim=SIM_CONE;
     if(activeSim){ activeSim.start(); }
     window.scrollTo(0,0);
   }
@@ -809,7 +1252,7 @@
     }
   }
 
-  function cardHTML(it,i,kind){
+  function cardHTML(it,i,kind,realIdx){
     var locked=(it.status==='soon');
     var idx=String(i+1);
     if(idx.length<2) idx='0'+idx;
@@ -839,12 +1282,21 @@
       '<div class="card-desc">'+(it.desc||'')+'</div>'+
       '<div class="card-foot">'+foot+'</div>';
     if(locked) return '<div class="card locked">'+inner+'</div>';
-    return '<div class="card" data-idx="'+i+'">'+inner+'</div>';
+    var di=(realIdx!==undefined)?realIdx:i;
+    return '<div class="card" data-idx="'+di+'">'+inner+'</div>';
   }
 
   function gridHTML(items,kind){
     var out='<div class="grid">';
     for(var i=0;i<items.length;i++) out+=cardHTML(items[i],i,kind);
+    return out+'</div>';
+  }
+  /* \u5b9f\u30a4\u30f3\u30c7\u30c3\u30af\u30b9\uff08\u5143children\u5185\u306e\u4f4d\u7f6e\uff09\u3092 data-idx \u306b\u4f7f\u3046\u7248 */
+  function gridHTMLIdx(pairs,kind){
+    var out='<div class="grid">';
+    for(var i=0;i<pairs.length;i++){
+      out+=cardHTML(pairs[i].it,i,kind,pairs[i].idx);
+    }
     return out+'</div>';
   }
 
@@ -865,17 +1317,21 @@
       html+=gridHTML(node.children,'unit');
     }else{
       html+='<div class="view-head">'+node.title+'</div>';
-      var concepts=node.children.filter(function(c){ return c.cat==='concept'; });
-      var reidais =node.children.filter(function(c){ return c.cat==='reidai'; });
+      var concepts=[], reidais=[];
+      for(var ci2=0;ci2<node.children.length;ci2++){
+        var ch2=node.children[ci2];
+        if(ch2.cat==='concept') concepts.push({it:ch2,idx:ci2});
+        else if(ch2.cat==='reidai') reidais.push({it:ch2,idx:ci2});
+      }
       if(concepts.length){
         html+='<div class="section-label" style="--accent:var(--teal)">\u6982\u5ff5\u7406\u89e3'+
               '<span class="note">\u5358\u5143\u306e\u3057\u304f\u307f\u3092\u76f4\u611f\u7684\u306b\u3064\u304b\u3080</span></div>';
-        html+=gridHTML(concepts,'sim');
+        html+=gridHTMLIdx(concepts,'sim');
       }
       if(reidais.length){
         html+='<div class="section-label" style="--accent:var(--orange)">\u6559\u79d1\u66f8\u306e\u4f8b\u984c'+
               '<span class="note">\u4f8b\u984c\u306e\u72b6\u6cc1\u3068\u89e3\u6cd5\u3092\u30a2\u30cb\u30e1\u3067\u898b\u308b</span></div>';
-        html+=gridHTML(reidais,'sim');
+        html+=gridHTMLIdx(reidais,'sim');
       }
     }
     viewEl.innerHTML=html;
@@ -937,18 +1393,18 @@
     var st={ R:1.0, omega:1.0, totalAngle:0, t:0,
              playing:false, speed:0.5, lapFlash:0,
              showK:true, showD:false, showV:false };
-    var LIM={R:[0.5,3.0],W:[0.5,4.0],TH:[0,6.28]};
-    var PRESETS=[
-      {label:'0',     deg:'0\u00b0',   val:0},
-      {label:'1 rad', deg:'\u5f27=R', val:1},
-      {label:'\u03c0/2',   deg:'90\u00b0',  val:Math.PI/2},
-      {label:'2 rad', deg:'',     val:2},
-      {label:'\u03c0',     deg:'180\u00b0', val:Math.PI},
-      {label:'3 rad', deg:'',     val:3},
-      {label:'3\u03c0/2',  deg:'270\u00b0', val:Math.PI*1.5},
-      {label:'2\u03c0',    deg:'360\u00b0', val:TWO_PI}
+    var LIM={R:[0.5,3.0],W:[0.5,4.0]};
+    /* \u89d2\u901f\u5ea6\u30d7\u30ea\u30bb\u30c3\u30c8\uff08\u3088\u304f\u4f7f\u3046\u5024\uff09 */
+    var WPRESETS=[
+      {label:'0.5', val:0.5},
+      {label:'1.0', val:1.0},
+      {label:'1.57', sub:'\u03c0/2', val:Math.PI/2},
+      {label:'2.0', val:2.0},
+      {label:'3.14', sub:'\u03c0', val:Math.PI},
+      {label:'4.0', val:4.0}
     ];
-    var inpR=$('bInpR'), inpW=$('bInpW'), inpTh=$('bInpTh');
+    var inpR=$('bInpR'), inpW=$('bInpW');
+    var calcTh=$('bCalcTh'), calcT=$('bCalcT');
 
     function theta(){ return ((st.totalAngle%TWO_PI)+TWO_PI)%TWO_PI; }
     function period(){ return TWO_PI/st.omega; }
@@ -956,37 +1412,45 @@
     function speedV(){ return st.R*st.omega; }
     function laps(){ return st.totalAngle/TWO_PI; }
 
-    /* \u30d7\u30ea\u30bb\u30c3\u30c8\u30c1\u30c3\u30d7\u751f\u6210 */
-    var chipsEl=$('bChips');
-    for(var ci=0;ci<PRESETS.length;ci++){
+    /* \u89d2\u901f\u5ea6\u30d7\u30ea\u30bb\u30c3\u30c8\u30c1\u30c3\u30d7\u751f\u6210 */
+    var chipsEl=$('bWChips');
+    for(var ci=0;ci<WPRESETS.length;ci++){
       (function(i){
         var b=document.createElement('button');
         b.className='chip';
-        var p=PRESETS[i];
+        var p=WPRESETS[i];
         b.innerHTML=p.label+'<span class="cv">'+
-          (p.deg?p.deg+' \u00b7 ':'')+p.val.toFixed(2)+'</span>';
+          (p.sub?p.sub+' rad/s':'rad/s')+'</span>';
         b.addEventListener('click',function(){
-          if(st.playing) return;
-          setTheta(PRESETS[i].val);
+          st.omega=clamp(WPRESETS[i].val,LIM.W[0],LIM.W[1]);
           syncInputs();
         });
         chipsEl.appendChild(b);
       })(ci);
     }
-    function setTheta(val){
-      if(st.playing) return;
-      var th=clamp(val,LIM.TH[0],LIM.TH[1]);
-      st.totalAngle=th;
-      st.t=th/st.omega;
-    }
     function refreshChips(){
-      var th=theta();
       var list=chipsEl.children;
       for(var i=0;i<list.length;i++){
-        list[i].disabled=st.playing;
         list[i].classList.toggle('active',
-          !st.playing && Math.abs(PRESETS[i].val-th)<0.02);
+          Math.abs(WPRESETS[i].val-st.omega)<0.03);
       }
+    }
+    /* \u03c9=\u03b8/t \u8a08\u7b97\u6b04 */
+    function calcOmega(){
+      var th=parseFloat(calcTh.value), tt=parseFloat(calcT.value);
+      if(isNaN(th)||isNaN(tt)||tt<=0) return null;
+      return th/tt;
+    }
+    function updateCalcOut(){
+      var th=parseFloat(calcTh.value), tt=parseFloat(calcT.value);
+      var w=calcOmega();
+      if(w===null){
+        $('bCalcOut').innerHTML='\u6570\u5024\u3092\u5165\u308c\u3066\u304f\u3060\u3055\u3044';
+        return;
+      }
+      $('bCalcOut').innerHTML='\u03c9 = \u03b8 \u00f7 t = '+th.toFixed(2)+
+        ' \u00f7 '+tt.toFixed(1)+' = <span class="mono">'+w.toFixed(2)+
+        ' rad/s</span>';
     }
 
     function readRW(){
@@ -994,17 +1458,10 @@
       if(!isNaN(r)) st.R=clamp(r,LIM.R[0],LIM.R[1]);
       if(!isNaN(w)) st.omega=clamp(w,LIM.W[0],LIM.W[1]);
     }
-    function readTh(){
-      if(st.playing) return;
-      var th=parseFloat(inpTh.value);
-      if(!isNaN(th)) setTheta(th);
-    }
     function syncInputs(){
       if(document.activeElement!==inpR) inpR.value=st.R.toFixed(1);
       if(document.activeElement!==inpW) inpW.value=st.omega.toFixed(1);
-      if(st.playing||document.activeElement!==inpTh)
-        inpTh.value=theta().toFixed(2);
-      inpTh.disabled=st.playing;
+      refreshChips();
     }
 
     function updateReadout(){
@@ -1172,16 +1629,12 @@
       st.playing=!st.playing;
       this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
       this.classList.toggle('playing',st.playing);
-      $('bNote').textContent=st.playing
-        ?'\u518d\u751f\u4e2d\uff1a\u03b8 \u306f\u6642\u9593\u3068\u3068\u3082\u306b\u5909\u5316\u3057\u307e\u3059\uff08\u03b8 = \u03c9 t\uff09'
-        :'\u4e00\u6642\u505c\u6b62\u4e2d\u306b\u89d2\u5ea6\u3092\u6c7a\u3081\u3089\u308c\u307e\u3059\uff08\u518d\u751f\u4e2d\u306f\u73fe\u5728\u5024\u3092\u8868\u793a\uff09';
       last=null;
     });
     $('bReset').addEventListener('click',function(){
       st.totalAngle=0;st.t=0;st.lapFlash=0;st.playing=false;
       var b=$('bPlay');
       b.textContent='\u25b6 \u518d\u751f';b.classList.remove('playing');
-      $('bNote').textContent='\u4e00\u6642\u505c\u6b62\u4e2d\u306b\u89d2\u5ea6\u3092\u6c7a\u3081\u3089\u308c\u307e\u3059\uff08\u518d\u751f\u4e2d\u306f\u73fe\u5728\u5024\u3092\u8868\u793a\uff09';
       last=null;
     });
     $('bSpeed').addEventListener('click',function(e){
@@ -1194,8 +1647,15 @@
     inpW.addEventListener('input',readRW);
     inpR.addEventListener('change',function(){readRW();syncInputs();});
     inpW.addEventListener('change',function(){readRW();syncInputs();});
-    inpTh.addEventListener('input',readTh);
-    inpTh.addEventListener('change',function(){readTh();syncInputs();});
+    calcTh.addEventListener('input',updateCalcOut);
+    calcT.addEventListener('input',updateCalcOut);
+    $('bCalcApply').addEventListener('click',function(){
+      var w=calcOmega();
+      if(w!==null){
+        st.omega=clamp(w,LIM.W[0],LIM.W[1]);
+        syncInputs();
+      }
+    });
     var bsteps=document.querySelectorAll('[data-bstep]');
     for(var bi=0;bi<bsteps.length;bi++){
       bsteps[bi].addEventListener('click',function(){
@@ -1205,11 +1665,26 @@
           st.R=clamp(+(st.R+dir*0.5).toFixed(1),LIM.R[0],LIM.R[1]);
         }else if(which==='W'){
           st.omega=clamp(+(st.omega+dir*0.5).toFixed(1),LIM.W[0],LIM.W[1]);
-        }else if(which==='TH'){
-          if(st.playing) return;
-          setTheta(+(theta()+dir*0.1).toFixed(2));
         }
         syncInputs();
+      });
+    }
+    /* \u03c9\u8a08\u7b97\u6b04\u306e\u30b9\u30c6\u30c3\u30d1\u30fc\uff08\u03b8\u30fbt\uff09 */
+    var bcalcs=document.querySelectorAll('[data-bcalc]');
+    for(var bci=0;bci<bcalcs.length;bci++){
+      bcalcs[bci].addEventListener('click',function(){
+        var which=this.getAttribute('data-bcalc');
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        if(which==='TH'){
+          var th=parseFloat(calcTh.value);
+          if(isNaN(th)) th=0;
+          calcTh.value=clamp(+(th+dir*0.1).toFixed(2),0,12.56).toFixed(2);
+        }else if(which==='TT'){
+          var tt=parseFloat(calcT.value);
+          if(isNaN(tt)) tt=0.5;
+          calcT.value=clamp(+(tt+dir*0.5).toFixed(1),0.5,20).toFixed(1);
+        }
+        updateCalcOut();
       });
     }
     $('bChkK').addEventListener('change',function(e){st.showK=e.target.checked;});
@@ -1220,6 +1695,7 @@
       start:function(){
         fit();
         syncInputs();
+        updateCalcOut();
         running=true; last=null;
         rafId=requestAnimationFrame(frame);
       },
@@ -1488,6 +1964,955 @@
       resize:function(){ if(running) fit(); }
     };
   })();
+
+  /* =========================================================
+     \u30b7\u30df\u30e5\u30ec\u30fc\u30b7\u30e7\u30f3\u2462\uff1a\u63a5\u7dda\u65b9\u5411\u306b\u98db\u3076\u30dc\u30fc\u30eb
+     ========================================================= */
+  var SIM_TANGENT=(function(){
+    var cv=$('cvT'), C=makeCanvas(cv), ctx=C.ctx;
+    var L={};
+    function layout(){
+      var w=C.width()||680;
+      if(w<560) L={ LW:440, LH:520, CX:220, CY:270, SCALE:48 };
+      else      L={ LW:680, LH:500, CX:340, CY:255, SCALE:62 };
+    }
+    function fit(){ layout(); C.fit(L); }
+
+    /* state: phase = 'circular'\uff08\u5186\u904b\u52d5\u4e2d\uff09/ 'flying'\uff08\u98db\u884c\u4e2d\uff09 */
+    var st={ R:2.0, omega:1.5, angle:0, speed:0.5,
+             playing:false, phase:'circular',
+             flyT:0, fx:0, fy:0, fvx:0, fvy:0,
+             trail:[],
+             showV:true, showPath:true, showGuide:false,
+             showTarget:true,
+             tgx:0, tgy:0, tgR:24,
+             hit:false, hitFlash:0, tries:0, hits:0 };
+    var LIM={R:[1.0,3.0],W:[0.5,3.0]};
+    var inpR=$('tInpR'), inpW=$('tInpW');
+
+    /* \u7684\u3092\u30e9\u30f3\u30c0\u30e0\u306a\u4f4d\u7f6e\u306b\u7f6e\u304f\uff08\u5186\u306e\u5916\u5074\u3001\u753b\u9762\u5185\uff09 */
+    function placeTarget(){
+      var ang=Math.random()*Math.PI*2;
+      var Rpx=st.R*L.SCALE;
+      var dist=Rpx+70+Math.random()*(Math.min(L.LW,L.LH)*0.32);
+      var x=L.CX+Math.cos(ang)*dist;
+      var y=L.CY-Math.sin(ang)*dist;
+      /* \u753b\u9762\u5185\u306b\u53ce\u3081\u308b */
+      x=clamp(x,40,L.LW-40);
+      y=clamp(y,46,L.LH-40);
+      st.tgx=x; st.tgy=y;
+    }
+
+    function speedV(){ return st.R*st.omega; }
+
+    function syncInputs(){
+      if(document.activeElement!==inpR) inpR.value=st.R.toFixed(1);
+      if(document.activeElement!==inpW) inpW.value=st.omega.toFixed(1);
+    }
+    function readRW(){
+      var r=parseFloat(inpR.value), w=parseFloat(inpW.value);
+      if(!isNaN(r)) st.R=clamp(r,LIM.R[0],LIM.R[1]);
+      if(!isNaN(w)) st.omega=clamp(w,LIM.W[0],LIM.W[1]);
+    }
+
+    /* \u5186\u904b\u52d5\u4e2d\u306e\u30dc\u30fc\u30eb\u4f4d\u7f6e\uff08\u753b\u9762\u5ea7\u6a19\uff09 */
+    function ballOnCircle(){
+      var Rpx=st.R*L.SCALE;
+      return { x:L.CX+Math.cos(st.angle)*Rpx,
+               y:L.CY-Math.sin(st.angle)*Rpx };
+    }
+    /* \u63a5\u7dda\u65b9\u5411\u306e\u5358\u4f4d\u30d9\u30af\u30c8\u30eb\uff08\u53cd\u6642\u8a08\u56de\u308a\uff1a\u753b\u9762\u3067\u306f\u4e0a\u304c-y\uff09 */
+    function tangentDir(){
+      return { x:-Math.sin(st.angle), y:-Math.cos(st.angle) };
+    }
+
+    function release(){
+      if(st.phase!=='circular') return;
+      var p=ballOnCircle();
+      var t=tangentDir();
+      var v=speedV();
+      st.phase='flying';
+      st.flyT=0;
+      st.tries++;
+      st.fx=p.x; st.fy=p.y;
+      /* \u753b\u9762\u30d4\u30af\u30bb\u30eb\u901f\u5ea6\uff081m=SCALEpx\u3001\u898b\u3084\u3059\u3055\u7528\u306b\u6642\u9593\u30b9\u30b1\u30fc\u30eb\uff09 */
+      st.fvx=t.x*v*L.SCALE;
+      st.fvy=t.y*v*L.SCALE;
+      st.trail=[{x:p.x,y:p.y}];
+      $('insightT').innerHTML='\u624b\u3092\u96e2\u3057\u305f\uff01\u30dc\u30fc\u30eb\u306f\u3001\u96e2\u3057\u305f\u77ac\u9593\u306e'+
+        '<span class="mono">\u901f\u5ea6\u306e\u5411\u304d\uff08\u63a5\u7dda\u65b9\u5411\uff09</span>\u306b\u307e\u3063\u3059\u3050\u9032\u3093\u3067\u3044\u307e\u3059\u3002';
+      updateReadout();
+    }
+
+    function arrow(x1,y1,x2,y2,color,w){
+      ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=w;
+      ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      var ang=Math.atan2(y2-y1,x2-x1), hs=9+w;
+      ctx.beginPath();
+      ctx.moveTo(x2,y2);
+      ctx.lineTo(x2-hs*Math.cos(ang-0.42), y2-hs*Math.sin(ang-0.42));
+      ctx.lineTo(x2-hs*Math.cos(ang+0.42), y2-hs*Math.sin(ang+0.42));
+      ctx.closePath(); ctx.fill();
+      ctx.lineCap='butt';
+    }
+
+    function draw(){
+      var LW=L.LW,LH=L.LH,CX=L.CX,CY=L.CY,SCALE=L.SCALE;
+      ctx.clearRect(0,0,LW,LH);
+      var Rpx=st.R*SCALE;
+
+      /* \u5186\u306e\u7d4c\u8def */
+      ctx.strokeStyle='#d8cda8'; ctx.lineWidth=1.6;
+      ctx.setLineDash([6,5]);
+      ctx.beginPath(); ctx.arc(CX,CY,Rpx,0,Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* \u7684 */
+      if(st.showTarget){
+        var glow=st.hitFlash;
+        /* \u547d\u4e2d\u6642\u306e\u5149 */
+        if(glow>0){
+          ctx.fillStyle='rgba(216,84,31,'+(glow*0.5)+')';
+          ctx.beginPath();
+          ctx.arc(st.tgx,st.tgy,st.tgR+10+glow*16,0,Math.PI*2);
+          ctx.fill();
+        }
+        /* \u540c\u5fc3\u5186\u306e\u7684 */
+        var rings=[
+          {r:st.tgR,      c:'#bf3b2b'},
+          {r:st.tgR*0.66, c:'#fbf9f1'},
+          {r:st.tgR*0.33, c:'#bf3b2b'}
+        ];
+        for(var ri=0;ri<rings.length;ri++){
+          ctx.fillStyle=rings[ri].c;
+          ctx.beginPath();
+          ctx.arc(st.tgx,st.tgy,rings[ri].r,0,Math.PI*2);
+          ctx.fill();
+        }
+        ctx.strokeStyle='#23221d'; ctx.lineWidth=1.6;
+        ctx.beginPath();
+        ctx.arc(st.tgx,st.tgy,st.tgR,0,Math.PI*2);
+        ctx.stroke();
+        /* \u547d\u4e2d\u30e9\u30d9\u30eb */
+        if(st.hit){
+          ctx.fillStyle='#bf3b2b';
+          ctx.font='900 15px "Zen Kaku Gothic New",sans-serif';
+          ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+          ctx.fillText('\u547d\u4e2d\uff01',st.tgx,st.tgy-st.tgR-9);
+        }else{
+          ctx.fillStyle='#8a8268';
+          ctx.font='600 11px "Zen Kaku Gothic New",sans-serif';
+          ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+          ctx.fillText('\u7684',st.tgx,st.tgy-st.tgR-7);
+        }
+      }
+
+      /* \u4e2d\u5fc3 O */
+      ctx.fillStyle='#23221d';
+      ctx.beginPath(); ctx.arc(CX,CY,4,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#5c5849';
+      ctx.font='600 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='right'; ctx.textBaseline='middle';
+      ctx.fillText('O',CX-8,CY+12);
+
+      var bx,by;
+      if(st.phase==='circular'){
+        var p=ballOnCircle(); bx=p.x; by=p.y;
+        /* \u534a\u5f84\u7dda\uff08\u7cf8\uff09 */
+        ctx.strokeStyle='#8a8268'; ctx.lineWidth=1.6;
+        ctx.beginPath(); ctx.moveTo(CX,CY); ctx.lineTo(bx,by); ctx.stroke();
+      }else{
+        bx=st.fx; by=st.fy;
+        /* \u98db\u884c\u4e2d\u306e\u8ecc\u8de1 */
+        if(st.showPath && st.trail.length>1){
+          ctx.strokeStyle='#d8541f'; ctx.lineWidth=3; ctx.lineCap='round';
+          ctx.beginPath();
+          ctx.moveTo(st.trail[0].x,st.trail[0].y);
+          for(var i=1;i<st.trail.length;i++) ctx.lineTo(st.trail[i].x,st.trail[i].y);
+          ctx.stroke();
+          ctx.lineCap='butt';
+        }
+        /* \u96e2\u3057\u305f\u5730\u70b9\u306e\u5370 */
+        if(st.trail.length>0){
+          ctx.strokeStyle='#bf3b2b'; ctx.lineWidth=2;
+          ctx.beginPath();
+          ctx.arc(st.trail[0].x,st.trail[0].y,6,0,Math.PI*2);
+          ctx.stroke();
+        }
+      }
+
+      /* \u63a5\u7dda\u306e\u70b9\u7dda\u30ac\u30a4\u30c9 */
+      if(st.showGuide && st.phase==='circular'){
+        var t=tangentDir();
+        ctx.strokeStyle='rgba(47,109,176,.5)'; ctx.lineWidth=1.6;
+        ctx.setLineDash([4,4]);
+        ctx.beginPath();
+        ctx.moveTo(bx-t.x*999,by-t.y*999);
+        ctx.lineTo(bx+t.x*999,by+t.y*999);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      /* \u901f\u5ea6\u30d9\u30af\u30c8\u30eb */
+      if(st.showV){
+        var dirx,diry;
+        if(st.phase==='circular'){
+          var td=tangentDir(); dirx=td.x; diry=td.y;
+        }else{
+          var m=Math.hypot(st.fvx,st.fvy)||1;
+          dirx=st.fvx/m; diry=st.fvy/m;
+        }
+        var vlen=Math.min(speedV()*22,Rpx*0.9)+26;
+        arrow(bx,by,bx+dirx*vlen,by+diry*vlen,'#2f6db0',3);
+        ctx.fillStyle='#2f6db0';
+        ctx.font='700 13px "Zen Kaku Gothic New",sans-serif';
+        ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+        ctx.fillText('v',bx+dirx*vlen+6,by+diry*vlen+4);
+      }
+
+      /* \u30dc\u30fc\u30eb\u672c\u4f53 */
+      ctx.fillStyle='#d8541f';
+      ctx.beginPath(); ctx.arc(bx,by,11,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=2; ctx.stroke();
+
+      /* \u72b6\u614b\u306b\u5fdc\u3058\u305f\u898b\u51fa\u3057 */
+      ctx.fillStyle='#23221d';
+      ctx.font='900 14px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      ctx.fillText(st.phase==='circular'
+        ? '\u5186\u904b\u52d5\u4e2d'
+        : '\u98db\u884c\u4e2d\uff08\u63a5\u7dda\u65b9\u5411\u306b\u76f4\u9032\uff09',
+        18,30);
+
+      updateReadout();
+    }
+
+    function updateReadout(){
+      var th=((st.angle%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
+      $('tR').textContent=st.R.toFixed(2);
+      $('tW').textContent=st.omega.toFixed(2);
+      $('tV').textContent=speedV().toFixed(2);
+      $('tTh').textContent=th.toFixed(2);
+      $('tDeg').textContent=(th*180/Math.PI).toFixed(0);
+      $('tState').textContent=st.phase==='circular'
+        ? '\u5186\u904b\u52d5\u4e2d' : '\u98db\u884c\u4e2d';
+      $('tFly').textContent=st.flyT.toFixed(2);
+    }
+
+    var running=false, last=null, rafId=0;
+    function frame(ts){
+      if(!running) return;
+      if(last==null) last=ts;
+      var dt=(ts-last)/1000; last=ts;
+      if(dt>0.05) dt=0.05;
+      if(st.playing){
+        if(st.phase==='circular'){
+          st.angle+=st.omega*dt*st.speed;
+        }else{
+          st.flyT+=dt*st.speed;
+          st.fx+=st.fvx*dt*st.speed;
+          st.fy+=st.fvy*dt*st.speed;
+          st.trail.push({x:st.fx,y:st.fy});
+          if(st.trail.length>600) st.trail.shift();
+          if(st.showTarget && !st.hit){
+            var dxh=st.fx-st.tgx, dyh=st.fy-st.tgy;
+            if(Math.hypot(dxh,dyh) < st.tgR+11){
+              st.hit=true; st.hitFlash=1; st.hits++;
+              $('insightT').innerHTML='<span class="mono">\u547d\u4e2d\uff01</span>'+
+                '\u63a5\u7dda\u65b9\u5411\u3092\u3046\u307e\u304f\u72d9\u3048\u307e\u3057\u305f\u3002'+
+                '\uff08'+st.hits+' / '+st.tries+' \u547d\u4e2d\uff09';
+            }
+          }
+          /* \u753b\u9762\u5916\u306b\u51fa\u305f\u3089\u505c\u6b62 */
+          if(st.fx<-40||st.fx>L.LW+40||st.fy<-40||st.fy>L.LH+40){
+            st.playing=false;
+            var b=$('tPlay');
+            b.textContent='\u25b6 \u518d\u751f';
+            b.classList.remove('playing');
+            if(!st.hit && st.showTarget){
+              $('insightT').innerHTML='\u30dc\u30fc\u30eb\u306f\u753b\u9762\u306e\u5916\u3078\u3002'+
+                '\u300c\u30ea\u30bb\u30c3\u30c8\u300d\u3067\u3082\u3046\u4e00\u5ea6\u3001\u624b\u3092\u96e2\u3059\u30bf\u30a4\u30df\u30f3\u30b0\u3092\u5de5\u592b\u3057\u3066\u307f\u3088\u3046\u3002';
+            }
+          }
+        }
+      }
+      if(st.hitFlash>0){ st.hitFlash-=dt*1.4; if(st.hitFlash<0) st.hitFlash=0; }
+      draw();
+      syncInputs();
+      rafId=requestAnimationFrame(frame);
+    }
+
+    function doReset(){
+      st.angle=0; st.phase='circular'; st.flyT=0;
+      st.trail=[]; st.playing=false;
+      st.hit=false; st.hitFlash=0;
+      placeTarget();
+      var b=$('tPlay');
+      b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+      $('insightT').innerHTML='\u25b6 \u518d\u751f\u3057\u3066\u3001\u30dc\u30fc\u30eb\u3092\u56de\u3057\u3066'+
+        '\u3044\u308b\u3068\u304d\u306b\u300c\u624b\u3092\u96e2\u3059\u300d\u3092\u62bc\u3057\u3066\u307f\u3088\u3046';
+      last=null;
+      updateReadout();
+    }
+
+    $('tPlay').addEventListener('click',function(){
+      st.playing=!st.playing;
+      this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
+      this.classList.toggle('playing',st.playing);
+      last=null;
+    });
+    $('tRelease').addEventListener('click',function(){
+      if(st.phase==='circular'){
+        release();
+        if(!st.playing){
+          st.playing=true;
+          var b=$('tPlay');
+          b.textContent='\u23f8 \u4e00\u6642\u505c\u6b62';
+          b.classList.add('playing');
+          last=null;
+        }
+      }
+    });
+    $('tReset').addEventListener('click',doReset);
+    $('tSpeed').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.speed=parseFloat(b.getAttribute('data-speed'));
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    inpR.addEventListener('input',readRW);
+    inpW.addEventListener('input',readRW);
+    inpR.addEventListener('change',function(){readRW();syncInputs();});
+    inpW.addEventListener('change',function(){readRW();syncInputs();});
+    var tsteps=document.querySelectorAll('[data-tstep]');
+    for(var ti=0;ti<tsteps.length;ti++){
+      tsteps[ti].addEventListener('click',function(){
+        var which=this.getAttribute('data-tstep');
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        if(which==='R'){
+          st.R=clamp(+(st.R+dir*0.5).toFixed(1),LIM.R[0],LIM.R[1]);
+        }else if(which==='W'){
+          st.omega=clamp(+(st.omega+dir*0.5).toFixed(1),LIM.W[0],LIM.W[1]);
+        }
+        syncInputs();
+      });
+    }
+    $('tChkV').addEventListener('change',function(e){st.showV=e.target.checked;});
+    $('tChkPath').addEventListener('change',function(e){st.showPath=e.target.checked;});
+    $('tChkGuide').addEventListener('change',function(e){st.showGuide=e.target.checked;});
+    $('tChkTarget').addEventListener('change',function(e){st.showTarget=e.target.checked;});
+    /* \u30ad\u30e3\u30f3\u30d0\u30b9\u3092\u76f4\u63a5\u30bf\u30c3\u30d7\u3057\u3066\u3082\u624b\u3092\u96e2\u305b\u308b */
+    cv.addEventListener('click',function(){
+      if(st.phase==='circular' && st.playing) release();
+    });
+
+    return {
+      start:function(){
+        fit();
+        doReset();
+        syncInputs();
+        running=true; last=null;
+        rafId=requestAnimationFrame(frame);
+      },
+      stop:function(){
+        running=false;
+        if(rafId) cancelAnimationFrame(rafId);
+      },
+      resize:function(){ if(running) fit(); }
+    };
+  })();
+
+  /* =========================================================
+     \u4f8b\u984c16\uff1a\u3070\u306d\u306b\u3088\u308b\u7b49\u901f\u5186\u904b\u52d5
+     ========================================================= */
+  var SIM_E16=(function(){
+    var cv=$('cvE16'), C=makeCanvas(cv), ctx=C.ctx;
+    var PI=3.14;  /* \u6559\u79d1\u66f8\u306b\u3042\u308f\u305b\u5186\u5468\u7387\u306f3.14 */
+    var L={};
+    function layout(){
+      var w=C.width()||680;
+      if(w<560) L={ LW:440, LH:430, CX:220, CY:215, SCALE:230 };
+      else      L={ LW:680, LH:430, CX:340, CY:215, SCALE:300 };
+    }
+    function fit(){ layout(); C.fit(L); }
+
+    /* \u6559\u79d1\u66f8\u306e\u6570\u5024\uff08\u81ea\u7136\u95770.30\u3001\u03c9=10\u3001k=25\u3001m=0.10 \u2192 \u91e3\u308a\u5408\u3044r=0.50\uff09 */
+    var BOOK={ k:25, m:0.10, omega:10, L0:0.30 };
+    /* phase: 'idle'\uff08\u81ea\u7136\u9577\u3067\u9759\u6b62\uff09/ 'extending'\uff08\u4f38\u3073\u4e2d\uff09/ 'spinning'\uff08\u56de\u8ee2\u4e2d\uff09 */
+    var st={ k:25, m:0.10, omega:10, L0:0.30,
+             curLen:0.30,            /* \u73fe\u5728\u306e\u3070\u306d\u306e\u9577\u3055\uff08\u30a2\u30cb\u30e1\u7528\uff09 */
+             angle:0, playing:false, speed:0.5,
+             phase:'idle', extT:0 };
+    var LIM={ k:[10,50], m:[0.05,0.30], W:[4,14], L0:[0.20,0.45] };
+    var inpK=$('e16InpK'), inpM=$('e16InpM'),
+        inpW=$('e16InpW'), inpL0=$('e16InpL0');
+
+    /* \u91e3\u308a\u5408\u3044\u306e\u9577\u3055 r = kL0/(k-m\u03c9\u00b2)\u3002\u5206\u6bcd\u304c0\u4ee5\u4e0b\u306a\u3089\u56de\u308c\u306a\u3044 */
+    function denom(){ return st.k - st.m*st.omega*st.omega; }
+    function canSpin(){ return denom() > 0.5; }   /* \u5b89\u5168\u30de\u30fc\u30b8\u30f3 */
+    function restLen(){
+      if(!canSpin()) return st.L0*3;  /* \u4fbf\u5b9c\u4e0a\u306e\u4e0a\u9650 */
+      var r=st.k*st.L0/denom();
+      return Math.min(r, st.L0*3);
+    }
+    /* \u5404\u7269\u7406\u91cf\uff08\u9577\u3055 len \u3092\u5f15\u6570\u306b\u3068\u308b\uff09 */
+    function stretchOf(len){ return len-st.L0; }
+    function forceOf(len){ return st.k*stretchOf(len); }   /* \u5f3e\u6027\u529b=kx */
+    function period(){ return 2*PI/st.omega; }
+
+    function syncInputs(){
+      if(document.activeElement!==inpK) inpK.value=st.k.toFixed(0);
+      if(document.activeElement!==inpM) inpM.value=st.m.toFixed(2);
+      if(document.activeElement!==inpW) inpW.value=st.omega.toFixed(0);
+      if(document.activeElement!==inpL0) inpL0.value=st.L0.toFixed(2);
+    }
+    function readInputs(){
+      var k=parseFloat(inpK.value), m=parseFloat(inpM.value),
+          w=parseFloat(inpW.value), l0=parseFloat(inpL0.value);
+      if(!isNaN(k)) st.k=clamp(k,LIM.k[0],LIM.k[1]);
+      if(!isNaN(m)) st.m=clamp(m,LIM.m[0],LIM.m[1]);
+      if(!isNaN(w)) st.omega=clamp(w,LIM.W[0],LIM.W[1]);
+      if(!isNaN(l0)) st.L0=clamp(l0,LIM.L0[0],LIM.L0[1]);
+      /* \u9759\u6b62\u4e2d\u306f\u73fe\u5728\u9577\u3055\u3082\u81ea\u7136\u9577\u306b\u5408\u308f\u305b\u308b */
+      if(st.phase==='idle') st.curLen=st.L0;
+    }
+
+    /* \u3070\u306d\u3092\u87ba\u65cb\u3067\u63cf\u304f */
+    function drawSpring(ax,ay,bx,by,coils,amp){
+      var dx=bx-ax, dy=by-ay, len=Math.hypot(dx,dy)||1;
+      var ux=dx/len, uy=dy/len;
+      var nx=-uy, ny=ux;
+      var lead=10;
+      ctx.strokeStyle='#5c5849'; ctx.lineWidth=2.4;
+      ctx.lineJoin='round'; ctx.lineCap='round';
+      ctx.beginPath();
+      ctx.moveTo(ax,ay);
+      ctx.lineTo(ax+ux*lead,ay+uy*lead);
+      var seg=coils*2;
+      var coilLen=len-lead*2;
+      for(var i=1;i<seg;i++){
+        var tt=i/seg;
+        var px=ax+ux*(lead+coilLen*tt);
+        var py=ay+uy*(lead+coilLen*tt);
+        var side=(i%2===0)?1:-1;
+        ctx.lineTo(px+nx*amp*side,py+ny*amp*side);
+      }
+      ctx.lineTo(bx-ux*lead,by-uy*lead);
+      ctx.lineTo(bx,by);
+      ctx.stroke();
+      ctx.lineJoin='miter'; ctx.lineCap='butt';
+    }
+
+    function arrow(x1,y1,x2,y2,color,w){
+      ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=w;
+      ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      var ang=Math.atan2(y2-y1,x2-x1), hs=8+w;
+      ctx.beginPath();
+      ctx.moveTo(x2,y2);
+      ctx.lineTo(x2-hs*Math.cos(ang-0.42),y2-hs*Math.sin(ang-0.42));
+      ctx.lineTo(x2-hs*Math.cos(ang+0.42),y2-hs*Math.sin(ang+0.42));
+      ctx.closePath(); ctx.fill();
+      ctx.lineCap='butt';
+    }
+
+    function draw(){
+      var LW=L.LW,LH=L.LH,CX=L.CX,CY=L.CY,SCALE=L.SCALE;
+      ctx.clearRect(0,0,LW,LH);
+      var len=st.curLen;
+      var Rpx=len*SCALE;
+      var maxR=Math.min(LW,LH)*0.40;
+      if(Rpx>maxR){ SCALE=maxR/len; Rpx=maxR; }
+
+      /* \u5186\u306e\u7d4c\u8def\uff08\u56de\u8ee2\u4e2d\u30fb\u4f38\u3073\u4e2d\u306e\u307f\uff09 */
+      if(st.phase!=='idle'){
+        ctx.strokeStyle='#d8cda8'; ctx.lineWidth=1.6;
+        ctx.setLineDash([5,5]);
+        ctx.beginPath(); ctx.arc(CX,CY,Rpx,0,Math.PI*2); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      /* \u81ea\u7136\u9577\u306e\u53c2\u8003\u5186\uff08\u70b9\u7dda\u30fb\u3046\u3059\u304f\uff09 */
+      if(st.phase!=='idle'){
+        ctx.strokeStyle='#e7ddc0'; ctx.lineWidth=1.2;
+        ctx.setLineDash([2,4]);
+        ctx.beginPath(); ctx.arc(CX,CY,st.L0*SCALE,0,Math.PI*2); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      /* \u304a\u3082\u308a\u4f4d\u7f6e */
+      var bx=CX+Math.cos(st.angle)*Rpx;
+      var by=CY-Math.sin(st.angle)*Rpx;
+
+      /* \u3070\u306d */
+      drawSpring(CX,CY,bx,by,9,7);
+
+      /* \u4e2d\u5fc3\u306e\u56fa\u5b9a\u30d4\u30f3 */
+      ctx.fillStyle='#23221d';
+      ctx.beginPath(); ctx.arc(CX,CY,6,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#23221d'; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(CX-9,CY-9); ctx.lineTo(CX+9,CY+9);
+      ctx.moveTo(CX-9,CY+9); ctx.lineTo(CX+9,CY-9);
+      ctx.stroke();
+
+      /* \u5411\u5fc3\u529b\u30d9\u30af\u30c8\u30eb\uff08\u56de\u8ee2\u4e2d\u306e\u307f\u30fb\u304a\u3082\u308a\u2192\u4e2d\u5fc3\uff09 */
+      if(st.phase!=='idle'){
+        var dirx=(CX-bx), diry=(CY-by);
+        var dm=Math.hypot(dirx,diry)||1;
+        dirx/=dm; diry/=dm;
+        var F=forceOf(len);
+        var flen=Math.min(F*14,Rpx*0.8)+22;
+        arrow(bx,by,bx+dirx*flen,by+diry*flen,'#bf3b2b',3);
+        ctx.fillStyle='#bf3b2b';
+        ctx.font='700 12px "Zen Kaku Gothic New",sans-serif';
+        ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+        ctx.fillText('\u5411\u5fc3\u529b F',bx+dirx*flen*0.5+8,by+diry*flen*0.5);
+      }
+
+      /* \u304a\u3082\u308a */
+      ctx.fillStyle='#d8541f';
+      ctx.beginPath(); ctx.arc(bx,by,13,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle='#fff';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('m',bx,by);
+
+      /* \u5de6\u4e0a\u306e\u72b6\u614b\u8868\u793a */
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      ctx.fillStyle='#23221d';
+      ctx.font='900 13px "Zen Kaku Gothic New",sans-serif';
+      var label;
+      if(st.phase==='idle') label='\u81ea\u7136\u9577\u3067\u9759\u6b62\u4e2d';
+      else if(st.phase==='extending') label='\u3070\u306d\u304c\u4f38\u3073\u3066\u3044\u307e\u3059\u2026';
+      else label='\u5f3e\u6027\u529b kx \uff1d \u5411\u5fc3\u529b mr\u03c9\u00b2';
+      ctx.fillText(label,16,26);
+      if(st.phase!=='idle'){
+        ctx.fillStyle='#bf3b2b';
+        ctx.font='700 12px "JetBrains Mono",monospace';
+        ctx.fillText(forceOf(len).toFixed(2)+' N',16,44);
+      }
+
+      updateReadout();
+    }
+
+    function fmt(n,d){ return n.toFixed(d); }
+
+    function updateReadout(){
+      var len=st.curLen;
+      var r=restLen();
+      $('e16k').textContent=fmt(st.k,1);
+      $('e16m').textContent=fmt(st.m,2);
+      $('e16w').textContent=fmt(st.omega,1);
+      $('e16L0in').textContent=fmt(st.L0,2);
+      $('e16T').textContent=fmt(period(),2);
+      /* \u8868\u793a\u306f\u300c\u73fe\u5728\u306e\u300d\u72b6\u614b\uff1a\u56de\u8ee2\u4e2d\u306f\u91e3\u308a\u5408\u3044\u5024\u3001\u9759\u6b62\u4e2d\u306f0 */
+      var showLen=(st.phase==='spinning')?r:len;
+      $('e16r').textContent=fmt(showLen,2);
+      $('e16F').textContent=fmt(forceOf(showLen),2);
+      $('e16x').textContent=fmt(stretchOf(showLen),2);
+      /* \u89e3\u304d\u65b9\u306e\u5f0f */
+      $('e16sol1').textContent='T = 2\u03c0/\u03c9 = 2\u00d73.14 / '+
+        fmt(st.omega,1)+' = '+fmt(period(),2)+' s';
+      $('e16sol2').textContent='k(r \u2212 L\u2080) = m r \u03c9\u00b2'+
+        '\u3000\u2192\u3000'+fmt(st.k,1)+'(r\u2212'+fmt(st.L0,2)+') = '+
+        fmt(st.m,2)+'\u00b7r\u00b7'+fmt(st.omega,1)+'\u00b2';
+      if(canSpin()){
+        $('e16sol3').textContent='r = kL\u2080/(k\u2212m\u03c9\u00b2) = '+
+          fmt(st.k,1)+'\u00d7'+fmt(st.L0,2)+' /('+fmt(st.k,1)+'\u2212'+
+          fmt(st.m,2)+'\u00d7'+fmt(st.omega,1)+'\u00b2) = '+fmt(r,2)+' m';
+        $('e16sol4').textContent='x = r \u2212 L\u2080 = '+fmt(r,2)+' \u2212 '+
+          fmt(st.L0,2)+' = '+fmt(stretchOf(r),2)+' m';
+      }else{
+        $('e16sol3').textContent='k \u2212 m\u03c9\u00b2 \u2266 0 \u2192 \u3053\u306e\u89d2\u901f\u5ea6\u3067\u306f\u3070\u306d\u304c\u652f\u3048\u304d\u308c\u305a\u3001\u5186\u904b\u52d5\u3067\u304d\u307e\u305b\u3093';
+        $('e16sol4').textContent='\u89d2\u901f\u5ea6 \u03c9 \u3092\u5c0f\u3055\u304f\u3059\u308b\u304b\u3001\u3070\u306d\u5b9a\u6570 k \u3092\u5927\u304d\u304f\u3057\u3066\u304f\u3060\u3055\u3044';
+      }
+    }
+
+    var running=false, last=null, rafId=0;
+    var EXT_DUR=0.7;  /* \u4f38\u3073\u30a2\u30cb\u30e1\u306e\u9577\u3055\uff08\u79d2\uff09 */
+    function frame(ts){
+      if(!running) return;
+      if(last==null) last=ts;
+      var dt=(ts-last)/1000; last=ts;
+      if(dt>0.05) dt=0.05;
+      if(st.playing){
+        if(st.phase==='extending'){
+          st.extT+=dt*st.speed;
+          var p=st.extT/EXT_DUR;
+          if(p>=1){ p=1; st.phase='spinning'; }
+          /* \u30a4\u30fc\u30ba\u30a2\u30a6\u30c8\u3067\u81ea\u7136\u9577\u2192\u91e3\u308a\u5408\u3044\u9577\u3078 */
+          var ease=1-Math.pow(1-p,3);
+          st.curLen=st.L0+(restLen()-st.L0)*ease;
+          st.angle+=st.omega*dt*st.speed*0.5;
+        }else if(st.phase==='spinning'){
+          st.curLen=restLen();
+          st.angle+=st.omega*dt*st.speed*0.5;
+        }
+      }
+      draw();
+      syncInputs();
+      rafId=requestAnimationFrame(frame);
+    }
+
+    function doReset(){
+      st.angle=0; st.playing=false;
+      st.phase='idle'; st.extT=0; st.curLen=st.L0;
+      var b=$('e16Play');
+      b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+      $('insightE16').innerHTML='\u3070\u306d\u306f\u3044\u307e\u81ea\u7136\u9577 '+
+        '<span class="mono">'+st.L0.toFixed(2)+' m</span>\u3002'+
+        '\u25b6 \u518d\u751f\u3067\u3001\u89d2\u901f\u5ea6\u306b\u5408\u3046\u9577\u3055\u307e\u3067\u4f38\u3073\u307e\u3059\u3002';
+      last=null;
+      updateReadout();
+    }
+
+    function startSpin(){
+      if(!canSpin()){
+        $('insightE16').innerHTML='<span class="mono">\u26a0</span> '+
+          '\u3053\u306e\u89d2\u901f\u5ea6\u3067\u306f\u3070\u306d\u304c\u652f\u3048\u304d\u308c\u307e\u305b\u3093\u3002'+
+          '\u03c9 \u3092\u5c0f\u3055\u304f\u3059\u308b\u304b k \u3092\u5927\u304d\u304f\u3057\u3066\u304f\u3060\u3055\u3044\u3002';
+        return false;
+      }
+      st.phase='extending'; st.extT=0; st.curLen=st.L0;
+      $('insightE16').innerHTML='\u3070\u306d\u304c\u4f38\u3073\u3066\u3001\u5f3e\u6027\u529b\u304c'+
+        '\u5411\u5fc3\u529b\u3068\u91e3\u308a\u5408\u3046\u9577\u3055 '+
+        '<span class="mono">'+restLen().toFixed(2)+' m</span> \u3067\u5b89\u5b9a\u3057\u307e\u3059\u3002';
+      return true;
+    }
+
+    $('e16Play').addEventListener('click',function(){
+      st.playing=!st.playing;
+      if(st.playing && st.phase==='idle'){
+        if(!startSpin()){ st.playing=false; return; }
+      }
+      this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
+      this.classList.toggle('playing',st.playing);
+      last=null;
+    });
+    $('e16Reset').addEventListener('click',doReset);
+    $('e16Book').addEventListener('click',function(){
+      st.k=BOOK.k; st.m=BOOK.m; st.omega=BOOK.omega; st.L0=BOOK.L0;
+      doReset();
+      $('insightE16').innerHTML='\u6559\u79d1\u66f8\u306e\u6570\u5024\u306b\u623b\u3057\u307e\u3057\u305f'+
+        '\uff08\u81ea\u7136\u9577 0.30 m\uff09\u3002\u25b6 \u518d\u751f\u3059\u308b\u3068 0.50 m \u307e\u3067\u4f38\u3073\u307e\u3059\u3002';
+    });
+    $('e16Speed').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.speed=parseFloat(b.getAttribute('data-speed'));
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    [inpK,inpM,inpW,inpL0].forEach(function(el){
+      el.addEventListener('input',function(){readInputs();updateReadout();});
+      el.addEventListener('change',function(){readInputs();syncInputs();updateReadout();});
+    });
+    var e16steps=document.querySelectorAll('[data-e16step]');
+    for(var ei=0;ei<e16steps.length;ei++){
+      e16steps[ei].addEventListener('click',function(){
+        var which=this.getAttribute('data-e16step');
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        if(which==='K'){
+          st.k=clamp(+(st.k+dir*5).toFixed(0),LIM.k[0],LIM.k[1]);
+        }else if(which==='M'){
+          st.m=clamp(+(st.m+dir*0.05).toFixed(2),LIM.m[0],LIM.m[1]);
+        }else if(which==='W'){
+          st.omega=clamp(+(st.omega+dir*1).toFixed(0),LIM.W[0],LIM.W[1]);
+        }else if(which==='L0'){
+          st.L0=clamp(+(st.L0+dir*0.05).toFixed(2),LIM.L0[0],LIM.L0[1]);
+        }
+        if(st.phase==='idle') st.curLen=st.L0;
+        syncInputs(); updateReadout();
+      });
+    }
+
+    return {
+      start:function(){
+        fit();
+        doReset();
+        syncInputs();
+        running=true; last=null;
+        rafId=requestAnimationFrame(frame);
+      },
+      stop:function(){
+        running=false;
+        if(rafId) cancelAnimationFrame(rafId);
+      },
+      resize:function(){ if(running) fit(); }
+    };
+  })();
+
+  /* =========================================================
+     \u30b7\u30df\u30e5\u30ec\u30fc\u30b7\u30e7\u30f3\uff1a\u5186\u9310\u632f\u308a\u5b50
+     ========================================================= */
+  var SIM_CONE=(function(){
+    var cv=$('cvCone'), C=makeCanvas(cv), ctx=C.ctx;
+    var G=9.8;
+    var L={};
+    function layout(){
+      var w=C.width()||680;
+      if(w<560) L={ LW:440, LH:440, PX:220, PY:70, SCALE:210 };
+      else      L={ LW:680, LH:440, PX:340, PY:74, SCALE:280 };
+    }
+    function fit(){ layout(); C.fit(L); }
+
+    var st={ m:0.20, omega:4.0, ell:0.80,
+             angle:0, playing:false, speed:0.5,
+             showForce:true, showSplit:false };
+    var LIM={ M:[0.10,0.50], W:[3.5,8.0], L:[0.50,1.20] };
+    var inpM=$('cnInpM'), inpW=$('cnInpW'), inpL=$('cnInpL');
+
+    /* \u7269\u7406\u91cf\u3002cos\u03b8 = g/(\u2113\u03c9\u00b2)\u3002\u2113\u03c9\u00b2<g \u306a\u3089\u5186\u9310\u632f\u308a\u5b50\u304c\u6210\u7acb\u3057\u306a\u3044\u2192\u03b8\u22480\u6271\u3044 */
+    function cosTheta(){
+      var c=G/(st.ell*st.omega*st.omega);
+      return clamp(c,0.04,0.999);
+    }
+    function theta(){ return Math.acos(cosTheta()); }   /* rad */
+    function radius(){ return st.ell*Math.sin(theta()); }
+    function tension(){ return st.m*st.ell*st.omega*st.omega; }
+    function weight(){ return st.m*G; }
+    function centripetal(){ return st.m*radius()*st.omega*st.omega; }
+
+    function syncInputs(){
+      if(document.activeElement!==inpM) inpM.value=st.m.toFixed(2);
+      if(document.activeElement!==inpW) inpW.value=st.omega.toFixed(1);
+      if(document.activeElement!==inpL) inpL.value=st.ell.toFixed(2);
+    }
+    function readInputs(){
+      var m=parseFloat(inpM.value), w=parseFloat(inpW.value), l=parseFloat(inpL.value);
+      if(!isNaN(m)) st.m=clamp(m,LIM.M[0],LIM.M[1]);
+      if(!isNaN(w)) st.omega=clamp(w,LIM.W[0],LIM.W[1]);
+      if(!isNaN(l)) st.ell=clamp(l,LIM.L[0],LIM.L[1]);
+    }
+
+    function arrow(x1,y1,x2,y2,color,w){
+      ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=w;
+      ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      var ang=Math.atan2(y2-y1,x2-x1), hs=8+w;
+      ctx.beginPath();
+      ctx.moveTo(x2,y2);
+      ctx.lineTo(x2-hs*Math.cos(ang-0.42),y2-hs*Math.sin(ang-0.42));
+      ctx.lineTo(x2-hs*Math.cos(ang+0.42),y2-hs*Math.sin(ang+0.42));
+      ctx.closePath(); ctx.fill();
+      ctx.lineCap='butt';
+    }
+
+    function draw(){
+      var LW=L.LW,LH=L.LH,PX=L.PX,PY=L.PY,SCALE=L.SCALE;
+      ctx.clearRect(0,0,LW,LH);
+
+      var th=theta();
+      var rPx=radius()*SCALE;
+      var hPx=st.ell*Math.cos(th)*SCALE;   /* \u925b\u76f4\u8ddd\u96e2 */
+      var ringY=PY+hPx;                    /* \u5186\u904b\u52d5\u306e\u9ad8\u3055 */
+      /* \u6955\u5186\uff08\u659c\u3081\u898b\u4e0b\u308d\u3057\uff09\u306e\u7e26\u3064\u3076\u3057\u7387 */
+      var squash=0.34;
+
+      /* \u5929\u4e95 */
+      ctx.fillStyle='#23221d';
+      ctx.fillRect(PX-70,PY-14,140,8);
+      ctx.strokeStyle='#23221d'; ctx.lineWidth=1.4;
+      for(var hx=-66;hx<=62;hx+=12){
+        ctx.beginPath();
+        ctx.moveTo(PX+hx,PY-6);
+        ctx.lineTo(PX+hx-7,PY+2);
+        ctx.stroke();
+      }
+      /* \u540a\u308a\u70b9 */
+      ctx.fillStyle='#23221d';
+      ctx.beginPath(); ctx.arc(PX,PY,4,0,Math.PI*2); ctx.fill();
+
+      /* \u7269\u4f53\u306e\u73fe\u5728\u4f4d\u7f6e\uff08\u6955\u5186\u8ecc\u9053\u4e0a\uff09 */
+      var bx=PX+Math.cos(st.angle)*rPx;
+      var by=ringY-Math.sin(st.angle)*rPx*squash;
+
+      /* \u6c34\u5e73\u5186\u306e\u8ecc\u9053\uff08\u6955\u5186\uff09 */
+      ctx.strokeStyle='#d8cda8'; ctx.lineWidth=1.6;
+      ctx.setLineDash([5,5]);
+      ctx.beginPath();
+      ctx.ellipse(PX,ringY,rPx,rPx*squash,0,0,Math.PI*2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* \u925b\u76f4\u306e\u4e2d\u5fc3\u7dda\uff08\u70b9\u7dda\uff09 */
+      ctx.strokeStyle='#cabf9f'; ctx.lineWidth=1;
+      ctx.setLineDash([3,4]);
+      ctx.beginPath();
+      ctx.moveTo(PX,PY); ctx.lineTo(PX,ringY+10);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* \u534a\u5f84\u306e\u7dda\uff08\u4e2d\u5fc3\u2192\u7269\u4f53\u3001\u6955\u5186\u9762\u5185\uff09 */
+      ctx.strokeStyle='#b3a986'; ctx.lineWidth=1.4;
+      ctx.beginPath();
+      ctx.moveTo(PX,ringY); ctx.lineTo(bx,by);
+      ctx.stroke();
+
+      /* \u7cf8\uff08\u540a\u308a\u70b9\u2192\u7269\u4f53\uff09 */
+      ctx.strokeStyle='#5c5849'; ctx.lineWidth=2.4; ctx.lineCap='round';
+      ctx.beginPath();
+      ctx.moveTo(PX,PY); ctx.lineTo(bx,by);
+      ctx.stroke();
+      ctx.lineCap='butt';
+
+      /* \u50be\u304d\u89d2\u03b8\u306e\u5186\u5f27 */
+      var aTo=Math.atan2(bx-PX,by-PY);   /* \u925b\u76f4\u304b\u3089\u306e\u89d2 */
+      ctx.strokeStyle='#15807a'; ctx.lineWidth=1.6;
+      ctx.beginPath();
+      ctx.arc(PX,PY,26,Math.PI/2-aTo,Math.PI/2,aTo<0);
+      ctx.stroke();
+      ctx.fillStyle='#15807a';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('\u03b8',PX+(bx>PX?17:-17),PY+24);
+
+      /* \u529b\u306e\u30d9\u30af\u30c8\u30eb */
+      if(st.showForce){
+        var Fscale=26;
+        /* \u91cd\u529b mg\uff08\u4e0b\u5411\u304d\uff09 */
+        var mgLen=weight()*Fscale;
+        arrow(bx,by,bx,by+mgLen,'#2f6db0',3);
+        ctx.fillStyle='#2f6db0';
+        ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+        ctx.textAlign='left'; ctx.textBaseline='middle';
+        ctx.fillText('mg',bx+6,by+mgLen);
+
+        /* \u5f35\u529b S\uff08\u7269\u4f53\u2192\u540a\u308a\u70b9\u5411\u304d\uff09 */
+        var sdx=PX-bx, sdy=PY-by;
+        var sm=Math.hypot(sdx,sdy)||1;
+        var sLen=tension()*Fscale;
+        arrow(bx,by,bx+sdx/sm*sLen,by+sdy/sm*sLen,'#15807a',3);
+        ctx.fillStyle='#15807a';
+        ctx.fillText('S',bx+sdx/sm*sLen-(bx>PX?-6:14),by+sdy/sm*sLen);
+
+        if(st.showSplit){
+          /* \u5f35\u529b\u306e\u925b\u76f4\u6210\u5206\uff08\u4e0a\u5411\u304d\u3001mg\u3068\u6253\u3061\u6d88\u3057\u5408\u3046\uff09 */
+          var svy=tension()*cosTheta()*Fscale;
+          arrow(bx,by,bx,by-svy,'rgba(21,128,122,.5)',2);
+          /* \u5f35\u529b\u306e\u6c34\u5e73\u6210\u5206\uff08\u4e2d\u5fc3\u5411\u304d\uff1d\u5411\u5fc3\u529b\uff09 */
+          var shx=tension()*Math.sin(th)*Fscale*(bx>PX?-1:1);
+          arrow(bx,by,bx+shx,by,'#bf3b2b',3);
+          ctx.fillStyle='#bf3b2b';
+          ctx.fillText('F',bx+shx-(bx>PX?14:-6),by-9);
+        }else{
+          /* \u5411\u5fc3\u529b\uff08\u4e2d\u5fc3\u5411\u304d\u3001\u6c34\u5e73\uff09 */
+          var fLen=centripetal()*Fscale;
+          var fdir=(PX>bx)?1:-1;
+          arrow(bx,by,bx+fdir*fLen,by,'#bf3b2b',3);
+          ctx.fillStyle='#bf3b2b';
+          ctx.fillText('F',bx+fdir*fLen+(fdir>0?6:-14),by-9);
+        }
+      }
+
+      /* \u7269\u4f53 */
+      ctx.fillStyle='#d8541f';
+      ctx.beginPath(); ctx.arc(bx,by,12,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle='#fff';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('m',bx,by);
+
+      /* \u6ce8\u610f\u66f8\u304d\uff08\u89d2\u901f\u5ea6\u304c\u5c0f\u3055\u3059\u304e\u308b\u3068\u304d\uff09 */
+      if(st.ell*st.omega*st.omega <= G*1.02){
+        ctx.fillStyle='#bf3b2b';
+        ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+        ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+        ctx.fillText('\u203b \u89d2\u901f\u5ea6\u304c\u5c0f\u3055\u3044\u3068\u7cf8\u306f\u3042\u307e\u308a\u958b\u304d\u307e\u305b\u3093',16,LH-14);
+      }
+      updateReadout();
+    }
+
+    function updateReadout(){
+      $('cnM').textContent=st.m.toFixed(2);
+      $('cnW').textContent=st.omega.toFixed(1);
+      $('cnL').textContent=st.ell.toFixed(2);
+      $('cnTh').textContent=(theta()*180/Math.PI).toFixed(0);
+      $('cnR').textContent=radius().toFixed(2);
+      $('cnS').textContent=tension().toFixed(2);
+      $('cnMg').textContent=weight().toFixed(2);
+      $('cnF').textContent=centripetal().toFixed(2);
+    }
+
+    var running=false, last=null, rafId=0;
+    function frame(ts){
+      if(!running) return;
+      if(last==null) last=ts;
+      var dt=(ts-last)/1000; last=ts;
+      if(dt>0.05) dt=0.05;
+      if(st.playing){
+        st.angle+=st.omega*dt*st.speed*0.5;
+      }
+      draw();
+      syncInputs();
+      rafId=requestAnimationFrame(frame);
+    }
+
+    function doReset(){
+      st.angle=0; st.playing=false;
+      var b=$('cnPlay');
+      b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+      $('insightCone').innerHTML='\u25b6 \u518d\u751f\u3059\u308b\u3068\u7269\u4f53\u304c'+
+        '\u6c34\u5e73\u9762\u5185\u3067\u5186\u3092\u63cf\u304d\u307e\u3059\u3002'+
+        '\u8cea\u91cf\u30fb\u89d2\u901f\u5ea6\u3092\u5909\u3048\u3066\u307f\u3088\u3046';
+      last=null;
+    }
+
+    $('cnPlay').addEventListener('click',function(){
+      st.playing=!st.playing;
+      this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
+      this.classList.toggle('playing',st.playing);
+      last=null;
+    });
+    $('cnReset').addEventListener('click',doReset);
+    $('cnSpeed').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.speed=parseFloat(b.getAttribute('data-speed'));
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    [inpM,inpW,inpL].forEach(function(el){
+      el.addEventListener('input',function(){readInputs();updateReadout();});
+      el.addEventListener('change',function(){readInputs();syncInputs();updateReadout();});
+    });
+    var cnsteps=document.querySelectorAll('[data-cnstep]');
+    for(var ci=0;ci<cnsteps.length;ci++){
+      cnsteps[ci].addEventListener('click',function(){
+        var which=this.getAttribute('data-cnstep');
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        if(which==='M'){
+          st.m=clamp(+(st.m+dir*0.05).toFixed(2),LIM.M[0],LIM.M[1]);
+        }else if(which==='W'){
+          st.omega=clamp(+(st.omega+dir*0.5).toFixed(1),LIM.W[0],LIM.W[1]);
+        }else if(which==='L'){
+          st.ell=clamp(+(st.ell+dir*0.10).toFixed(2),LIM.L[0],LIM.L[1]);
+        }
+        syncInputs(); updateReadout();
+      });
+    }
+    $('cnChkForce').addEventListener('change',function(e){st.showForce=e.target.checked;});
+    $('cnChkSplit').addEventListener('change',function(e){st.showSplit=e.target.checked;});
+
+    return {
+      start:function(){
+        fit();
+        doReset();
+        syncInputs();
+        running=true; last=null;
+        rafId=requestAnimationFrame(frame);
+      },
+      stop:function(){
+        running=false;
+        if(rafId) cancelAnimationFrame(rafId);
+      },
+      resize:function(){ if(running) fit(); }
+    };
+  })();
+
+
+
 
   /* =========================================================
      \u30ea\u30b5\u30a4\u30ba\uff08\u8868\u793a\u4e2d\u306e\u30b7\u30df\u30e5\u30ec\u30fc\u30b7\u30e7\u30f3\u3060\u3051\u4f5c\u308a\u76f4\u3059\uff09
