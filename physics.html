@@ -397,6 +397,98 @@
     .insight{margin-left:12px;margin-right:12px;}
     .num-box{flex:1 1 100%;}
   }
+
+  /* ===== レスポンシブ・レイアウト ===== */
+  /* JSが sim-head と sim-foot の間の子要素を
+     .sim-col-stage（ステージ側）と .sim-col-panel（操作側）に振り分ける */
+  .sim-body{display:block;}
+  .sim-col-stage{display:block;}
+  .sim-col-panel{display:block;}
+
+  /* --- 広い画面（PC・タブレット横）：左ステージ＋右パネルの2カラム --- */
+  @media (min-width:980px){
+    .screen.active{display:flex;flex-direction:column;height:calc(100vh - 0px);}
+    .sim-head{flex:0 0 auto;}
+    .sim-foot{flex:0 0 auto;}
+    .sim-body{
+      display:flex;flex:1 1 auto;min-height:0;align-items:stretch;
+    }
+    .sim-col-stage{
+      flex:1 1 60%;min-width:0;display:flex;flex-direction:column;
+      border-right:1.5px solid var(--ink);overflow:hidden;
+    }
+    .sim-col-stage .stage{
+      flex:1 1 auto;min-height:0;display:flex;align-items:center;
+      justify-content:center;padding:18px;
+    }
+    .sim-col-stage .stage canvas{
+      width:auto;height:auto;max-width:100%;max-height:100%;
+    }
+    .sim-col-panel{
+      flex:1 1 40%;min-width:340px;max-width:520px;
+      overflow-y:auto;display:flex;flex-direction:column;
+    }
+    .sim-col-panel .controls{border-top:none;}
+    .panel-toggle,.mini-bar{display:none !important;}
+  }
+
+  /* --- スマホ縦・狭い画面：操作パネルは下からスライド --- */
+  @media (max-width:979px){
+    .sim-col-panel{
+      position:fixed;left:0;right:0;bottom:0;z-index:60;
+      max-height:80vh;overflow-y:auto;
+      background:var(--paper);border-top:2.5px solid var(--ink);
+      box-shadow:0 -8px 0 rgba(35,34,29,.12),0 -8px 28px rgba(35,34,29,.22);
+      transform:translateY(100%);
+      transition:transform .26s cubic-bezier(.33,1,.68,1);
+      padding-bottom:8px;
+    }
+    .sim-col-panel.open{transform:translateY(0);}
+    .panel-grip{
+      position:sticky;top:0;z-index:2;background:var(--paper);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:9px 16px;border-bottom:1.3px solid var(--line);
+    }
+    .panel-grip .pg-title{font-size:13px;font-weight:900;}
+    .panel-grip .pg-close{
+      border:1.4px solid var(--ink);background:var(--paper);
+      width:34px;height:34px;font-size:17px;line-height:1;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;padding:0;
+    }
+    /* 常時表示のミニ操作バー（再生・リセット・速度・設定） */
+    .mini-bar{
+      position:fixed;left:0;right:0;bottom:0;z-index:55;
+      display:flex;align-items:center;gap:8px;
+      padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));
+      background:var(--paper-2);border-top:2px solid var(--ink);
+      box-shadow:0 -4px 14px rgba(35,34,29,.14);
+    }
+    .mini-bar.hidden{display:none;}
+    .mini-bar button{padding:9px 12px;font-size:13px;min-height:46px;}
+    .mini-bar .mb-play{flex:0 0 auto;background:var(--orange);color:#fff;}
+    .mini-bar .mb-play.playing{background:var(--ink);}
+    .mini-bar .mb-reset{flex:0 0 auto;}
+    .mini-bar .mb-spacer{flex:1 1 auto;}
+    .mini-bar .mb-speed{display:flex;}
+    .mini-bar .mb-speed button{
+      padding:9px 9px;font-family:"JetBrains Mono",monospace;
+      border-right-width:0;font-size:12px;
+    }
+    .mini-bar .mb-speed button:last-child{border-right-width:1.5px;}
+    .mini-bar .mb-speed button.active{background:var(--teal);color:#fff;}
+    .mini-bar .mb-gear{
+      flex:0 0 auto;background:var(--ink);color:var(--paper);
+      font-size:13px;font-weight:900;
+    }
+    /* シミュレーション画面の下に、ミニバーぶんの余白 */
+    .screen.active{padding-bottom:78px;}
+    /* パネルが開いている間の暗幕 */
+    .panel-scrim{
+      position:fixed;inset:0;z-index:58;background:rgba(35,34,29,.42);
+      opacity:0;pointer-events:none;transition:opacity .2s ease;
+    }
+    .panel-scrim.show{opacity:1;pointer-events:auto;}
+  }
 </style>
 </head>
 <body>
@@ -1002,6 +1094,16 @@
 
 </div>
 
+<!-- スマホ縦向き用：常時表示のミニ操作バー -->
+<div class="mini-bar hidden" id="miniBar">
+  <button class="mb-play" id="mbPlay">▶ 再生</button>
+  <button class="mb-reset" id="mbReset">■</button>
+  <div class="mb-spacer"></div>
+  <div class="mb-speed" id="mbSpeed"></div>
+  <button class="mb-gear" id="mbGear">⚙ 操作</button>
+</div>
+<div class="panel-scrim" id="panelScrim"></div>
+
 <div class="overlay" id="overlay">
 
 
@@ -1199,13 +1301,19 @@
     else if(screenId==='screen-tangent') activeSim=SIM_TANGENT;
     else if(screenId==='screen-reidai16') activeSim=SIM_E16;
     else if(screenId==='screen-cone') activeSim=SIM_CONE;
+    LAYOUT.onOpenSim();
     if(activeSim){ activeSim.start(); }
+    /* CSS\u30ec\u30a4\u30a2\u30a6\u30c8\u78ba\u5b9a\u5f8c\u306b\u3082\u3046\u4e00\u5ea6\u30b5\u30a4\u30ba\u3092\u5408\u308f\u305b\u308b */
+    setTimeout(function(){
+      if(activeSim && activeSim.resize) activeSim.resize();
+    },60);
     window.scrollTo(0,0);
   }
 
   /* \u30cf\u30d6\uff08\u30ab\u30fc\u30c9\u4e00\u89a7\uff09\u3092\u8868\u793a */
   function showHub(){
     if(activeSim){ activeSim.stop(); activeSim=null; }
+    LAYOUT.onCloseSim();
     showScreen('screen-hub');
     renderHub();
     window.scrollTo(0,0);
@@ -1366,16 +1474,197 @@
       ctx:ctx,
       fit:function(L){
         var dpr=window.devicePixelRatio||1;
-        var cssW=canvas.clientWidth||L.LW;
+        var stage=canvas.parentElement;
+        /* \u30b9\u30c6\u30fc\u30b8\u9818\u57df\u306e\u4f7f\u3048\u308b\u5e45\u30fb\u9ad8\u3055 */
+        var availW=(stage&&stage.clientWidth)||canvas.clientWidth||L.LW;
+        var availH=(stage&&stage.clientHeight)||0;
+        /* \u30d1\u30c7\u30a3\u30f3\u30b0\u3076\u3093\u5c11\u3057\u5185\u5074\u306b */
+        availW=Math.max(80,availW-4);
+        var cssW=availW;
         var cssH=cssW*L.LH/L.LW;
+        /* \u9ad8\u3055\u60c5\u5831\u304c\u3042\u308a\u3001\u306f\u307f\u51fa\u3059\u306a\u3089\u9ad8\u3055\u57fa\u6e96\u3067\u7e2e\u3081\u308b */
+        if(availH>40 && cssH>availH-4){
+          cssH=availH-4;
+          cssW=cssH*L.LW/L.LH;
+        }
+        canvas.style.width=cssW+'px';
         canvas.style.height=cssH+'px';
         canvas.width=Math.round(L.LW*dpr);
         canvas.height=Math.round(L.LH*dpr);
         ctx.setTransform(canvas.width/L.LW,0,0,canvas.height/L.LH,0,0);
       },
-      width:function(){ return canvas.clientWidth||0; }
+      width:function(){
+        var stage=canvas.parentElement;
+        return (stage&&stage.clientWidth)||canvas.clientWidth||0;
+      }
     };
   }
+
+  /* =========================================================
+     \u30ec\u30b9\u30dd\u30f3\u30b7\u30d6\u30fb\u30ec\u30a4\u30a2\u30a6\u30c8\u7ba1\u7406
+     - \u5404\u30b7\u30df\u30e5\u30ec\u30fc\u30b7\u30e7\u30f3\u753b\u9762\u3092\u300c\u30b9\u30c6\u30fc\u30b8\u5217\u300d\u300c\u64cd\u4f5c\u30d1\u30cd\u30eb\u5217\u300d\u306b\u518d\u69cb\u6210
+     - \u30b9\u30de\u30db\u7e26\uff1a\u64cd\u4f5c\u30d1\u30cd\u30eb\u3092\u4e0b\u304b\u3089\u30b9\u30e9\u30a4\u30c9\u3001\u30df\u30cb\u64cd\u4f5c\u30d0\u30fc\u3092\u5e38\u6642\u8868\u793a
+     ========================================================= */
+  var LAYOUT=(function(){
+    var miniBar=$('miniBar'), mbPlay=$('mbPlay'), mbReset=$('mbReset'),
+        mbSpeed=$('mbSpeed'), mbGear=$('mbGear'), scrim=$('panelScrim');
+    var built=false;
+
+    /* sim-head \u3068 sim-foot \u306e\u9593\u306e\u5b50\u8981\u7d20\u30922\u5217\u306b\u632f\u308a\u5206\u3051\u308b */
+    function buildColumns(){
+      var screens=document.querySelectorAll('.screen');
+      for(var s=0;s<screens.length;s++){
+        var sc=screens[s];
+        if(sc.id==='screen-hub') continue;
+        if(sc.querySelector('.sim-body')) continue;  /* \u65e2\u306b\u518d\u69cb\u6210\u6e08\u307f */
+        var kids=[];
+        var n=sc.firstElementChild;
+        while(n){ kids.push(n); n=n.nextElementSibling; }
+        var head=null, foot=null, mids=[];
+        for(var i=0;i<kids.length;i++){
+          var k=kids[i];
+          if(k.classList.contains('sim-head')) head=k;
+          else if(k.classList.contains('sim-foot')) foot=k;
+          else mids.push(k);
+        }
+        var body=document.createElement('div'); body.className='sim-body';
+        var colStage=document.createElement('div'); colStage.className='sim-col-stage';
+        var colPanel=document.createElement('div'); colPanel.className='sim-col-panel';
+        /* \u30d1\u30cd\u30eb\u306e\u63b4\u307f\u90e8\uff08\u30b9\u30de\u30db\u7e26\u306e\u3068\u304d\u8868\u793a\uff09 */
+        var grip=document.createElement('div'); grip.className='panel-grip';
+        grip.innerHTML='<span class="pg-title">\u64cd\u4f5c\u30fb\u8a2d\u5b9a</span>'+
+          '<button class="pg-close" type="button">\u00d7</button>';
+        colPanel.appendChild(grip);
+        /* \u30b9\u30c6\u30fc\u30b8\u5217\uff1astage \u3068 insight\u3002\u305d\u308c\u4ee5\u5916\u306f\u30d1\u30cd\u30eb\u5217\u3078 */
+        for(var j=0;j<mids.length;j++){
+          var m=mids[j];
+          if(m.classList.contains('stage') || m.classList.contains('insight')){
+            colStage.appendChild(m);
+          }else{
+            colPanel.appendChild(m);
+          }
+        }
+        body.appendChild(colStage);
+        body.appendChild(colPanel);
+        /* head \u306e\u5f8c\u308d\u3001foot \u306e\u524d\u306b body \u3092\u5165\u308c\u308b */
+        if(foot) sc.insertBefore(body,foot);
+        else sc.appendChild(body);
+        /* \u30b0\u30ea\u30c3\u30d7\u306e\u00d7\u3067\u30d1\u30cd\u30eb\u3092\u9589\u3058\u308b */
+        grip.querySelector('.pg-close').addEventListener('click',closePanel);
+      }
+      built=true;
+    }
+
+    /* \u3044\u307e\u958b\u3044\u3066\u3044\u308b\u30b7\u30df\u30e5\u30ec\u30fc\u30b7\u30e7\u30f3\u753b\u9762 */
+    function activeScreenEl(){
+      var screens=document.querySelectorAll('.screen.active');
+      for(var i=0;i<screens.length;i++){
+        if(screens[i].id!=='screen-hub') return screens[i];
+      }
+      return null;
+    }
+
+    /* \u64cd\u4f5c\u30d1\u30cd\u30eb\u306e\u958b\u9589\uff08\u30b9\u30de\u30db\u7e26\u306e\u307f\u610f\u5473\u3092\u6301\u3064\uff09 */
+    function openPanel(){
+      var sc=activeScreenEl(); if(!sc) return;
+      var panel=sc.querySelector('.sim-col-panel');
+      if(panel){ panel.classList.add('open'); scrim.classList.add('show'); }
+    }
+    function closePanel(){
+      var panels=document.querySelectorAll('.sim-col-panel.open');
+      for(var i=0;i<panels.length;i++) panels[i].classList.remove('open');
+      scrim.classList.remove('show');
+    }
+
+    /* \u30df\u30cb\u30d0\u30fc\u306e\u901f\u5ea6\u30dc\u30bf\u30f3\u3092\u3001\u73fe\u5728\u753b\u9762\u306e\u901f\u5ea6\u30b0\u30eb\u30fc\u30d7\u304b\u3089\u8907\u88fd\u3057\u3066\u4f5c\u308b */
+    function syncMiniBar(){
+      var sc=activeScreenEl();
+      if(!sc || window.innerWidth>=980){
+        miniBar.classList.add('hidden');
+        return;
+      }
+      miniBar.classList.remove('hidden');
+      /* \u901f\u5ea6\u30dc\u30bf\u30f3\u7fa4\u3092\u4f5c\u308a\u76f4\u3057\uff08\u5143\u306e speed-group \u3092\u63a2\u3059\uff09 */
+      var srcSpeed=sc.querySelector('.speed-group');
+      mbSpeed.innerHTML='';
+      if(srcSpeed){
+        var sb=srcSpeed.querySelectorAll('button');
+        for(var i=0;i<sb.length;i++){
+          (function(orig){
+            var b=document.createElement('button');
+            b.textContent=orig.textContent;
+            if(orig.classList.contains('active')) b.classList.add('active');
+            b.addEventListener('click',function(){
+              orig.click();
+              /* active\u30af\u30e9\u30b9\u3092\u540c\u671f */
+              var all=mbSpeed.querySelectorAll('button');
+              for(var k=0;k<all.length;k++) all[k].classList.remove('active');
+              b.classList.add('active');
+            });
+            mbSpeed.appendChild(b);
+          })(sb[i]);
+        }
+        mbSpeed.style.display='';
+      }else{
+        mbSpeed.style.display='none';
+      }
+      refreshMiniPlay();
+    }
+
+    /* \u30df\u30cb\u30d0\u30fc\u306e\u518d\u751f\u30dc\u30bf\u30f3\u8868\u793a\u3092\u3001\u672c\u7269\u306e\u30dc\u30bf\u30f3\u306b\u5408\u308f\u305b\u308b */
+    function refreshMiniPlay(){
+      var sc=activeScreenEl(); if(!sc) return;
+      var realPlay=sc.querySelector('.controls button.primary');
+      if(realPlay){
+        mbPlay.textContent=realPlay.textContent;
+        mbPlay.classList.toggle('playing',realPlay.classList.contains('playing'));
+      }
+    }
+
+    /* \u30df\u30cb\u30d0\u30fc\u306e\u30dc\u30bf\u30f3 \u2192 \u672c\u7269\u306e\u30dc\u30bf\u30f3\u3078\u8ee2\u9001 */
+    mbPlay.addEventListener('click',function(){
+      var sc=activeScreenEl(); if(!sc) return;
+      var realPlay=sc.querySelector('.controls button.primary');
+      if(realPlay){ realPlay.click(); setTimeout(refreshMiniPlay,10); }
+    });
+    mbReset.addEventListener('click',function(){
+      var sc=activeScreenEl(); if(!sc) return;
+      /* \u30ea\u30bb\u30c3\u30c8\u30dc\u30bf\u30f3\uff1dcontrols \u5185\u306e ghost \u3067\u300c\u30ea\u30bb\u30c3\u30c8\u300d\u3092\u542b\u3080\u3082\u306e */
+      var btns=sc.querySelectorAll('.controls button.ghost');
+      for(var i=0;i<btns.length;i++){
+        if(btns[i].textContent.indexOf('\u30ea\u30bb\u30c3\u30c8')>=0){
+          btns[i].click(); break;
+        }
+      }
+      setTimeout(refreshMiniPlay,10);
+    });
+    mbGear.addEventListener('click',function(){
+      var sc=activeScreenEl(); if(!sc) return;
+      var panel=sc.querySelector('.sim-col-panel');
+      if(panel && panel.classList.contains('open')) closePanel();
+      else openPanel();
+    });
+    scrim.addEventListener('click',closePanel);
+
+    return {
+      init:function(){ if(!built) buildColumns(); },
+      onOpenSim:function(){
+        if(!built) buildColumns();
+        closePanel();
+        syncMiniBar();
+      },
+      onCloseSim:function(){
+        closePanel();
+        miniBar.classList.add('hidden');
+      },
+      onResize:function(){
+        if(window.innerWidth>=980) closePanel();
+        syncMiniBar();
+      },
+      refreshPlay:refreshMiniPlay
+    };
+  })();
+
 
   /* =========================================================
      \u30b7\u30df\u30e5\u30ec\u30fc\u30b7\u30e7\u30f3\u2460\uff1a\u7b49\u901f\u5186\u904b\u52d5\u306e\u57fa\u672c
@@ -2937,14 +3226,22 @@
   window.addEventListener('resize',function(){
     clearTimeout(rt);
     rt=setTimeout(function(){
+      LAYOUT.onResize();
       if(activeSim && activeSim.resize) activeSim.resize();
     },140);
+  });
+  window.addEventListener('orientationchange',function(){
+    setTimeout(function(){
+      LAYOUT.onResize();
+      if(activeSim && activeSim.resize) activeSim.resize();
+    },220);
   });
 
   /* =========================================================
      \u8d77\u52d5\uff08\u5931\u6557\u3057\u305f\u3089\u753b\u9762\u306b\u30a8\u30e9\u30fc\u3092\u51fa\u3059\uff09
      ========================================================= */
   try{
+    LAYOUT.init();
     showHub();
   }catch(err){
     var v=document.getElementById('view');
