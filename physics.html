@@ -102,12 +102,14 @@
     padding:14px 14px 15px;cursor:pointer;
     transition:transform .05s ease,box-shadow .12s ease,border-color .12s ease;
   }
-  .card:hover{box-shadow:3px 3px 0 rgba(35,34,29,.18);border-color:var(--ink);}
+  @media (hover:hover){
+    .card:hover{box-shadow:3px 3px 0 rgba(35,34,29,.18);border-color:var(--ink);}
+    .card.locked:hover{box-shadow:none;border-color:#d8d0b8;}
+  }
   .card:active{transform:translate(1px,1px);}
   .card.locked{
     cursor:default;background:#efebdd;border-color:#d8d0b8;color:var(--ink-soft);
   }
-  .card.locked:hover{box-shadow:none;border-color:#d8d0b8;}
   .card.locked:active{transform:none;}
   .card-top{
     display:flex;align-items:center;justify-content:space-between;
@@ -266,6 +268,20 @@
   .speed-group button:last-child{border-right-width:1.5px;}
   .speed-group button.active{background:var(--teal);color:#fff;}
 
+  /* 視点・場合分けの選択ボタン */
+  .vp-group{display:flex;flex-wrap:wrap;gap:0;}
+  .vp-group button{
+    border-right-width:0;padding:10px 14px;font-size:13px;
+    flex:1 1 auto;min-width:120px;
+  }
+  .vp-group button:last-child{border-right-width:1.5px;}
+  .vp-group button.active{background:var(--blue);color:#fff;}
+  .vp-label{
+    font-size:11px;font-weight:700;letter-spacing:.06em;
+    color:var(--ink-soft);margin-bottom:6px;
+  }
+  .vp-wrap{margin-bottom:4px;}
+
   .num-box{
     flex:1 1 220px;min-width:200px;
     border:1.3px solid var(--line);background:var(--paper);padding:9px 12px 11px;
@@ -416,7 +432,7 @@
   /* --- 2カラムにできる幅・向き（PC・スマホ横・タブレット） --- */
   /* 横長（アスペクト比が横向き）または十分な幅があれば2カラム */
   @media (min-width:760px), (min-aspect-ratio:13/10){
-    .screen.active{
+    .screen.active:not(#screen-hub){
       display:flex;flex-direction:column;
       height:calc(100vh - 34px);min-height:460px;
     }
@@ -494,7 +510,7 @@
       flex:0 0 auto;background:var(--ink);color:var(--paper);
       font-size:13px;font-weight:900;
     }
-    .screen.active{padding-bottom:78px;}
+    .screen.active:not(#screen-hub){padding-bottom:78px;}
     .panel-scrim{
       position:fixed;inset:0;z-index:58;background:rgba(35,34,29,.42);
       opacity:0;pointer-events:none;transition:opacity .2s ease;
@@ -994,57 +1010,64 @@
     </div>
   </div>
 
-  <!-- ===== シミュレーション：円錐振り子 ===== -->
-  <div class="screen" id="screen-cone">
+  <!-- ===== 例題17：加速度運動をする電車 ===== -->
+  <div class="screen" id="screen-reidai17">
     <div class="sim-head">
-      <div class="sim-title"><span class="tag">CONCEPT</span>円錐振り子（糸で吊るした物体）</div>
-      <p class="sim-sub">糸の張力と重力の合力が向心力 ── 質量や角速度を変えると張力はどう変わる？</p>
+      <div class="sim-title"><span class="tag reidai-tag">例題17</span>加速度運動をする電車</div>
+      <p class="sim-sub">電車内のおもりと慣性力 ── 観測者によって見え方はどう変わる？</p>
     </div>
-    <div class="stage"><canvas id="cvCone"></canvas></div>
-    <div class="insight" id="insightCone">▶ 再生すると物体が水平面内で円を描きます。質量・角速度を変えてみよう</div>
+    <div class="qbox">
+      水平に等加速度直線運動をする電車内に、おもりが天井から糸でつるされ、
+      糸が鉛直方向と角 <b>θ</b> をなす位置で電車に対して静止している。電車の加速度の大きさ <b>a</b> を求めよ。
+      <span class="qask">▶ 観測者を切り替えて、力のようすを見くらべよう（答え：a＝g tanθ）</span>
+    </div>
+    <div class="stage"><canvas id="cvE17"></canvas></div>
+    <div class="insight" id="insightE17">▶ 再生すると電車が加速し、糸が傾いて安定します</div>
     <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
-    <div class="readout" id="readoutCone">
-      <div class="cell input" data-gloss="c:m"><span class="qmark">?</span>
-        <div class="cell-label">質量 m</div>
-        <div class="cell-value"><span id="cnM">0.20</span><span class="unit">kg</span></div>
+    <div class="readout" id="readoutE17">
+      <div class="cell input" data-gloss="r17:m"><span class="qmark">?</span>
+        <div class="cell-label">おもりの質量 m</div>
+        <div class="cell-value"><span id="e17m">1.0</span><span class="unit">kg</span></div>
         <div class="cell-formula">操作量</div></div>
-      <div class="cell input" data-gloss="c:omega"><span class="qmark">?</span>
-        <div class="cell-label">角速度 ω</div>
-        <div class="cell-value"><span id="cnW">4.0</span><span class="unit">rad/s</span></div>
+      <div class="cell input" data-gloss="r17:a"><span class="qmark">?</span>
+        <div class="cell-label">電車の加速度 a</div>
+        <div class="cell-value"><span id="e17a">4.9</span><span class="unit">m/s²</span></div>
         <div class="cell-formula">操作量</div></div>
-      <div class="cell input" data-gloss="c:L"><span class="qmark">?</span>
-        <div class="cell-label">糸の長さ ℓ</div>
-        <div class="cell-value"><span id="cnL">0.80</span><span class="unit">m</span></div>
-        <div class="cell-formula">操作量</div></div>
-      <div class="cell derived" data-gloss="c:theta"><span class="qmark">?</span>
+      <div class="cell derived" data-gloss="r17:theta"><span class="qmark">?</span>
         <div class="cell-label">糸の傾き θ</div>
-        <div class="cell-value"><span id="cnTh">52</span><span class="unit">°</span></div>
-        <div class="cell-formula">cosθ = g/(ℓω²)</div></div>
-      <div class="cell derived" data-gloss="c:r"><span class="qmark">?</span>
-        <div class="cell-label">円の半径 r</div>
-        <div class="cell-value"><span id="cnR">0.63</span><span class="unit">m</span></div>
-        <div class="cell-formula">r = ℓ sinθ</div></div>
-      <div class="cell derived" data-gloss="c:S"><span class="qmark">?</span>
-        <div class="cell-label">糸の張力 S</div>
-        <div class="cell-value"><span id="cnS">2.56</span><span class="unit">N</span></div>
-        <div class="cell-formula">S = mℓω²</div></div>
-      <div class="cell" data-gloss="c:mg"><span class="qmark">?</span>
+        <div class="cell-value"><span id="e17th">27</span><span class="unit">°</span></div>
+        <div class="cell-formula">tanθ = a/g</div></div>
+      <div class="cell" data-gloss="r17:mg"><span class="qmark">?</span>
         <div class="cell-label">重力 mg</div>
-        <div class="cell-value"><span id="cnMg">1.96</span><span class="unit">N</span></div>
+        <div class="cell-value"><span id="e17mg">9.80</span><span class="unit">N</span></div>
         <div class="cell-formula">下向き</div></div>
-      <div class="cell derived" data-gloss="c:F"><span class="qmark">?</span>
-        <div class="cell-label">向心力 F</div>
-        <div class="cell-value"><span id="cnF">1.65</span><span class="unit">N</span></div>
-        <div class="cell-formula">F = mrω²</div></div>
+      <div class="cell derived" data-gloss="r17:S"><span class="qmark">?</span>
+        <div class="cell-label">糸の張力 S</div>
+        <div class="cell-value"><span id="e17S">10.96</span><span class="unit">N</span></div>
+        <div class="cell-formula">S = mg/cosθ</div></div>
+      <div class="cell derived" data-gloss="r17:F"><span class="qmark">?</span>
+        <div class="cell-label">慣性力 / 合力 F</div>
+        <div class="cell-value"><span id="e17F">4.90</span><span class="unit">N</span></div>
+        <div class="cell-formula">F = ma</div></div>
     </div>
     <div class="controls">
       <div class="ctl-row">
-        <button id="cnPlay" class="primary">▶ 再生</button>
-        <button id="cnReset" class="ghost">■ リセット</button>
+        <button id="e17Play" class="primary">▶ 再生</button>
+        <button id="e17Reset" class="ghost">■ リセット</button>
+        <button id="e17Book" class="ghost book">教科書の数値に戻す</button>
+      </div>
+      <div class="ctl-row vp-wrap">
+        <div style="flex:1 1 100%;">
+          <div class="vp-label">どちらの観測者で見る？</div>
+          <div class="vp-group" id="e17View">
+            <button data-view="in" class="active">電車内の観測者</button>
+            <button data-view="ground">地上の観測者</button>
+          </div>
+        </div>
       </div>
       <div class="ctl-row">
         <span class="ctl-label" style="margin-left:2px;">再生速度</span>
-        <div class="speed-group" id="cnSpeed">
+        <div class="speed-group" id="e17Speed">
           <button data-speed="1">×1</button>
           <button data-speed="0.5" class="active">×½</button>
           <button data-speed="0.25">×¼</button>
@@ -1052,61 +1075,756 @@
       </div>
       <div class="ctl-row">
         <div class="num-box">
-          <div class="num-head" data-gloss="c:m">
-            <span class="nm">質量 m<span class="mini-q">?</span></span>
-            <span class="rng">0.10 〜 0.50 / 0.05刻み</span>
+          <div class="num-head" data-gloss="r17:m">
+            <span class="nm">おもりの質量 m<span class="mini-q">?</span></span>
+            <span class="rng">0.5 〜 3.0 / 0.5刻み</span>
           </div>
           <div class="stepper">
-            <button data-cnstep="M" data-dir="-1">−</button>
-            <input type="number" id="cnInpM" min="0.10" max="0.50" step="0.05" value="0.20" inputmode="decimal">
-            <button data-cnstep="M" data-dir="1">+</button>
+            <button data-e17step="M" data-dir="-1">−</button>
+            <input type="number" id="e17InpM" min="0.5" max="3.0" step="0.5" value="1.0" inputmode="decimal">
+            <button data-e17step="M" data-dir="1">+</button>
             <span class="unit-tag">kg</span>
           </div>
         </div>
         <div class="num-box">
-          <div class="num-head" data-gloss="c:omega">
-            <span class="nm">角速度 ω<span class="mini-q">?</span></span>
-            <span class="rng">3.5 〜 8.0 / 0.5刻み</span>
+          <div class="num-head" data-gloss="r17:a">
+            <span class="nm">電車の加速度 a<span class="mini-q">?</span></span>
+            <span class="rng">0.98 〜 9.8 / 0.98刻み</span>
           </div>
           <div class="stepper">
-            <button data-cnstep="W" data-dir="-1">−</button>
-            <input type="number" id="cnInpW" min="3.5" max="8.0" step="0.5" value="4.0" inputmode="decimal">
-            <button data-cnstep="W" data-dir="1">+</button>
-            <span class="unit-tag">rad/s</span>
+            <button data-e17step="A" data-dir="-1">−</button>
+            <input type="number" id="e17InpA" min="0.98" max="9.8" step="0.98" value="4.9" inputmode="decimal">
+            <button data-e17step="A" data-dir="1">+</button>
+            <span class="unit-tag">m/s²</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="solve">
+      <div class="solve-title">考え方（タップで開く）</div>
+      <details class="step">
+        <summary>STEP 1　電車内の観測者（非慣性系）</summary>
+        <div class="step-body">
+          電車内の観測者には、おもりは静止して見えます。重力 mg・張力 S に加えて、
+          加速の向きと逆向きの<b>慣性力 ma</b> がはたらき、3力がつりあいます。<br>
+          <span class="mono" id="e17sol1">水平：S sinθ − ma = 0　／　鉛直：S cosθ − mg = 0</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 2　地上の観測者（慣性系）</summary>
+        <div class="step-body">
+          地上の観測者には、おもりは電車と一緒に加速して見えます。
+          はたらく力は重力 mg と張力 S だけ。その合力が水平向きの加速を生みます。<br>
+          <span class="mono" id="e17sol2">水平：ma = S sinθ　／　鉛直：S cosθ − mg = 0</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 3　a を求める</summary>
+        <div class="step-body">
+          どちらの立場でも、2式から S を消去すると同じ結果になります。
+          辺々を割ると ma/mg = tanθ。<br>
+          <span class="mono" id="e17sol3">a = g tanθ = 9.8 × tan27° = 4.9 m/s²</span>
+        </div>
+      </details>
+    </div>
+    <div class="sim-foot">
+      同じ現象でも、<b>観測者の立場で力のかき方が変わります</b>。電車内（非慣性系）では慣性力を加えて
+      「つりあい」、地上（慣性系）では重力と張力の合力で「加速」。それでも答え a＝g tanθ は一致します。
+      これが慣性力の考え方のかなめです。
+    </div>
+  </div>
+
+  <!-- ===== 例題18：加速度運動をするエレベーター ===== -->
+  <div class="screen" id="screen-reidai18">
+    <div class="sim-head">
+      <div class="sim-title"><span class="tag reidai-tag">例題18</span>加速度運動をするエレベーター</div>
+      <p class="sim-sub">床が物体を押す力（垂直抗力）── 加速のしかたでどう変わる？</p>
+    </div>
+    <div class="qbox">
+      エレベーターの床に質量 <b>m</b> の物体が置かれている。エレベーターが次の運動をするとき、
+      物体が床から受ける垂直抗力 <b>N</b> の大きさはいくらか。
+      <span class="qask">▶ 3つの場合をボタンで選んで見くらべよう</span>
+    </div>
+    <div class="stage"><canvas id="cvE18"></canvas></div>
+    <div class="insight" id="insightE18">▶ 再生するとエレベーターが動き、体重計の値が変わります</div>
+    <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
+    <div class="readout" id="readoutE18">
+      <div class="cell input" data-gloss="r18:m"><span class="qmark">?</span>
+        <div class="cell-label">物体の質量 m</div>
+        <div class="cell-value"><span id="e18m">2.0</span><span class="unit">kg</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="r18:a"><span class="qmark">?</span>
+        <div class="cell-label">加速度の大きさ a</div>
+        <div class="cell-value"><span id="e18a">2.0</span><span class="unit">m/s²</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell" data-gloss="r18:mg"><span class="qmark">?</span>
+        <div class="cell-label">重力 mg</div>
+        <div class="cell-value"><span id="e18mg">19.6</span><span class="unit">N</span></div>
+        <div class="cell-formula">下向き</div></div>
+      <div class="cell" data-gloss="r18:inertia"><span class="qmark">?</span>
+        <div class="cell-label">慣性力 ma</div>
+        <div class="cell-value"><span id="e18ma">4.0</span><span class="unit">N</span></div>
+        <div class="cell-formula">加速と逆向き</div></div>
+      <div class="cell answer" data-gloss="r18:N"><span class="qmark">?</span>
+        <div class="cell-label">垂直抗力 N</div>
+        <div class="cell-value"><span id="e18N">23.6</span><span class="unit">N</span></div>
+        <div class="cell-formula"><span id="e18Nf">N = m(g+a)</span></div></div>
+      <div class="cell derived" data-gloss="r18:scale"><span class="qmark">?</span>
+        <div class="cell-label">体重計の表示</div>
+        <div class="cell-value"><span id="e18scale">2.41</span><span class="unit">kg重</span></div>
+        <div class="cell-formula">N / g</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl-row vp-wrap">
+        <div style="flex:1 1 100%;">
+          <div class="vp-label">エレベーターの運動を選ぶ</div>
+          <div class="vp-group" id="e18Case">
+            <button data-case="up" class="active">上向きに加速</button>
+            <button data-case="const">等速で上昇</button>
+            <button data-case="down">下向きに加速</button>
+          </div>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <button id="e18Play" class="primary">▶ 再生</button>
+        <button id="e18Reset" class="ghost">■ リセット</button>
+        <span class="ctl-label" style="margin-left:6px;">再生速度</span>
+        <div class="speed-group" id="e18Speed">
+          <button data-speed="1">×1</button>
+          <button data-speed="0.5" class="active">×½</button>
+          <button data-speed="0.25">×¼</button>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box">
+          <div class="num-head" data-gloss="r18:m">
+            <span class="nm">物体の質量 m<span class="mini-q">?</span></span>
+            <span class="rng">0.5 〜 5.0 / 0.5刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e18step="M" data-dir="-1">−</button>
+            <input type="number" id="e18InpM" min="0.5" max="5.0" step="0.5" value="2.0" inputmode="decimal">
+            <button data-e18step="M" data-dir="1">+</button>
+            <span class="unit-tag">kg</span>
+          </div>
+        </div>
+        <div class="num-box">
+          <div class="num-head" data-gloss="r18:a">
+            <span class="nm">加速度の大きさ a<span class="mini-q">?</span></span>
+            <span class="rng">0.5 〜 5.0 / 0.5刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e18step="A" data-dir="-1">−</button>
+            <input type="number" id="e18InpA" min="0.5" max="5.0" step="0.5" value="2.0" inputmode="decimal">
+            <button data-e18step="A" data-dir="1">+</button>
+            <span class="unit-tag">m/s²</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="solve">
+      <div class="solve-title">考え方（タップで開く）</div>
+      <details class="step">
+        <summary>STEP 1　(1) 上向きに加速するとき</summary>
+        <div class="step-body">
+          エレベーター内の観測者には物体は静止して見えます。加速度が上向きなので、
+          慣性力は<b>下向き</b>。重力 mg・慣性力 ma が下、垂直抗力 N が上でつりあいます。<br>
+          <span class="mono" id="e18sol1">N − mg − ma = 0　→　N = m(g + a)</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 2　(2) 等速で上昇するとき</summary>
+        <div class="step-body">
+          加速度が 0 なので慣性力ははたらきません。重力と垂直抗力だけのつりあいです。<br>
+          <span class="mono" id="e18sol2">N − mg = 0　→　N = mg</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 3　(3) 下向きに加速するとき</summary>
+        <div class="step-body">
+          加速度が下向きなので、慣性力は<b>上向き</b>。垂直抗力 N と慣性力 ma が上、
+          重力 mg が下でつりあいます。<br>
+          <span class="mono" id="e18sol3">N + ma − mg = 0　→　N = m(g − a)</span>
+        </div>
+      </details>
+    </div>
+    <div class="sim-foot">
+      上向きに加速すると体重計は<b>重く</b>、下向きに加速すると<b>軽く</b>表示されます。
+      これが「見かけの重さ」。慣性力の向き（加速と逆向き）で、重力に足されるか引かれるかが決まります。
+    </div>
+  </div>
+
+  <!-- ===== 例題19：円錐振り子 ===== -->
+  <div class="screen" id="screen-reidai19">
+    <div class="sim-head">
+      <div class="sim-title"><span class="tag reidai-tag">例題19</span>円錐振り子</div>
+      <p class="sim-sub">糸でつるしたおもりの円運動 ── 周期を2つの立場で求める</p>
+    </div>
+    <div class="qbox">
+      糸の一端を天井に固定し、他端におもりをつけて水平面内で等速円運動をさせる（円錐振り子）。
+      糸と鉛直方向のなす角を <b>θ</b>、糸の長さを <b>L</b> として、おもりの周期 <b>T</b> を求めよ。
+      <span class="qask">▶ 観測者を切り替えて見くらべよう（答え：T＝2π√(Lcosθ/g)）</span>
+    </div>
+    <div class="stage"><canvas id="cvE19"></canvas></div>
+    <div class="insight" id="insightE19">▶ 再生するとおもりが水平面内で円を描きます</div>
+    <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
+    <div class="readout" id="readoutE19">
+      <div class="cell input" data-gloss="r19:m"><span class="qmark">?</span>
+        <div class="cell-label">おもりの質量 m</div>
+        <div class="cell-value"><span id="e19m">0.20</span><span class="unit">kg</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="r19:L"><span class="qmark">?</span>
+        <div class="cell-label">糸の長さ L</div>
+        <div class="cell-value"><span id="e19L">0.80</span><span class="unit">m</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="r19:theta"><span class="qmark">?</span>
+        <div class="cell-label">糸の傾き θ</div>
+        <div class="cell-value"><span id="e19th">40</span><span class="unit">°</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell derived" data-gloss="r19:r"><span class="qmark">?</span>
+        <div class="cell-label">円の半径 r</div>
+        <div class="cell-value"><span id="e19r">0.51</span><span class="unit">m</span></div>
+        <div class="cell-formula">r = L sinθ</div></div>
+      <div class="cell derived" data-gloss="r19:S"><span class="qmark">?</span>
+        <div class="cell-label">糸の張力 S</div>
+        <div class="cell-value"><span id="e19S">2.56</span><span class="unit">N</span></div>
+        <div class="cell-formula">S = mg/cosθ</div></div>
+      <div class="cell answer" data-gloss="r19:T"><span class="qmark">?</span>
+        <div class="cell-label">周期 T</div>
+        <div class="cell-value"><span id="e19T">1.56</span><span class="unit">s</span></div>
+        <div class="cell-formula">T = 2π√(Lcosθ/g)</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl-row">
+        <button id="e19Play" class="primary">▶ 再生</button>
+        <button id="e19Reset" class="ghost">■ リセット</button>
+        <button id="e19Book" class="ghost book">教科書の数値に戻す</button>
+      </div>
+      <div class="ctl-row vp-wrap">
+        <div style="flex:1 1 100%;">
+          <div class="vp-label">どちらの観測者で見る？</div>
+          <div class="vp-group" id="e19View">
+            <button data-view="rot" class="active">回転する観測者</button>
+            <button data-view="ground">地上の観測者</button>
+          </div>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <span class="ctl-label" style="margin-left:2px;">再生速度</span>
+        <div class="speed-group" id="e19Speed">
+          <button data-speed="1">×1</button>
+          <button data-speed="0.5" class="active">×½</button>
+          <button data-speed="0.25">×¼</button>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box">
+          <div class="num-head" data-gloss="r19:m">
+            <span class="nm">おもりの質量 m<span class="mini-q">?</span></span>
+            <span class="rng">0.10 〜 0.50 / 0.05刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e19step="M" data-dir="-1">−</button>
+            <input type="number" id="e19InpM" min="0.10" max="0.50" step="0.05" value="0.20" inputmode="decimal">
+            <button data-e19step="M" data-dir="1">+</button>
+            <span class="unit-tag">kg</span>
+          </div>
+        </div>
+        <div class="num-box">
+          <div class="num-head" data-gloss="r19:L">
+            <span class="nm">糸の長さ L<span class="mini-q">?</span></span>
+            <span class="rng">0.50 〜 1.20 / 0.10刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e19step="L" data-dir="-1">−</button>
+            <input type="number" id="e19InpL" min="0.50" max="1.20" step="0.10" value="0.80" inputmode="decimal">
+            <button data-e19step="L" data-dir="1">+</button>
+            <span class="unit-tag">m</span>
           </div>
         </div>
       </div>
       <div class="ctl-row">
         <div class="num-box full">
-          <div class="num-head" data-gloss="c:L">
-            <span class="nm">糸の長さ ℓ<span class="mini-q">?</span></span>
-            <span class="rng">0.50 〜 1.20 / 0.10刻み</span>
+          <div class="num-head" data-gloss="r19:theta">
+            <span class="nm">糸の傾き θ<span class="mini-q">?</span></span>
+            <span class="rng">20 〜 70 / 5刻み</span>
           </div>
           <div class="stepper">
-            <button data-cnstep="L" data-dir="-1">−</button>
-            <input type="number" id="cnInpL" min="0.50" max="1.20" step="0.10" value="0.80" inputmode="decimal">
-            <button data-cnstep="L" data-dir="1">+</button>
+            <button data-e19step="TH" data-dir="-1">−</button>
+            <input type="number" id="e19InpTh" min="20" max="70" step="5" value="40" inputmode="decimal">
+            <button data-e19step="TH" data-dir="1">+</button>
+            <span class="unit-tag">°</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="solve">
+      <div class="solve-title">考え方（タップで開く）</div>
+      <details class="step">
+        <summary>STEP 1　回転する観測者（非慣性系）</summary>
+        <div class="step-body">
+          おもりとともに回る観測者には、おもりは静止して見えます。張力 S・重力 mg に加えて、
+          外向きの<b>遠心力 mrω²</b> がはたらき、つりあいます。r＝L sinθ、ω＝2π/T。<br>
+          <span class="mono" id="e19sol1">水平：S sinθ − mL sinθ(2π/T)² = 0　／　鉛直：S cosθ − mg = 0</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 2　地上の観測者（慣性系）</summary>
+        <div class="step-body">
+          地上の観測者には、おもりは等速円運動して見えます。張力と重力の合力が向心力です。<br>
+          <span class="mono" id="e19sol2">水平：mL sinθ(2π/T)² = S sinθ　／　鉛直：S cosθ − mg = 0</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 3　周期 T を求める</summary>
+        <div class="step-body">
+          どちらの立場でも S を消去すると同じ式になります。<br>
+          <span class="mono" id="e19sol3">T = 2π√(L cosθ / g) = 2π√(0.80×cos40° / 9.8) = 1.56 s</span>
+        </div>
+      </details>
+    </div>
+    <div class="sim-foot">
+      円錐振り子も、<b>回転する観測者（遠心力でつりあい）</b>と<b>地上の観測者（合力が向心力）</b>の
+      どちらの立場でも考えられ、周期 T＝2π√(Lcosθ/g) は一致します。T は糸の長さと傾きだけで決まり、
+      質量にはよりません。
+    </div>
+  </div>
+
+  <!-- ===== 例題20：鉛直面内の円運動 ===== -->
+  <div class="screen" id="screen-reidai20">
+    <div class="sim-head">
+      <div class="sim-title"><span class="tag reidai-tag">例題20</span>鉛直面内の円運動</div>
+      <p class="sim-sub">ループを一周する台車 ── 最高点の速さ・垂直抗力・一周の条件</p>
+    </div>
+    <div class="qbox">
+      台車が高さ <b>h</b> の地点から静かに出発し、鉛直面内にある半径 <b>r</b> のなめらかな円形レールを一周する。
+      最高点Pでの速さ・垂直抗力・一周できる最小の高さを求めよ。
+      <span class="qask">▶ 高さ h と半径 r を変えて、一周できるか試してみよう</span>
+    </div>
+    <div class="stage"><canvas id="cvE20"></canvas></div>
+    <div class="insight" id="insightE20">▶ 再生すると台車が動き出します。一周できるか見てみよう</div>
+    <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
+    <div class="readout" id="readoutE20">
+      <div class="cell input" data-gloss="r20:h"><span class="qmark">?</span>
+        <div class="cell-label">出発の高さ h</div>
+        <div class="cell-value"><span id="e20h">1.00</span><span class="unit">m</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="r20:r"><span class="qmark">?</span>
+        <div class="cell-label">円の半径 r</div>
+        <div class="cell-value"><span id="e20r">0.30</span><span class="unit">m</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell derived" data-gloss="r20:vp"><span class="qmark">?</span>
+        <div class="cell-label">最高点の速さ v</div>
+        <div class="cell-value"><span id="e20vp">2.80</span><span class="unit">m/s</span></div>
+        <div class="cell-formula">v²=2g(h−2r)</div></div>
+      <div class="cell derived" data-gloss="r20:N"><span class="qmark">?</span>
+        <div class="cell-label">最高点の垂直抗力 N</div>
+        <div class="cell-value"><span id="e20N">16.3</span><span class="unit">N</span></div>
+        <div class="cell-formula">N=mg(2h/r−5)</div></div>
+      <div class="cell derived" data-gloss="r20:hmin"><span class="qmark">?</span>
+        <div class="cell-label">一周できる最小の h</div>
+        <div class="cell-value"><span id="e20hmin">0.75</span><span class="unit">m</span></div>
+        <div class="cell-formula">h ≧ 5r/2</div></div>
+      <div class="cell answer" data-gloss="r20:ok"><span class="qmark">?</span>
+        <div class="cell-label">判定</div>
+        <div class="cell-value"><span id="e20ok">一周できる</span></div>
+        <div class="cell-formula">h と 5r/2 をくらべる</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl-row">
+        <button id="e20Play" class="primary">▶ 再生</button>
+        <button id="e20Reset" class="ghost">■ リセット</button>
+        <button id="e20Book" class="ghost book">教科書の例に戻す</button>
+      </div>
+      <div class="ctl-row">
+        <span class="ctl-label" style="margin-left:2px;">再生速度</span>
+        <div class="speed-group" id="e20Speed">
+          <button data-speed="1">×1</button>
+          <button data-speed="0.5" class="active">×½</button>
+          <button data-speed="0.25">×¼</button>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box">
+          <div class="num-head" data-gloss="r20:h">
+            <span class="nm">出発の高さ h<span class="mini-q">?</span></span>
+            <span class="rng">0.40 〜 2.00 / 0.10刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e20step="H" data-dir="-1">−</button>
+            <input type="number" id="e20InpH" min="0.40" max="2.00" step="0.10" value="1.00" inputmode="decimal">
+            <button data-e20step="H" data-dir="1">+</button>
+            <span class="unit-tag">m</span>
+          </div>
+        </div>
+        <div class="num-box">
+          <div class="num-head" data-gloss="r20:r">
+            <span class="nm">円の半径 r<span class="mini-q">?</span></span>
+            <span class="rng">0.20 〜 0.60 / 0.05刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e20step="R" data-dir="-1">−</button>
+            <input type="number" id="e20InpR" min="0.20" max="0.60" step="0.05" value="0.30" inputmode="decimal">
+            <button data-e20step="R" data-dir="1">+</button>
             <span class="unit-tag">m</span>
           </div>
         </div>
       </div>
-      <div class="ctl-row toggles">
-        <span class="ctl-label">表示</span>
-        <label class="tg a"><input type="checkbox" id="cnChkForce" checked><span class="sw"></span>力のベクトル（張力・重力・向心力）</label>
-        <label class="tg guide"><input type="checkbox" id="cnChkSplit"><span class="sw"></span>張力を縦・横に分解</label>
-      </div>
+    </div>
+    <div class="solve">
+      <div class="solve-title">考え方（タップで開く）</div>
+      <details class="step">
+        <summary>STEP 1　最高点Pの速さ v</summary>
+        <div class="step-body">
+          出発点と最高点Pで力学的エネルギーが保存されます。Pの高さは 2r なので、<br>
+          <span class="mono" id="e20sol1">mgh = ½mv² + mg·2r　→　v² = 2g(h−2r)</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 2　最高点Pの垂直抗力 N</summary>
+        <div class="step-body">
+          台車とともに運動する観測者には、垂直抗力 N・重力 mg・遠心力 mv²/r がはたらき、
+          中心方向の力がつりあって見えます。<br>
+          <span class="mono" id="e20sol2">mg + N − mv²/r = 0　→　N = mg(2h/r − 5)</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 3　一周できる条件</summary>
+        <div class="step-body">
+          最高点で N ≧ 0 であれば、台車はレールから離れずに一周できます。<br>
+          <span class="mono" id="e20sol3">mg(2h/r − 5) ≧ 0　→　h ≧ 5r/2</span>
+        </div>
+      </details>
     </div>
     <div class="sim-foot">
-      物体には<b>糸の張力 S</b>（糸に沿って斜め上）と<b>重力 mg</b>（下向き）の2つが働きます。
-      この2つの合力がちょうど水平・中心向きになり、<b>向心力</b>になります。
-      鉛直方向はつりあい（S cosθ＝mg）、水平方向が円運動の式（S sinθ＝mrω²）。
-      角速度を上げると糸はより外に開き、張力も大きくなります。
+      かなめは「最高点で N ≧ 0」。エネルギー保存だけ考えて h ≧ 2r とすると、最高点に届く前に
+      N＝0 になりレールから離れてしまいます。一周には <b>h ≧ 5r/2</b> が必要です。
+    </div>
+  </div>
+
+  <!-- ===== 例題21：鉛直ばね振り子 ===== -->
+  <div class="screen" id="screen-reidai21">
+    <div class="sim-head">
+      <div class="sim-title"><span class="tag reidai-tag">例題21</span>鉛直ばね振り子</div>
+      <p class="sim-sub">つるしたばねの単振動 ── 中心・振幅・周期・最大の速さ</p>
+    </div>
+    <div class="qbox">
+      ばね定数 <b>k</b> のばねの上端を固定し、下端に質量 <b>m</b> のおもりをつるす。つりあいの位置から
+      おもりを <b>A</b> だけ引き下げてはなすと、おもりは単振動をした。
+      <span class="qask">▶ 中心の位置・振幅・周期・速さの最大値を求めよう</span>
+    </div>
+    <div class="stage"><canvas id="cvE21"></canvas></div>
+    <div class="insight" id="insightE21">▶ 再生するとおもりが単振動します</div>
+    <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
+    <div class="readout" id="readoutE21">
+      <div class="cell input" data-gloss="r21:k"><span class="qmark">?</span>
+        <div class="cell-label">ばね定数 k</div>
+        <div class="cell-value"><span id="e21k">9.8</span><span class="unit">N/m</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="r21:m"><span class="qmark">?</span>
+        <div class="cell-label">おもりの質量 m</div>
+        <div class="cell-value"><span id="e21m">0.050</span><span class="unit">kg</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell input" data-gloss="r21:A"><span class="qmark">?</span>
+        <div class="cell-label">引き下げ A（振幅）</div>
+        <div class="cell-value"><span id="e21A">0.020</span><span class="unit">m</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell derived" data-gloss="r21:T"><span class="qmark">?</span>
+        <div class="cell-label">周期 T</div>
+        <div class="cell-value"><span id="e21T">0.45</span><span class="unit">s</span></div>
+        <div class="cell-formula">T=2π√(m/k)</div></div>
+      <div class="cell derived" data-gloss="r21:vmax"><span class="qmark">?</span>
+        <div class="cell-label">速さの最大値</div>
+        <div class="cell-value"><span id="e21vmax">0.28</span><span class="unit">m/s</span></div>
+        <div class="cell-formula">v=Aω</div></div>
+      <div class="cell answer" data-gloss="r21:center"><span class="qmark">?</span>
+        <div class="cell-label">振動の中心</div>
+        <div class="cell-value"><span id="e21center">つりあいの位置</span></div>
+        <div class="cell-formula">復元力が 0 の位置</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl-row">
+        <button id="e21Play" class="primary">▶ 再生</button>
+        <button id="e21Reset" class="ghost">■ リセット</button>
+        <button id="e21Book" class="ghost book">教科書の数値に戻す</button>
+      </div>
+      <div class="ctl-row">
+        <span class="ctl-label" style="margin-left:2px;">再生速度</span>
+        <div class="speed-group" id="e21Speed">
+          <button data-speed="1">×1</button>
+          <button data-speed="0.5" class="active">×½</button>
+          <button data-speed="0.25">×¼</button>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box">
+          <div class="num-head" data-gloss="r21:k">
+            <span class="nm">ばね定数 k<span class="mini-q">?</span></span>
+            <span class="rng">4.9 〜 19.6 / 4.9刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e21step="K" data-dir="-1">−</button>
+            <input type="number" id="e21InpK" min="4.9" max="19.6" step="4.9" value="9.8" inputmode="decimal">
+            <button data-e21step="K" data-dir="1">+</button>
+            <span class="unit-tag">N/m</span>
+          </div>
+        </div>
+        <div class="num-box">
+          <div class="num-head" data-gloss="r21:m">
+            <span class="nm">おもりの質量 m<span class="mini-q">?</span></span>
+            <span class="rng">0.025 〜 0.20 / 0.025刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e21step="M" data-dir="-1">−</button>
+            <input type="number" id="e21InpM" min="0.025" max="0.20" step="0.025" value="0.050" inputmode="decimal">
+            <button data-e21step="M" data-dir="1">+</button>
+            <span class="unit-tag">kg</span>
+          </div>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box full">
+          <div class="num-head" data-gloss="r21:A">
+            <span class="nm">引き下げ A（振幅）<span class="mini-q">?</span></span>
+            <span class="rng">0.010 〜 0.050 / 0.005刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e21step="A" data-dir="-1">−</button>
+            <input type="number" id="e21InpA" min="0.010" max="0.050" step="0.005" value="0.020" inputmode="decimal">
+            <button data-e21step="A" data-dir="1">+</button>
+            <span class="unit-tag">m</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="solve">
+      <div class="solve-title">考え方（タップで開く）</div>
+      <details class="step">
+        <summary>STEP 1　振動の中心</summary>
+        <div class="step-body">
+          振動の中心は、おもりが受ける力の合力（復元力）が 0 になる位置 ── つまり
+          重力とばねの弾性力がつりあう「つりあいの位置」です。<br>
+          <span class="mono">中心 = つりあいの位置（x = 0）</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 2　振幅と周期</summary>
+        <div class="step-body">
+          振幅は、はなした位置から中心までの距離 A。周期はばね振り子の式で求まります。<br>
+          <span class="mono" id="e21sol2">T = 2π√(m/k) = 2π√(0.050/9.8) = 0.45 s</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 3　速さの最大値</summary>
+        <div class="step-body">
+          速さが最大になるのは中心を通過するとき。v = Aω、ω = 2π/T。<br>
+          <span class="mono" id="e21sol3">v = Aω = A·(2π/T) = 0.28 m/s</span>
+        </div>
+      </details>
+    </div>
+    <div class="sim-foot">
+      鉛直ばね振り子でも、振動の中心は「つりあいの位置」。重力は中心をずらすだけで、周期 T＝2π√(m/k)
+      には影響しません。速さは中心で最大、両端で 0 になります。
+    </div>
+  </div>
+
+  <!-- ===== 例題22：第1宇宙速度 ===== -->
+  <div class="screen" id="screen-reidai22">
+    <div class="sim-head">
+      <div class="sim-title"><span class="tag reidai-tag">例題22</span>第1宇宙速度</div>
+      <p class="sim-sub">地表すれすれを回る人工衛星 ── 万有引力が向心力</p>
+    </div>
+    <div class="qbox">
+      地表近くを、円軌道を描いてまわる人工衛星の速さ（第1宇宙速度）を求めよ。
+      地球の半径を <b>R</b>、地表付近の重力加速度を <b>g</b> とする。
+      <span class="qask">▶ 速さを変えて、衛星が落ちる／回る／飛び去るを見てみよう</span>
+    </div>
+    <div class="stage"><canvas id="cvE22"></canvas></div>
+    <div class="insight" id="insightE22">▶ 再生：いまの速さで衛星がどうなるか見てみよう</div>
+    <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
+    <div class="readout" id="readoutE22">
+      <div class="cell input" data-gloss="r22:v"><span class="qmark">?</span>
+        <div class="cell-label">打ち出す速さ v</div>
+        <div class="cell-value"><span id="e22v">7.9</span><span class="unit">km/s</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell" data-gloss="r22:R"><span class="qmark">?</span>
+        <div class="cell-label">地球の半径 R</div>
+        <div class="cell-value"><span id="e22R">6.4×10⁶</span><span class="unit">m</span></div>
+        <div class="cell-formula">定数</div></div>
+      <div class="cell" data-gloss="r22:g"><span class="qmark">?</span>
+        <div class="cell-label">重力加速度 g</div>
+        <div class="cell-value"><span id="e22g">9.8</span><span class="unit">m/s²</span></div>
+        <div class="cell-formula">定数</div></div>
+      <div class="cell derived" data-gloss="r22:v1"><span class="qmark">?</span>
+        <div class="cell-label">第1宇宙速度</div>
+        <div class="cell-value"><span id="e22v1">7.9</span><span class="unit">km/s</span></div>
+        <div class="cell-formula">v₁=√(gR)</div></div>
+      <div class="cell answer" data-gloss="r22:state"><span class="qmark">?</span>
+        <div class="cell-label">いまの速さでは</div>
+        <div class="cell-value"><span id="e22state">円軌道</span></div>
+        <div class="cell-formula">v と v₁ をくらべる</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl-row">
+        <button id="e22Play" class="primary">▶ 再生</button>
+        <button id="e22Reset" class="ghost">■ リセット</button>
+        <button id="e22Book" class="ghost book">第1宇宙速度に合わせる</button>
+      </div>
+      <div class="ctl-row">
+        <span class="ctl-label" style="margin-left:2px;">再生速度</span>
+        <div class="speed-group" id="e22Speed">
+          <button data-speed="1">×1</button>
+          <button data-speed="0.5" class="active">×½</button>
+          <button data-speed="0.25">×¼</button>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box full">
+          <div class="num-head" data-gloss="r22:v">
+            <span class="nm">打ち出す速さ v<span class="mini-q">?</span></span>
+            <span class="rng">5.0 〜 11.5 / 0.1刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e22step="V" data-dir="-1">−</button>
+            <input type="number" id="e22InpV" min="5.0" max="11.5" step="0.1" value="7.9" inputmode="decimal">
+            <button data-e22step="V" data-dir="1">+</button>
+            <span class="unit-tag">km/s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="solve">
+      <div class="solve-title">考え方（タップで開く）</div>
+      <details class="step">
+        <summary>STEP 1　運動方程式を立てる</summary>
+        <div class="step-body">
+          人工衛星は、地球との万有引力を向心力として等速円運動をします。地表近くなので
+          円軌道の半径は地球の半径 R にほぼ等しいです。<br>
+          <span class="mono">mv²/R = GMm/R²</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 2　v について解く</summary>
+        <div class="step-body">
+          両辺を整理すると v² = GM/R。<br>
+          <span class="mono">v = √(GM/R)</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 3　g で表す</summary>
+        <div class="step-body">
+          地表では GM = gR² の関係が成り立ちます。これを代入すると、<br>
+          <span class="mono" id="e22sol3">v₁ = √(gR) = √(9.8×6.4×10⁶) ≒ 7.9 km/s</span>
+        </div>
+      </details>
+    </div>
+    <div class="sim-foot">
+      第1宇宙速度 v₁＝√(gR) は約 7.9 km/s。これより遅いと地表に落ち、ちょうどなら円軌道、
+      速いと楕円軌道を描きます。万有引力がちょうど向心力としてはたらく速さです。
+    </div>
+  </div>
+
+  <!-- ===== 例題23：第2宇宙速度 ===== -->
+  <div class="screen" id="screen-reidai23">
+    <div class="sim-head">
+      <div class="sim-title"><span class="tag reidai-tag">例題23</span>第2宇宙速度</div>
+      <p class="sim-sub">地球から飛び去る最小の速さ ── 力学的エネルギー保存</p>
+    </div>
+    <div class="qbox">
+      地表から打ち上げた物体が、地球から飛び去るのに必要な最小の初速度（第2宇宙速度）を求めよ。
+      地球の半径を <b>R</b>、地表付近の重力加速度を <b>g</b> とする。
+      <span class="qask">▶ 速さを変えて、戻ってくる／飛び去るの境目を見てみよう</span>
+    </div>
+    <div class="stage"><canvas id="cvE23"></canvas></div>
+    <div class="insight" id="insightE23">▶ 再生：いまの速さで物体が飛び去れるか見てみよう</div>
+    <div class="readout-hint">用語カード（下の枠）をタップすると、その言葉の解説が出ます</div>
+    <div class="readout" id="readoutE23">
+      <div class="cell input" data-gloss="r23:v"><span class="qmark">?</span>
+        <div class="cell-label">打ち上げる速さ v</div>
+        <div class="cell-value"><span id="e23v">11.2</span><span class="unit">km/s</span></div>
+        <div class="cell-formula">操作量</div></div>
+      <div class="cell" data-gloss="r23:R"><span class="qmark">?</span>
+        <div class="cell-label">地球の半径 R</div>
+        <div class="cell-value"><span id="e23R">6.4×10⁶</span><span class="unit">m</span></div>
+        <div class="cell-formula">定数</div></div>
+      <div class="cell" data-gloss="r23:g"><span class="qmark">?</span>
+        <div class="cell-label">重力加速度 g</div>
+        <div class="cell-value"><span id="e23g">9.8</span><span class="unit">m/s²</span></div>
+        <div class="cell-formula">定数</div></div>
+      <div class="cell derived" data-gloss="r23:v2"><span class="qmark">?</span>
+        <div class="cell-label">第2宇宙速度</div>
+        <div class="cell-value"><span id="e23v2">11.2</span><span class="unit">km/s</span></div>
+        <div class="cell-formula">v₂=√(2gR)</div></div>
+      <div class="cell answer" data-gloss="r23:state"><span class="qmark">?</span>
+        <div class="cell-label">いまの速さでは</div>
+        <div class="cell-value"><span id="e23state">飛び去る</span></div>
+        <div class="cell-formula">v と v₂ をくらべる</div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl-row">
+        <button id="e23Play" class="primary">▶ 再生</button>
+        <button id="e23Reset" class="ghost">■ リセット</button>
+        <button id="e23Book" class="ghost book">第2宇宙速度に合わせる</button>
+      </div>
+      <div class="ctl-row">
+        <span class="ctl-label" style="margin-left:2px;">再生速度</span>
+        <div class="speed-group" id="e23Speed">
+          <button data-speed="1">×1</button>
+          <button data-speed="0.5" class="active">×½</button>
+          <button data-speed="0.25">×¼</button>
+        </div>
+      </div>
+      <div class="ctl-row">
+        <div class="num-box full">
+          <div class="num-head" data-gloss="r23:v">
+            <span class="nm">打ち上げる速さ v<span class="mini-q">?</span></span>
+            <span class="rng">7.0 〜 14.0 / 0.1刻み</span>
+          </div>
+          <div class="stepper">
+            <button data-e23step="V" data-dir="-1">−</button>
+            <input type="number" id="e23InpV" min="7.0" max="14.0" step="0.1" value="11.2" inputmode="decimal">
+            <button data-e23step="V" data-dir="1">+</button>
+            <span class="unit-tag">km/s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="solve">
+      <div class="solve-title">考え方（タップで開く）</div>
+      <details class="step">
+        <summary>STEP 1　エネルギー保存の式</summary>
+        <div class="step-body">
+          無限遠で運動エネルギーが 0 以上なら、物体は地球から飛び去れます。出発点と無限遠で
+          力学的エネルギーが保存されます（位置エネルギーの基準は無限遠）。<br>
+          <span class="mono">½mv₀² − GMm/R = ½mv²(∞) + 0</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 2　最小の速さ v₀</summary>
+        <div class="step-body">
+          無限遠での速さがちょうど 0 になるときが最小。<br>
+          <span class="mono">½mv₀² − GMm/R = 0　→　v₀² = 2GM/R</span>
+        </div>
+      </details>
+      <details class="step">
+        <summary>STEP 3　g で表す</summary>
+        <div class="step-body">
+          GM = gR² を代入すると、<br>
+          <span class="mono" id="e23sol3">v₂ = √(2gR) = √(2×9.8×6.4×10⁶) ≒ 11.2 km/s</span>
+        </div>
+      </details>
+    </div>
+    <div class="sim-foot">
+      第2宇宙速度 v₂＝√(2gR) は約 11.2 km/s。第1宇宙速度の √2 倍です。これより遅いと
+      いつか地球に戻り、これ以上なら無限遠まで飛び去ります。
     </div>
   </div>
 
 </div>
 
 <!-- スマホ縦向き用：常時表示のミニ操作バー -->
+
+
 <div class="mini-bar hidden" id="miniBar">
   <button class="mb-play" id="mbPlay">▶ 再生</button>
   <button class="mb-reset" id="mbReset">■</button>
@@ -1167,31 +1885,28 @@
               { type:"sim", cat:"concept", status:"open", screen:"screen-shm",
                 title:"\u7b49\u901f\u5186\u904b\u52d5\u3068\u5358\u632f\u52d5\u30b7\u30df\u30e5\u30ec\u30fc\u30bf\u30fc",
                 desc:"\u5186\u904b\u52d5\u306e\u7e26\u6210\u5206\u304c\u5358\u632f\u52d5\u306b\u306a\u308b\u3057\u304f\u307f\u3092\u3001\u30b0\u30e9\u30d5\u3068\u4e26\u3079\u3066\u89b3\u5bdf\u3059\u308b\u3002" },
-              { type:"sim", cat:"concept", status:"open", screen:"screen-cone",
-                title:"\u5186\u9310\u632f\u308a\u5b50\uff08\u7cf8\u3067\u5410\u308b\u3057\u305f\u7269\u4f53\uff09",
-                desc:"\u7cf8\u306e\u5f35\u529b\u3068\u91cd\u529b\u306e\u5408\u529b\u304c\u5411\u5fc3\u529b\u306b\u3002\u8cea\u91cf\u3084\u89d2\u901f\u5ea6\u3067\u5f35\u529b\u304c\u3069\u3046\u5909\u308f\u308b\u304b\u3002" },
               { type:"sim", cat:"reidai", num:"\u4f8b\u984c16", status:"open", screen:"screen-reidai16",
                 title:"\u3070\u306d\u306b\u3088\u308b\u7b49\u901f\u5186\u904b\u52d5",
                 desc:"\u3070\u306d\u306e\u5f3e\u6027\u529b\u304c\u5411\u5fc3\u529b\u306b\u306a\u308b\u3057\u304f\u307f\u3002\u5468\u671f\u3068\u81ea\u7136\u9577\u3092\u6c42\u3081\u308b\u3002" },
-              { type:"sim", cat:"reidai", num:"\u4f8b\u984c17", status:"soon",
+              { type:"sim", cat:"reidai", num:"\u4f8b\u984c17", status:"open", screen:"screen-reidai17",
                 title:"\u52a0\u901f\u5ea6\u904b\u52d5\u3092\u3059\u308b\u96fb\u8eca",
                 desc:"\u975e\u6163\u6027\u7cfb\u3067\u73fe\u308c\u308b\u6163\u6027\u529b\u3092\u3001\u8eca\u5185\u306e\u8996\u70b9\u304b\u3089\u898b\u308b\u3002" },
-              { type:"sim", cat:"reidai", num:"\u4f8b\u984c18", status:"soon",
+              { type:"sim", cat:"reidai", num:"\u4f8b\u984c18", status:"open", screen:"screen-reidai18",
                 title:"\u52a0\u901f\u5ea6\u904b\u52d5\u3092\u3059\u308b\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc",
                 desc:"\u4e0a\u4e0b\u3059\u308b\u7bb1\u306e\u4e2d\u3067\u3001\u898b\u304b\u3051\u306e\u91cd\u3055\u304c\u3069\u3046\u5909\u308f\u308b\u304b\u3002" },
-              { type:"sim", cat:"reidai", num:"\u4f8b\u984c19", status:"soon",
+              { type:"sim", cat:"reidai", num:"\u4f8b\u984c19", status:"open", screen:"screen-reidai19",
                 title:"\u5186\u9310\u632f\u308a\u5b50",
                 desc:"\u659c\u3081\u306b\u5f35\u3063\u305f\u7cf8\u306e\u5f35\u529b\u3092\u3001\u5411\u5fc3\u529b\u3068\u91cd\u529b\u306b\u5206\u3051\u3066\u898b\u308b\u3002" },
-              { type:"sim", cat:"reidai", num:"\u4f8b\u984c20", status:"soon",
+              { type:"sim", cat:"reidai", num:"\u4f8b\u984c20", status:"open", screen:"screen-reidai20",
                 title:"\u925b\u76f4\u9762\u5185\u306e\u5186\u904b\u52d5",
                 desc:"\u6700\u9ad8\u70b9\u30fb\u6700\u4e0b\u70b9\u3067\u901f\u3055\u3068\u5f35\u529b\u304c\u3069\u3046\u5909\u308f\u308b\u304b\u3002" },
-              { type:"sim", cat:"reidai", num:"\u4f8b\u984c21", status:"soon",
+              { type:"sim", cat:"reidai", num:"\u4f8b\u984c21", status:"open", screen:"screen-reidai21",
                 title:"\u925b\u76f4\u3070\u306d\u632f\u308a\u5b50",
                 desc:"\u91cd\u529b\u3068\u3070\u306d\u306e\u529b\u306e\u5408\u529b\u304c\u5fa9\u5143\u529b\u306b\u306a\u308b\u3057\u304f\u307f\u3002" },
-              { type:"sim", cat:"reidai", num:"\u4f8b\u984c22", status:"soon",
+              { type:"sim", cat:"reidai", num:"\u4f8b\u984c22", status:"open", screen:"screen-reidai22",
                 title:"\u7b2c1\u5b87\u5b99\u901f\u5ea6",
                 desc:"\u5730\u8868\u3059\u308c\u3059\u308c\u3092\u56de\u308a\u7d9a\u3051\u308b\u306e\u306b\u5fc5\u8981\u306a\u901f\u3055\u3002" },
-              { type:"sim", cat:"reidai", num:"\u4f8b\u984c23", status:"soon",
+              { type:"sim", cat:"reidai", num:"\u4f8b\u984c23", status:"open", screen:"screen-reidai23",
                 title:"\u7b2c2\u5b87\u5b99\u901f\u5ea6",
                 desc:"\u5730\u7403\u306e\u5f15\u529b\u3092\u632f\u308a\u5207\u308b\u306e\u306b\u5fc5\u8981\u306a\u901f\u3055\u3002" }
             ]
@@ -1245,14 +1960,46 @@
     "e:F":{t:"\u5411\u5fc3\u529b F",b:"\u5186\u904b\u52d5\u3092\u7d9a\u3051\u308b\u305f\u3081\u306b\u3001\u5186\u306e\u4e2d\u5fc3\u5411\u304d\u306b\u5fc5\u8981\u306a\u529b\u3067\u3059\u3002\\n\u3053\u306e\u554f\u984c\u3067\u306f\u3001\u3070\u306d\u306e\u5f3e\u6027\u529b\u304c\u3061\u3087\u3046\u3069\u3053\u306e\u5411\u5fc3\u529b\u306b\u306a\u3063\u3066\u3044\u307e\u3059\u3002",rel:"F = m r \u03c9\u00b2"},
     "e:x":{t:"\u3070\u306d\u306e\u4f38\u3073 x",b:"\u3070\u306d\u304c\u81ea\u7136\u9577\u304b\u3089\u3069\u308c\u3060\u3051\u4f38\u3073\u305f\u304b\u3002\\n\u5f3e\u6027\u529b\uff1d\u5411\u5fc3\u529b\uff08kx = F\uff09\u306a\u306e\u3067\u3001x = F/k \u3067\u6c42\u3081\u3089\u308c\u307e\u3059\u3002",rel:"x = F / k"},
     "e:L0":{t:"\u3070\u306d\u306e\u81ea\u7136\u9577 L\u2080",b:"\u529b\u304c\u304b\u304b\u3063\u3066\u3044\u306a\u3044\u3068\u304d\u306e\u3070\u306d\u672c\u6765\u306e\u9577\u3055\u3067\u3059\u3002\n\u518d\u751f\u3059\u308b\u3068\u3001\u3053\u306e\u9577\u3055\u304b\u3089\u300c\u91e3\u308a\u5408\u3046\u9577\u3055 r\u300d\u307e\u3067\u3070\u306d\u304c\u4f38\u3073\u307e\u3059\u3002",rel:"x = r \u2212 L\u2080"},
-    "c:m":{t:"\u8cea\u91cf m",b:"\u540a\u308b\u3057\u305f\u7269\u4f53\u306e\u8cea\u91cf\u3067\u3059\u3002\\n\u8cea\u91cf\u304c\u5927\u304d\u3044\u307b\u3069\u91cd\u529b mg \u304c\u5927\u304d\u304f\u306a\u308a\u3001\u305d\u308c\u3092\u652f\u3048\u308b\u7cf8\u306e\u5f35\u529b\u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002",rel:"mg = m \u00d7 9.8"},
-    "c:omega":{t:"\u89d2\u901f\u5ea6 \u03c9",b:"1\u79d2\u3042\u305f\u308a\u306b\u56de\u308b\u89d2\u5ea6\uff08rad\uff09\u3002\\n\u03c9 \u3092\u5927\u304d\u304f\u3059\u308b\u3068\u3001\u5fc5\u8981\u306a\u5411\u5fc3\u529b\u304c\u5897\u3048\u3066\u7cf8\u304c\u3088\u308a\u5916\u306b\u958b\u304d\uff08\u03b8 \u304c\u5927\u304d\u304f\u306a\u308a\uff09\u3001\u5f35\u529b\u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002",rel:"S = m \u2113 \u03c9\u00b2"},
-    "c:L":{t:"\u7cf8\u306e\u9577\u3055 \u2113",b:"\u7269\u4f53\u3092\u540a\u308b\u3057\u3066\u3044\u308b\u7cf8\u306e\u9577\u3055\u3067\u3059\u3002\\n\u7cf8\u304c\u9577\u3044\u307b\u3069\u3001\u540c\u3058\u50be\u304d\u3067\u3082\u5186\u306e\u534a\u5f84 r=\u2113sin\u03b8 \u304c\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002"},
-    "c:theta":{t:"\u7cf8\u306e\u50be\u304d \u03b8",b:"\u7cf8\u304c\u925b\u76f4\u65b9\u5411\u3068\u306a\u3059\u89d2\u5ea6\u3067\u3059\u3002\\n\u89d2\u901f\u5ea6\u304c\u5927\u304d\u3044\u307b\u3069\u7cf8\u306f\u5916\u306b\u958b\u3044\u3066 \u03b8 \u304c\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002cos\u03b8 = g/(\u2113\u03c9\u00b2) \u3067\u6c7a\u307e\u308a\u307e\u3059\u3002",rel:"cos\u03b8 = g / (\u2113 \u03c9\u00b2)"},
-    "c:r":{t:"\u5186\u306e\u534a\u5f84 r",b:"\u7269\u4f53\u304c\u63cf\u304f\u6c34\u5e73\u306a\u5186\u306e\u534a\u5f84\u3067\u3059\u3002\\n\u7cf8\u306e\u9577\u3055\u3068\u50be\u304d\u304b\u3089 r = \u2113 sin\u03b8 \u3067\u6c42\u307e\u308a\u307e\u3059\u3002",rel:"r = \u2113 sin\u03b8"},
-    "c:S":{t:"\u7cf8\u306e\u5f35\u529b S",b:"\u7cf8\u304c\u7269\u4f53\u3092\u5f15\u304f\u529b\u3067\u3001\u7cf8\u306b\u6cbf\u3063\u305f\u5411\u304d\u3067\u3059\u3002\\n\u925b\u76f4\u6210\u5206 Scos\u03b8 \u304c\u91cd\u529b\u3092\u652f\u3048\u3001\u6c34\u5e73\u6210\u5206 Ssin\u03b8 \u304c\u5411\u5fc3\u529b\u306b\u306a\u308a\u307e\u3059\u3002\u307e\u3068\u3081\u308b\u3068 S = m\u2113\u03c9\u00b2\u3002",rel:"S = m \u2113 \u03c9\u00b2"},
-    "c:mg":{t:"\u91cd\u529b mg",b:"\u7269\u4f53\u306b\u306f\u305f\u3089\u304f\u4e0b\u5411\u304d\u306e\u91cd\u529b\u3067\u3059\uff08g\u22489.8 m/s\u00b2\uff09\u3002\\n\u7cf8\u306e\u5f35\u529b\u306e\u925b\u76f4\u6210\u5206\u3068\u3064\u308a\u3042\u3063\u3066\u3044\u307e\u3059\uff08S cos\u03b8 = mg\uff09\u3002",rel:"S cos\u03b8 = mg"},
-    "c:F":{t:"\u5411\u5fc3\u529b F",b:"\u5186\u904b\u52d5\u3092\u7d9a\u3051\u308b\u305f\u3081\u4e2d\u5fc3\u5411\u304d\u306b\u5fc5\u8981\u306a\u529b\u3067\u3059\u3002\\n\u3053\u306e\u904b\u52d5\u3067\u306f\u3001\u5f35\u529b\u3068\u91cd\u529b\u306e\u5408\u529b\uff08\uff1d\u5f35\u529b\u306e\u6c34\u5e73\u6210\u5206\uff09\u304c\u305d\u308c\u306b\u3042\u305f\u308a\u307e\u3059\u3002",rel:"F = m r \u03c9\u00b2 = S sin\u03b8"}
+    "r17:m":{t:"\u304a\u3082\u308a\u306e\u8cea\u91cf m",b:"\u96fb\u8eca\u5185\u306b\u3064\u308b\u3055\u308c\u305f\u304a\u3082\u308a\u306e\u8cea\u91cf\u3067\u3059\u3002\n\u8cea\u91cf\u304c\u5927\u304d\u3044\u307b\u3069\u91cd\u529b mg \u3082\u6163\u6027\u529b ma \u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u304c\u3001\u50be\u304d \u03b8 \u306f\u8cea\u91cf\u306b\u3088\u308a\u307e\u305b\u3093\u3002"},
+    "r17:a":{t:"\u96fb\u8eca\u306e\u52a0\u901f\u5ea6 a",b:"\u96fb\u8eca\u304c\u901f\u5ea6\u3092\u5909\u3048\u308b\u5272\u5408\u3067\u3059\u3002\n\u52a0\u901f\u5ea6\u304c\u5927\u304d\u3044\u307b\u3069\u6163\u6027\u529b ma \u304c\u5927\u304d\u304f\u306a\u308a\u3001\u7cf8\u306f\u3088\u308a\u5927\u304d\u304f\u50be\u304d\u307e\u3059\u3002a \u304c\u7b54\u3048\u3067\u3059\u3002",rel:"a = g tan\u03b8"},
+    "r17:theta":{t:"\u7cf8\u306e\u50be\u304d \u03b8",b:"\u7cf8\u304c\u925b\u76f4\u65b9\u5411\u3068\u306a\u3059\u89d2\u5ea6\u3067\u3059\u3002\n\u52a0\u901f\u5ea6\u304c\u5927\u304d\u3044\u307b\u3069 \u03b8 \u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002tan\u03b8 = a/g \u306e\u95a2\u4fc2\u304c\u3042\u308a\u307e\u3059\u3002",rel:"tan\u03b8 = a / g"},
+    "r17:mg":{t:"\u91cd\u529b mg",b:"\u304a\u3082\u308a\u306b\u306f\u305f\u3089\u304f\u4e0b\u5411\u304d\u306e\u91cd\u529b\u3067\u3059\uff08g\u22489.8 m/s\u00b2\uff09\u3002\n\u3069\u306e\u89b3\u6e2c\u8005\u304b\u3089\u898b\u3066\u3082\u3001\u3064\u306d\u306b\u925b\u76f4\u4e0b\u5411\u304d\u306b\u306f\u305f\u3089\u304d\u307e\u3059\u3002"},
+    "r17:S":{t:"\u7cf8\u306e\u5f35\u529b S",b:"\u7cf8\u304c\u304a\u3082\u308a\u3092\u5f15\u304f\u529b\u3067\u3001\u7cf8\u306b\u6cbf\u3063\u305f\u5411\u304d\u3067\u3059\u3002\n\u925b\u76f4\u6210\u5206 Scos\u03b8 \u304c\u91cd\u529b\u3068\u3064\u308a\u3042\u3044\u3001\u6c34\u5e73\u6210\u5206 Ssin\u03b8 \u304c\u6163\u6027\u529b\uff08\u307e\u305f\u306f\u5408\u529b\uff09\u306b\u306a\u308a\u307e\u3059\u3002",rel:"S cos\u03b8 = mg"},
+    "r17:F":{t:"\u6163\u6027\u529b / \u5408\u529b F",b:"\u96fb\u8eca\u5185\u306e\u89b3\u6e2c\u8005\u304b\u3089\u898b\u308b\u3068\u3001\u52a0\u901f\u3068\u9006\u5411\u304d\u306e\u6163\u6027\u529b ma\u3002\n\u5730\u4e0a\u306e\u89b3\u6e2c\u8005\u304b\u3089\u898b\u308b\u3068\u3001\u5f35\u529b\u3068\u91cd\u529b\u306e\u5408\u529b\uff08\u6c34\u5e73\u5411\u304d\uff09\u3002\u3069\u3061\u3089\u3082\u5927\u304d\u3055\u306f ma \u3067\u3059\u3002",rel:"F = m a"},
+    "r18:m":{t:"\u7269\u4f53\u306e\u8cea\u91cf m",b:"\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u306e\u5e8a\u306b\u7f6e\u304b\u308c\u305f\u7269\u4f53\u306e\u8cea\u91cf\u3067\u3059\u3002\n\u8cea\u91cf\u304c\u5927\u304d\u3044\u307b\u3069\u91cd\u529b\u3082\u6163\u6027\u529b\u3082\u5927\u304d\u304f\u306a\u308a\u3001\u5782\u76f4\u6297\u529b N \u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002"},
+    "r18:a":{t:"\u52a0\u901f\u5ea6\u306e\u5927\u304d\u3055 a",b:"\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u304c\u901f\u5ea6\u3092\u5909\u3048\u308b\u5272\u5408\u3067\u3059\u3002\n\u4e0a\u5411\u304d\u52a0\u901f\u306a\u3089 N=m(g+a)\u3001\u4e0b\u5411\u304d\u52a0\u901f\u306a\u3089 N=m(g\u2212a) \u3068\u306a\u308a\u307e\u3059\u3002"},
+    "r18:mg":{t:"\u91cd\u529b mg",b:"\u7269\u4f53\u306b\u306f\u305f\u3089\u304f\u4e0b\u5411\u304d\u306e\u91cd\u529b\u3067\u3059\uff08g\u22489.8 m/s\u00b2\uff09\u3002\n\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u306e\u904b\u52d5\u306b\u95a2\u4fc2\u306a\u304f\u3001\u3064\u306d\u306b\u4e00\u5b9a\u3067\u3059\u3002"},
+    "r18:inertia":{t:"\u6163\u6027\u529b ma",b:"\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u5185\u306e\u89b3\u6e2c\u8005\u304b\u3089\u898b\u305f\u3068\u304d\u306b\u73fe\u308c\u308b\u898b\u304b\u3051\u306e\u529b\u3067\u3059\u3002\n\u5411\u304d\u306f\u52a0\u901f\u5ea6\u3068\u9006\u5411\u304d\u3002\u4e0a\u5411\u304d\u52a0\u901f\u306a\u3089\u4e0b\u5411\u304d\u3001\u4e0b\u5411\u304d\u52a0\u901f\u306a\u3089\u4e0a\u5411\u304d\u306b\u306f\u305f\u3089\u304d\u307e\u3059\u3002",rel:"F' = -m a"},
+    "r18:N":{t:"\u5782\u76f4\u6297\u529b N",b:"\u5e8a\u304c\u7269\u4f53\u3092\u62bc\u3057\u8fd4\u3059\u529b\uff08\u4e0a\u5411\u304d\uff09\u3067\u3059\u3002\n\u3053\u308c\u304c\u4f53\u91cd\u8a08\u306e\u793a\u3059\u5024\u306e\u3082\u3068\u306b\u306a\u308a\u307e\u3059\u3002\u4e0a\u5411\u304d\u52a0\u901f\u3067\u5927\u304d\u304f\u3001\u4e0b\u5411\u304d\u52a0\u901f\u3067\u5c0f\u3055\u304f\u306a\u308a\u307e\u3059\u3002",rel:"N = m(g \u00b1 a)"},
+    "r18:scale":{t:"\u4f53\u91cd\u8a08\u306e\u8868\u793a",b:"\u5782\u76f4\u6297\u529b N \u3092\u91cd\u529b\u52a0\u901f\u5ea6 g \u3067\u5272\u3063\u305f\u5024\u3067\u3001\u4f53\u91cd\u8a08\u304c\u793a\u3059\u300c\u898b\u304b\u3051\u306e\u8cea\u91cf\u300d\u3067\u3059\u3002\n\u4e0a\u5411\u304d\u52a0\u901f\u306e\u3068\u304d\u5b9f\u969b\u3088\u308a\u91cd\u304f\u3001\u4e0b\u5411\u304d\u52a0\u901f\u306e\u3068\u304d\u8efd\u304f\u8868\u793a\u3055\u308c\u307e\u3059\u3002",rel:"\u8868\u793a = N / g"},
+    "r19:m":{t:"\u304a\u3082\u308a\u306e\u8cea\u91cf m",b:"\u5186\u9310\u632f\u308a\u5b50\u306e\u304a\u3082\u308a\u306e\u8cea\u91cf\u3067\u3059\u3002\n\u8cea\u91cf\u306f\u5f35\u529b\u306b\u306f\u5f71\u97ff\u3057\u307e\u3059\u304c\u3001\u5468\u671f T \u306b\u306f\u5f71\u97ff\u3057\u307e\u305b\u3093\u3002"},
+    "r19:L":{t:"\u7cf8\u306e\u9577\u3055 L",b:"\u304a\u3082\u308a\u3092\u3064\u308b\u3059\u7cf8\u306e\u9577\u3055\u3067\u3059\u3002\n\u7cf8\u304c\u9577\u3044\u307b\u3069\u5468\u671f T \u3082\u9577\u304f\u306a\u308a\u307e\u3059\uff08T \u306f \u221aL \u306b\u6bd4\u4f8b\uff09\u3002",rel:"T = 2\u03c0\u221a(L cos\u03b8 / g)"},
+    "r19:theta":{t:"\u7cf8\u306e\u50be\u304d \u03b8",b:"\u7cf8\u304c\u925b\u76f4\u65b9\u5411\u3068\u306a\u3059\u89d2\u5ea6\u3067\u3059\u3002\n\u03b8 \u304c\u5927\u304d\u3044\u307b\u3069 cos\u03b8 \u304c\u5c0f\u3055\u304f\u306a\u308a\u3001\u5468\u671f T \u306f\u77ed\u304f\u306a\u308a\u307e\u3059\u3002",rel:"r = L sin\u03b8"},
+    "r19:r":{t:"\u5186\u306e\u534a\u5f84 r",b:"\u304a\u3082\u308a\u304c\u63cf\u304f\u6c34\u5e73\u306a\u5186\u306e\u534a\u5f84\u3067\u3059\u3002\n\u7cf8\u306e\u9577\u3055\u3068\u50be\u304d\u304b\u3089 r = L sin\u03b8 \u3067\u6c42\u307e\u308a\u307e\u3059\u3002",rel:"r = L sin\u03b8"},
+    "r19:S":{t:"\u7cf8\u306e\u5f35\u529b S",b:"\u7cf8\u304c\u304a\u3082\u308a\u3092\u5f15\u304f\u529b\u3067\u3001\u7cf8\u306b\u6cbf\u3063\u305f\u5411\u304d\u3067\u3059\u3002\n\u925b\u76f4\u6210\u5206 Scos\u03b8 \u304c\u91cd\u529b\u3068\u3064\u308a\u3042\u3044\u307e\u3059\uff08S = mg/cos\u03b8\uff09\u3002",rel:"S cos\u03b8 = mg"},
+    "r19:T":{t:"\u5468\u671f T",b:"\u304a\u3082\u308a\u304c\u5186\u30921\u5468\u3059\u308b\u306e\u306b\u304b\u304b\u308b\u6642\u9593\u3067\u3059\u3002\n\u7cf8\u306e\u9577\u3055 L \u3068\u50be\u304d \u03b8 \u3060\u3051\u3067\u6c7a\u307e\u308a\u3001\u8cea\u91cf\u306b\u306f\u3088\u308a\u307e\u305b\u3093\u3002\u3053\u308c\u304c\u7b54\u3048\u3067\u3059\u3002",rel:"T = 2\u03c0\u221a(L cos\u03b8 / g)"},
+    "r20:h":{t:"\u51fa\u767a\u306e\u9ad8\u3055 h",b:"\u53f0\u8eca\u304c\u9759\u304b\u306b\u51fa\u767a\u3059\u308b\u4f4d\u7f6e\u306e\u9ad8\u3055\u3067\u3059\u3002\nh \u304c\u5927\u304d\u3044\u307b\u3069\u6700\u9ad8\u70b9\u3067\u306e\u901f\u3055\u304c\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002\u4e00\u5468\u306b\u306f h \u2267 5r/2 \u304c\u5fc5\u8981\u3067\u3059\u3002",rel:"h \u2267 5r/2"},
+    "r20:r":{t:"\u5186\u306e\u534a\u5f84 r",b:"\u5186\u5f62\u30ec\u30fc\u30eb\u306e\u534a\u5f84\u3067\u3059\u3002\n\u6700\u9ad8\u70b9\u306e\u9ad8\u3055\u306f 2r\u3002\u534a\u5f84\u304c\u5927\u304d\u3044\u307b\u3069\u3001\u4e00\u5468\u306b\u5fc5\u8981\u306a\u9ad8\u3055 5r/2 \u3082\u5927\u304d\u304f\u306a\u308a\u307e\u3059\u3002"},
+    "r20:vp":{t:"\u6700\u9ad8\u70b9\u306e\u901f\u3055 v",b:"\u5186\u306e\u6700\u9ad8\u70b9P\u3092\u901a\u904e\u3059\u308b\u3068\u304d\u306e\u901f\u3055\u3067\u3059\u3002\n\u30a8\u30cd\u30eb\u30ae\u30fc\u4fdd\u5b58\u304b\u3089 v\u00b2=2g(h\u22122r) \u3067\u6c42\u307e\u308a\u307e\u3059\u3002",rel:"v\u00b2 = 2g(h\u22122r)"},
+    "r20:N":{t:"\u6700\u9ad8\u70b9\u306e\u5782\u76f4\u6297\u529b N",b:"\u6700\u9ad8\u70b9\u3067\u30ec\u30fc\u30eb\u304c\u53f0\u8eca\u3092\u62bc\u3059\u529b\u3067\u3059\u3002\nN=mg(2h/r\u22125)\u3002\u3053\u308c\u304c 0 \u4ee5\u4e0a\u306a\u3089\u4e00\u5468\u3067\u304d\u307e\u3059\u3002",rel:"N = mg(2h/r \u2212 5)"},
+    "r20:hmin":{t:"\u4e00\u5468\u3067\u304d\u308b\u6700\u5c0f\u306e h",b:"\u53f0\u8eca\u304c\u30ec\u30fc\u30eb\u304b\u3089\u96e2\u308c\u305a\u306b\u4e00\u5468\u3059\u308b\u306e\u306b\u5fc5\u8981\u306a\u3001\u6700\u5c0f\u306e\u51fa\u767a\u306e\u9ad8\u3055\u3067\u3059\u3002\n\u6700\u9ad8\u70b9\u3067 N\u22670 \u3068\u306a\u308b\u6761\u4ef6\u304b\u3089 h\u22675r/2 \u304c\u5c0e\u304b\u308c\u307e\u3059\u3002",rel:"h \u2267 5r/2"},
+    "r20:ok":{t:"\u5224\u5b9a",b:"\u3044\u307e\u306e\u9ad8\u3055 h \u3067\u4e00\u5468\u3067\u304d\u308b\u304b\u3069\u3046\u304b\u3067\u3059\u3002\nh \u304c 5r/2 \u4ee5\u4e0a\u306a\u3089\u300c\u4e00\u5468\u3067\u304d\u308b\u300d\u3001\u8db3\u308a\u306a\u3044\u3068\u6700\u9ad8\u70b9\u306e\u624b\u524d\u3067\u30ec\u30fc\u30eb\u304b\u3089\u96e2\u308c\u307e\u3059\u3002"},
+    "r21:k":{t:"\u3070\u306d\u5b9a\u6570 k",b:"\u3070\u306d\u306e\u304b\u305f\u3055\u3092\u8868\u3059\u5024\u3067\u3059\u3002\nk \u304c\u5927\u304d\u3044\u307b\u3069\u5fa9\u5143\u529b\u304c\u5f37\u304f\u3001\u5468\u671f T=2\u03c0\u221a(m/k) \u306f\u77ed\u304f\u306a\u308a\u307e\u3059\u3002",rel:"T = 2\u03c0\u221a(m/k)"},
+    "r21:m":{t:"\u304a\u3082\u308a\u306e\u8cea\u91cf m",b:"\u3070\u306d\u306b\u3064\u308b\u3059\u304a\u3082\u308a\u306e\u8cea\u91cf\u3067\u3059\u3002\n\u8cea\u91cf\u304c\u5927\u304d\u3044\u307b\u3069\u5468\u671f T \u306f\u9577\u304f\u306a\u308a\u307e\u3059\uff08T \u306f \u221am \u306b\u6bd4\u4f8b\uff09\u3002",rel:"T = 2\u03c0\u221a(m/k)"},
+    "r21:A":{t:"\u5f15\u304d\u4e0b\u3052 A\uff08\u632f\u5e45\uff09",b:"\u3064\u308a\u3042\u3044\u306e\u4f4d\u7f6e\u304b\u3089\u304a\u3082\u308a\u3092\u5f15\u304d\u4e0b\u3052\u305f\u8ddd\u96e2\u3067\u3001\u3053\u308c\u304c\u305d\u306e\u307e\u307e\u632f\u5e45\u306b\u306a\u308a\u307e\u3059\u3002\n\u632f\u5e45\u306f\u5468\u671f\u306b\u306f\u5f71\u97ff\u3057\u307e\u305b\u3093\u304c\u3001\u901f\u3055\u306e\u6700\u5927\u5024 v=A\u03c9 \u306b\u5f71\u97ff\u3057\u307e\u3059\u3002"},
+    "r21:T":{t:"\u5468\u671f T",b:"\u304a\u3082\u308a\u304c1\u5f80\u5fa9\u3059\u308b\u306e\u306b\u304b\u304b\u308b\u6642\u9593\u3067\u3059\u3002\n\u3070\u306d\u632f\u308a\u5b50\u3067\u306f T=2\u03c0\u221a(m/k)\u3002\u91cd\u529b\u304c\u3042\u3063\u3066\u3082\u5468\u671f\u306f\u5909\u308f\u308a\u307e\u305b\u3093\u3002",rel:"T = 2\u03c0\u221a(m/k)"},
+    "r21:vmax":{t:"\u901f\u3055\u306e\u6700\u5927\u5024",b:"\u304a\u3082\u308a\u306e\u901f\u3055\u304c\u6700\u3082\u5927\u304d\u304f\u306a\u308b\u5024\u3067\u3001\u632f\u52d5\u306e\u4e2d\u5fc3\u3092\u901a\u904e\u3059\u308b\u3068\u304d\u306e\u901f\u3055\u3067\u3059\u3002\nv=A\u03c9\u3001\u03c9=2\u03c0/T \u3067\u6c42\u307e\u308a\u307e\u3059\u3002",rel:"v = A\u03c9"},
+    "r21:center":{t:"\u632f\u52d5\u306e\u4e2d\u5fc3",b:"\u304a\u3082\u308a\u304c\u53d7\u3051\u308b\u529b\u306e\u5408\u529b\uff08\u5fa9\u5143\u529b\uff09\u304c 0 \u306b\u306a\u308b\u4f4d\u7f6e\u3067\u3059\u3002\n\u925b\u76f4\u3070\u306d\u632f\u308a\u5b50\u3067\u306f\u3001\u91cd\u529b\u3068\u5f3e\u6027\u529b\u304c\u3064\u308a\u3042\u3046\u300c\u3064\u308a\u3042\u3044\u306e\u4f4d\u7f6e\u300d\u304c\u4e2d\u5fc3\u306b\u306a\u308a\u307e\u3059\u3002"},
+    "r22:v":{t:"\u6253\u3061\u51fa\u3059\u901f\u3055 v",b:"\u4eba\u5de5\u885b\u661f\u3092\u5730\u8868\u3059\u308c\u3059\u308c\u3067\u6a2a\u5411\u304d\u306b\u6253\u3061\u51fa\u3059\u901f\u3055\u3067\u3059\u3002\n\u7b2c1\u5b87\u5b99\u901f\u5ea6\u3088\u308a\u304a\u305d\u3044\u3068\u843d\u4e0b\u3001\u3061\u3087\u3046\u3069\u306a\u3089\u5186\u8ecc\u9053\u3001\u901f\u3044\u3068\u6955\u5186\u8ecc\u9053\u306b\u306a\u308a\u307e\u3059\u3002"},
+    "r22:R":{t:"\u5730\u7403\u306e\u534a\u5f84 R",b:"\u5730\u7403\u306e\u534a\u5f84\u3067\u3059\uff08\u7d04 6.4\u00d710\u2076 m\uff09\u3002\n\u5730\u8868\u8fd1\u304f\u3092\u56de\u308b\u885b\u661f\u306e\u5186\u8ecc\u9053\u306e\u534a\u5f84\u306f\u3001\u307b\u307c\u5730\u7403\u306e\u534a\u5f84\u306b\u7b49\u3057\u3044\u3068\u307f\u306a\u305b\u307e\u3059\u3002"},
+    "r22:g":{t:"\u91cd\u529b\u52a0\u901f\u5ea6 g",b:"\u5730\u8868\u4ed8\u8fd1\u306e\u91cd\u529b\u52a0\u901f\u5ea6\uff08\u7d04 9.8 m/s\u00b2\uff09\u3067\u3059\u3002\nGM=gR\u00b2 \u306e\u95a2\u4fc2\u3092\u4f7f\u3046\u3068\u3001\u7b2c1\u5b87\u5b99\u901f\u5ea6\u3092 g \u3068 R \u3060\u3051\u3067\u8868\u305b\u307e\u3059\u3002",rel:"GM = gR\u00b2"},
+    "r22:v1":{t:"\u7b2c1\u5b87\u5b99\u901f\u5ea6",b:"\u5730\u8868\u3059\u308c\u3059\u308c\u3092\u5186\u8ecc\u9053\u3067\u56de\u308a\u7d9a\u3051\u308b\u306e\u306b\u5fc5\u8981\u306a\u901f\u3055\u3067\u3059\u3002\nv\u2081=\u221a(gR)\u22527.9 km/s\u3002\u4e07\u6709\u5f15\u529b\u304c\u3061\u3087\u3046\u3069\u5411\u5fc3\u529b\u306b\u306a\u308a\u307e\u3059\u3002",rel:"v\u2081 = \u221a(gR)"},
+    "r22:state":{t:"\u3044\u307e\u306e\u901f\u3055\u3067\u306f",b:"\u6253\u3061\u51fa\u3057\u305f\u901f\u3055\u3067\u885b\u661f\u304c\u3069\u3046\u306a\u308b\u304b\u3067\u3059\u3002\nv\u2081\u3088\u308a\u9045\u3044\u3068\u843d\u4e0b\u3001\u3061\u3087\u3046\u3069\u306a\u3089\u5186\u8ecc\u9053\u3001\u901f\u3044\u3068\u6955\u5186\u8ecc\u9053\u3092\u63cf\u304d\u307e\u3059\u3002"},
+    "r23:v":{t:"\u6253\u3061\u4e0a\u3052\u308b\u901f\u3055 v",b:"\u7269\u4f53\u3092\u5730\u8868\u304b\u3089\u6253\u3061\u4e0a\u3052\u308b\u521d\u901f\u5ea6\u3067\u3059\u3002\n\u7b2c2\u5b87\u5b99\u901f\u5ea6\u3088\u308a\u9045\u3044\u3068\u3044\u3064\u304b\u5730\u7403\u306b\u623b\u308a\u3001\u3053\u308c\u4ee5\u4e0a\u3060\u3068\u7121\u9650\u9060\u307e\u3067\u98db\u3073\u53bb\u308a\u307e\u3059\u3002"},
+    "r23:R":{t:"\u5730\u7403\u306e\u534a\u5f84 R",b:"\u5730\u7403\u306e\u534a\u5f84\u3067\u3059\uff08\u7d04 6.4\u00d710\u2076 m\uff09\u3002\n\u4e07\u6709\u5f15\u529b\u306b\u3088\u308b\u4f4d\u7f6e\u30a8\u30cd\u30eb\u30ae\u30fc\u306e\u8a08\u7b97\u306b\u4f7f\u3044\u307e\u3059\u3002"},
+    "r23:g":{t:"\u91cd\u529b\u52a0\u901f\u5ea6 g",b:"\u5730\u8868\u4ed8\u8fd1\u306e\u91cd\u529b\u52a0\u901f\u5ea6\uff08\u7d04 9.8 m/s\u00b2\uff09\u3067\u3059\u3002\nGM=gR\u00b2 \u306e\u95a2\u4fc2\u3092\u4f7f\u3046\u3068\u3001\u7b2c2\u5b87\u5b99\u901f\u5ea6\u3092 g \u3068 R \u3060\u3051\u3067\u8868\u305b\u307e\u3059\u3002",rel:"GM = gR\u00b2"},
+    "r23:v2":{t:"\u7b2c2\u5b87\u5b99\u901f\u5ea6",b:"\u5730\u7403\u306e\u5f15\u529b\u3092\u632f\u308a\u5207\u3063\u3066\u98db\u3073\u53bb\u308b\u306e\u306b\u5fc5\u8981\u306a\u3001\u6700\u5c0f\u306e\u521d\u901f\u5ea6\u3067\u3059\u3002\nv\u2082=\u221a(2gR)\u225211.2 km/s\u3002\u7b2c1\u5b87\u5b99\u901f\u5ea6\u306e \u221a2 \u500d\u3067\u3059\u3002",rel:"v\u2082 = \u221a(2gR)"},
+    "r23:state":{t:"\u3044\u307e\u306e\u901f\u3055\u3067\u306f",b:"\u6253\u3061\u4e0a\u3052\u305f\u901f\u3055\u3067\u7269\u4f53\u304c\u3069\u3046\u306a\u308b\u304b\u3067\u3059\u3002\nv\u2082\u3088\u308a\u9045\u3044\u3068\u3044\u3064\u304b\u5730\u7403\u306b\u623b\u308a\u3001\u3053\u308c\u4ee5\u4e0a\u306a\u3089\u7121\u9650\u9060\u307e\u3067\u98db\u3073\u53bb\u308a\u307e\u3059\u3002"}
   };
 
   /* =========================================================
@@ -1312,7 +2059,13 @@
     else if(screenId==='screen-shm') activeSim=SIM_SHM;
     else if(screenId==='screen-tangent') activeSim=SIM_TANGENT;
     else if(screenId==='screen-reidai16') activeSim=SIM_E16;
-    else if(screenId==='screen-cone') activeSim=SIM_CONE;
+    else if(screenId==='screen-reidai17') activeSim=SIM_E17;
+    else if(screenId==='screen-reidai18') activeSim=SIM_E18;
+    else if(screenId==='screen-reidai19') activeSim=SIM_E19;
+    else if(screenId==='screen-reidai20') activeSim=SIM_E20;
+    else if(screenId==='screen-reidai21') activeSim=SIM_E21;
+    else if(screenId==='screen-reidai22') activeSim=SIM_E22;
+    else if(screenId==='screen-reidai23') activeSim=SIM_E23;
     LAYOUT.onOpenSim();
     if(activeSim){ activeSim.start(); }
     /* CSS\u30ec\u30a4\u30a2\u30a6\u30c8\u78ba\u5b9a\u5f8c\u306b\u3082\u3046\u4e00\u5ea6\u30b5\u30a4\u30ba\u3092\u5408\u308f\u305b\u308b */
@@ -2953,46 +3706,410 @@
   })();
 
   /* =========================================================
-     \u30b7\u30df\u30e5\u30ec\u30fc\u30b7\u30e7\u30f3\uff1a\u5186\u9310\u632f\u308a\u5b50
+     \u4f8b\u984c17\uff1a\u52a0\u901f\u5ea6\u904b\u52d5\u3092\u3059\u308b\u96fb\u8eca
      ========================================================= */
-  var SIM_CONE=(function(){
-    var cv=$('cvCone'), C=makeCanvas(cv), ctx=C.ctx;
+  var SIM_E17=(function(){
+    var cv=$('cvE17'), C=makeCanvas(cv), ctx=C.ctx;
     var G=9.8;
     var L={};
     function layout(){
       var w=C.width()||680;
-      if(w<560) L={ LW:440, LH:440, PX:220, PY:70, SCALE:210 };
-      else      L={ LW:680, LH:440, PX:340, PY:74, SCALE:280 };
+      if(w<560) L={ LW:460, LH:400 };
+      else      L={ LW:680, LH:400 };
     }
     function fit(){ layout(); C.fit(L); }
 
-    var st={ m:0.20, omega:4.0, ell:0.80,
-             angle:0, playing:false, speed:0.5,
-             showForce:true, showSplit:false };
-    var LIM={ M:[0.10,0.50], W:[3.5,8.0], L:[0.50,1.20] };
-    var inpM=$('cnInpM'), inpW=$('cnInpW'), inpL=$('cnInpL');
+    var BOOK={ m:1.0, a:4.9 };
+    var st={ m:1.0, a:4.9, view:'in',
+             phase:'idle', tiltT:0, bgOff:0, vel:0,
+             playing:false, speed:0.5 };
+    var LIM={ M:[0.5,3.0], A:[0.98,9.8] };
+    var inpM=$('e17InpM'), inpA=$('e17InpA');
 
-    /* \u7269\u7406\u91cf\u3002cos\u03b8 = g/(\u2113\u03c9\u00b2)\u3002\u2113\u03c9\u00b2<g \u306a\u3089\u5186\u9310\u632f\u308a\u5b50\u304c\u6210\u7acb\u3057\u306a\u3044\u2192\u03b8\u22480\u6271\u3044 */
-    function cosTheta(){
-      var c=G/(st.ell*st.omega*st.omega);
-      return clamp(c,0.04,0.999);
-    }
-    function theta(){ return Math.acos(cosTheta()); }   /* rad */
-    function radius(){ return st.ell*Math.sin(theta()); }
-    function tension(){ return st.m*st.ell*st.omega*st.omega; }
+    function theta(){ return Math.atan(st.a/G); }   /* tan\u03b8 = a/g */
     function weight(){ return st.m*G; }
-    function centripetal(){ return st.m*radius()*st.omega*st.omega; }
+    function inertiaF(){ return st.m*st.a; }
+    function tension(){ return st.m*G/Math.cos(theta()); }
 
     function syncInputs(){
-      if(document.activeElement!==inpM) inpM.value=st.m.toFixed(2);
-      if(document.activeElement!==inpW) inpW.value=st.omega.toFixed(1);
-      if(document.activeElement!==inpL) inpL.value=st.ell.toFixed(2);
+      if(document.activeElement!==inpM) inpM.value=st.m.toFixed(1);
+      if(document.activeElement!==inpA) inpA.value=st.a.toFixed(2);
     }
     function readInputs(){
-      var m=parseFloat(inpM.value), w=parseFloat(inpW.value), l=parseFloat(inpL.value);
+      var m=parseFloat(inpM.value), a=parseFloat(inpA.value);
       if(!isNaN(m)) st.m=clamp(m,LIM.M[0],LIM.M[1]);
-      if(!isNaN(w)) st.omega=clamp(w,LIM.W[0],LIM.W[1]);
-      if(!isNaN(l)) st.ell=clamp(l,LIM.L[0],LIM.L[1]);
+      if(!isNaN(a)) st.a=clamp(a,LIM.A[0],LIM.A[1]);
+    }
+
+    function arrow(x1,y1,x2,y2,color,w){
+      ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=w;
+      ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      var ang=Math.atan2(y2-y1,x2-x1), hs=8+w;
+      ctx.beginPath();
+      ctx.moveTo(x2,y2);
+      ctx.lineTo(x2-hs*Math.cos(ang-0.42),y2-hs*Math.sin(ang-0.42));
+      ctx.lineTo(x2-hs*Math.cos(ang+0.42),y2-hs*Math.sin(ang+0.42));
+      ctx.closePath(); ctx.fill();
+      ctx.lineCap='butt';
+    }
+
+    /* \u4eba\u306e\u30a4\u30e9\u30b9\u30c8\uff08\u68d2\u4eba\u9593\uff09\u3002footX,footY=\u8db3\u5143\u306e\u4f4d\u7f6e\u3002faceDir=\u5411\u304d(1\u53f3/-1\u5de6) */
+    /* \u68d2\u4eba\u9593\uff08\u5168\u4f8b\u984c\u3067\u7d71\u4e00\u30c7\u30b6\u30a4\u30f3\uff09 cx,cy=\u8db3\u5143\u3001h=\u9ad8\u3055 */
+    function stickFigure(cx,cy,h,col,face){
+      var head=h*0.22;
+      var headY=cy-h+head;
+      ctx.strokeStyle=col; ctx.fillStyle=col;
+      ctx.lineWidth=2.4; ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.beginPath(); ctx.arc(cx,headY,head,0,Math.PI*2); ctx.stroke();
+      var neck=headY+head, hip=cy-h*0.38;
+      ctx.beginPath(); ctx.moveTo(cx,neck); ctx.lineTo(cx,hip); ctx.stroke();
+      var sh=neck+h*0.12;
+      ctx.beginPath();
+      ctx.moveTo(cx,sh); ctx.lineTo(cx-h*0.20,sh+h*0.16);
+      ctx.moveTo(cx,sh); ctx.lineTo(cx+h*0.20,sh+h*0.16);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx,hip); ctx.lineTo(cx-h*0.16,cy);
+      ctx.moveTo(cx,hip); ctx.lineTo(cx+h*0.16,cy);
+      ctx.stroke();
+      ctx.fillStyle=col;
+      ctx.beginPath();
+      ctx.arc(cx+face*head*0.4,headY-head*0.1,1.8,0,Math.PI*2);
+      ctx.fill();
+      ctx.lineCap='butt'; ctx.lineJoin='miter';
+    }
+    function observerTag(cx,cy,text,col){
+      ctx.font='700 10.5px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      var w=ctx.measureText(text).width+14;
+      ctx.fillStyle='#fff';
+      ctx.fillRect(cx-w/2,cy-9,w,18);
+      ctx.strokeStyle=col; ctx.lineWidth=1.3;
+      ctx.strokeRect(cx-w/2,cy-9,w,18);
+      ctx.fillStyle=col;
+      ctx.fillText(text,cx,cy+1);
+    }
+
+    function draw(){
+      var LW=L.LW,LH=L.LH;
+      ctx.clearRect(0,0,LW,LH);
+
+      /* ===== \u6d41\u308c\u308b\u80cc\u666f\uff08\u96fb\u8eca\u304c\u52d5\u3044\u3066\u898b\u3048\u308b\u3088\u3046\u306b\uff09 ===== */
+      /* \u5730\u9762 */
+      var groundY=LH-46;
+      ctx.fillStyle='#ece5d0';
+      ctx.fillRect(0,groundY,LW,LH-groundY);
+      /* \u80cc\u666f\u306e\u5efa\u7269\u30fb\u6728\u3092 bgOff \u3076\u3093\u305a\u3089\u3057\u3066\u63cf\u304f\uff08\u53f3\u304b\u3089\u5de6\u3078\u6d41\u308c\u308b\uff09 */
+      var pattern=120;
+      var base=-(st.bgOff % pattern);
+      for(var bx0=base-pattern;bx0<LW+pattern;bx0+=pattern){
+        /* \u6728 */
+        ctx.fillStyle='#cdbf97';
+        ctx.beginPath();
+        ctx.arc(bx0+30,groundY-30,16,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#9a8f6e';
+        ctx.fillRect(bx0+27,groundY-30,6,30);
+        /* \u5efa\u7269 */
+        ctx.fillStyle='#d8cfb4';
+        ctx.fillRect(bx0+70,groundY-58,40,58);
+        ctx.strokeStyle='#b3a986'; ctx.lineWidth=1;
+        ctx.strokeRect(bx0+70,groundY-58,40,58);
+        ctx.strokeRect(bx0+78,groundY-48,10,10);
+        ctx.strokeRect(bx0+94,groundY-48,10,10);
+      }
+      /* \u7dda\u8def */
+      ctx.strokeStyle='#8a8167'; ctx.lineWidth=3;
+      ctx.beginPath();
+      ctx.moveTo(0,groundY+8); ctx.lineTo(LW,groundY+8);
+      ctx.stroke();
+      var tieBase=-(st.bgOff % 34);
+      for(var tx=tieBase;tx<LW;tx+=34){
+        ctx.beginPath();
+        ctx.moveTo(tx,groundY+4); ctx.lineTo(tx,groundY+14);
+        ctx.stroke();
+      }
+
+      /* ===== \u96fb\u8eca\u306e\u7bb1 ===== */
+      var carX=88, carY=70, carW=LW-176, carH=groundY-70-20;
+      ctx.fillStyle='rgba(246,242,230,.93)';
+      ctx.fillRect(carX,carY,carW,carH);
+      ctx.strokeStyle='#23221d'; ctx.lineWidth=2.4;
+      ctx.strokeRect(carX,carY,carW,carH);
+      /* \u8eca\u8f2a */
+      ctx.fillStyle='#23221d';
+      ctx.beginPath(); ctx.arc(carX+54,carY+carH+10,13,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(carX+carW-54,carY+carH+10,13,0,Math.PI*2); ctx.fill();
+      /* \u7a93 */
+      ctx.strokeStyle='#b3a986'; ctx.lineWidth=1.4;
+      ctx.strokeRect(carX+16,carY+16,40,34);
+
+      /* \u9032\u884c\u65b9\u5411\u30fb\u72b6\u614b\u306e\u8868\u793a */
+      ctx.fillStyle='#15807a';
+      ctx.font='700 12px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      var moveLabel=(st.phase==='idle')?
+        '\u96fb\u8eca\uff1a\u7b49\u901f\u3067\u8d70\u884c\u4e2d \u2192':
+        '\u96fb\u8eca\uff1a\u52a0\u901f\u4e2d \u2192\u2192';
+      ctx.fillText(moveLabel,carX+4,carY-12);
+
+      /* \u7cf8\u306e\u56fa\u5b9a\u70b9\uff08\u5929\u4e95\u4e2d\u592e\uff09 */
+      var px=carX+carW/2, py=carY+22;
+      ctx.fillStyle='#23221d';
+      ctx.fillRect(px-22,carY+12,44,7);
+      ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fill();
+
+      /* \u50be\u304d\u89d2\uff08\u518d\u751f\u3067 0 \u2192 \u03b8\uff09 */
+      var th=theta();
+      var curTh;
+      if(st.phase==='idle') curTh=0;
+      else if(st.phase==='tilting'){
+        var p=st.tiltT; if(p>1)p=1;
+        curTh=th*(1-Math.pow(1-p,3));
+      }else curTh=th;
+      /* \u7cf8\u306f\u5f8c\u65b9\uff08\u5de6\uff09\u306b\u50be\u304f */
+      var Lpx=130;
+      var bx=px - Math.sin(curTh)*Lpx;
+      var by=py + Math.cos(curTh)*Lpx;
+
+      /* \u925b\u76f4\u306e\u70b9\u7dda */
+      ctx.strokeStyle='#cabf9f'; ctx.lineWidth=1;
+      ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px,py+Lpx+8); ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* \u50be\u304d\u89d2\u306e\u5f27 */
+      if(curTh>0.02){
+        ctx.strokeStyle='#15807a'; ctx.lineWidth=1.6;
+        ctx.beginPath();
+        ctx.arc(px,py,26,Math.PI/2,Math.PI/2+curTh,false);
+        ctx.stroke();
+        ctx.fillStyle='#15807a';
+        ctx.font='700 12px "Zen Kaku Gothic New",sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText('\u03b8',px-18,py+32);
+      }
+
+      /* \u7cf8 */
+      ctx.strokeStyle='#5c5849'; ctx.lineWidth=2.4; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(bx,by); ctx.stroke();
+      ctx.lineCap='butt';
+
+      /* ===== \u89b3\u6e2c\u8005\u306e\u4eba\u30a4\u30e9\u30b9\u30c8 ===== */
+      /* ===== \u89b3\u6e2c\u8005\u306e\u4eba\u30a4\u30e9\u30b9\u30c8\uff08\u7d71\u4e00stickFigure\uff09 ===== */
+      var inActive=(st.view==='in');
+      /* \u96fb\u8eca\u5185\u306e\u4eba\uff08\u8eca\u5185\u306e\u53f3\u5bc4\u308a\uff09 */
+      stickFigure(carX+carW-48, carY+carH-6, 56,
+        inActive?'#2f6db0':'#bdb49a', 1);
+      if(inActive) observerTag(carX+carW-48, carY+carH-72,
+        '\u8eca\u5185\u306e\u89b3\u6e2c\u8005','#2f6db0');
+      /* \u5730\u4e0a\u306e\u4eba\uff08\u96fb\u8eca\u306e\u5916\u3001\u53f3\u4e0b\u306e\u5730\u9762\uff09 */
+      stickFigure(LW-42, groundY+4, 56,
+        inActive?'#bdb49a':'#d8541f', -1);
+      if(!inActive) observerTag(LW-42, groundY-62,
+        '\u5730\u4e0a\u306e\u89b3\u6e2c\u8005','#d8541f');
+
+      /* ===== \u529b\u306e\u30d9\u30af\u30c8\u30eb\uff08\u518d\u751f\u3057\u305f\u77ac\u9593\u304b\u3089\u5e38\u6642\u8868\u793a\uff09 ===== */
+      var showForce=(st.phase!=='idle');
+      if(showForce){
+        var Fs=9;
+        /* \u91cd\u529b mg\uff08\u4e0b\u5411\u304d\uff09 */
+        var mgLen=weight()*Fs;
+        arrow(bx,by,bx,by+mgLen,'#2f6db0',3);
+        ctx.fillStyle='#2f6db0';
+        ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+        ctx.textAlign='left'; ctx.textBaseline='middle';
+        ctx.fillText('mg',bx+6,by+mgLen);
+
+        /* \u5f35\u529b S\uff08\u7cf8\u306b\u6cbf\u3063\u3066\u56fa\u5b9a\u70b9\u5411\u304d\uff09 */
+        var sdx=px-bx, sdy=py-by, sm=Math.hypot(sdx,sdy)||1;
+        var sLen=tension()*Fs;
+        arrow(bx,by,bx+sdx/sm*sLen,by+sdy/sm*sLen,'#15807a',3);
+        ctx.fillStyle='#15807a';
+        ctx.fillText('S',bx+sdx/sm*sLen-14,by+sdy/sm*sLen-4);
+
+        if(st.view==='in'){
+          /* \u96fb\u8eca\u5185\uff1a\u6163\u6027\u529b ma\uff08\u5f8c\u308d\u5411\u304d\uff1d\u5de6\uff09 */
+          var fLen=inertiaF()*Fs;
+          arrow(bx,by,bx-fLen,by,'#bf3b2b',3);
+          ctx.fillStyle='#bf3b2b';
+          ctx.textAlign='right'; ctx.textBaseline='middle';
+          ctx.fillText('\u6163\u6027\u529b ma',bx-fLen-4,by-2);
+          ctx.fillStyle='#23221d';
+          ctx.font='900 12px "Zen Kaku Gothic New",sans-serif';
+          ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+          ctx.fillText('\u96fb\u8eca\u5185\u306e\u89b3\u6e2c\u8005\uff1a3\u529b\u304c\u3064\u308a\u3042\u3046',16,LH-14);
+        }else{
+          /* \u5730\u4e0a\uff1a\u5f35\u529b\u3068\u91cd\u529b\u306e\u5408\u529b\uff08\u6c34\u5e73\u30fb\u9032\u884c\u65b9\u5411\uff1d\u53f3\uff09 */
+          var fLen2=inertiaF()*Fs;
+          arrow(bx,by,bx+fLen2,by,'#d8541f',3);
+          ctx.fillStyle='#d8541f';
+          ctx.textAlign='left'; ctx.textBaseline='middle';
+          ctx.fillText('\u5408\u529b F\uff08\u2192\u52a0\u901f\uff09',bx+fLen2+6,by-2);
+          ctx.fillStyle='#23221d';
+          ctx.font='900 12px "Zen Kaku Gothic New",sans-serif';
+          ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+          ctx.fillText('\u5730\u4e0a\u306e\u89b3\u6e2c\u8005\uff1a\u5408\u529b\u3067\u52a0\u901f\u3057\u3066\u898b\u3048\u308b',16,LH-14);
+        }
+      }
+
+      /* \u304a\u3082\u308a */
+      ctx.fillStyle='#d8541f';
+      ctx.beginPath(); ctx.arc(bx,by,12,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle='#fff';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('m',bx,by);
+
+      updateReadout();
+    }
+
+    function updateReadout(){
+      var thDeg=theta()*180/Math.PI;
+      $('e17m').textContent=st.m.toFixed(1);
+      $('e17a').textContent=st.a.toFixed(2);
+      $('e17th').textContent=thDeg.toFixed(0);
+      $('e17mg').textContent=weight().toFixed(2);
+      $('e17S').textContent=tension().toFixed(2);
+      $('e17F').textContent=inertiaF().toFixed(2);
+      $('e17sol3').textContent='a = g tan\u03b8 = 9.8 \u00d7 tan'+
+        thDeg.toFixed(0)+'\u00b0 = '+st.a.toFixed(2)+' m/s\u00b2';
+    }
+
+    var running=false, last=null, rafId=0;
+    var TILT_DUR=0.7;
+    function frame(ts){
+      if(!running) return;
+      if(last==null) last=ts;
+      var dt=(ts-last)/1000; last=ts;
+      if(dt>0.05) dt=0.05;
+      if(st.playing){
+        /* \u80cc\u666f\u3092\u6d41\u3059\uff08\u901f\u5ea6\u306b\u5fdc\u3058\u3066\uff09\u3002idle\u4e2d\u306f\u4e00\u5b9a\u901f\u5ea6\u3001\u52a0\u901f\u4e2d\u306f\u901f\u5ea6\u3092\u4e0a\u3052\u308b */
+        if(st.phase==='idle'){
+          st.vel=120;
+        }else if(st.phase==='tilting'){
+          st.tiltT+=dt*st.speed/TILT_DUR;
+          st.vel+=st.a*40*dt*st.speed;
+          if(st.tiltT>=1){ st.tiltT=1; st.phase='steady'; }
+        }else{
+          st.vel+=st.a*40*dt*st.speed;
+        }
+        if(st.vel>900) st.vel=900;
+        st.bgOff+=st.vel*dt*st.speed;
+      }
+      draw();
+      syncInputs();
+      rafId=requestAnimationFrame(frame);
+    }
+
+    function doReset(){
+      st.phase='idle'; st.tiltT=0; st.playing=false;
+      st.bgOff=0; st.vel=120;
+      var b=$('e17Play');
+      b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+      $('insightE17').innerHTML='\u25b6 \u518d\u751f\u3059\u308b\u3068\u96fb\u8eca\u304c'+
+        '\u52a0\u901f\u3057\u3001\u7cf8\u304c\u50be\u3044\u3066\u3044\u304f\u3088\u3046\u3059\u304c\u898b\u3048\u307e\u3059';
+      last=null; updateReadout();
+    }
+
+    $('e17Play').addEventListener('click',function(){
+      if(st.phase==='idle'){
+        st.phase='tilting'; st.tiltT=0; st.playing=true;
+        $('insightE17').innerHTML='\u52a0\u901f\u306b\u3088\u308a\u7cf8\u304c'+
+          '\u50be\u3044\u3066\u3044\u304d\u307e\u3059\u3002\u529b\u306e\u3084\u3058\u308b\u3057\u3092\u898b\u3066\u307f\u3088\u3046\u3002';
+      }else{
+        st.playing=!st.playing;
+      }
+      this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
+      this.classList.toggle('playing',st.playing);
+      last=null;
+    });
+    $('e17Reset').addEventListener('click',doReset);
+    $('e17Book').addEventListener('click',function(){
+      st.m=BOOK.m; st.a=BOOK.a;
+      doReset(); syncInputs();
+      $('insightE17').innerHTML='\u6559\u79d1\u66f8\u306e\u6570\u5024\u306b\u623b\u3057\u307e\u3057\u305f'+
+        '\uff08m=1.0kg\u3001a=4.9m/s\u00b2\uff09\u3002';
+    });
+    $('e17Speed').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.speed=parseFloat(b.getAttribute('data-speed'));
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    $('e17View').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.view=b.getAttribute('data-view');
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    [inpM,inpA].forEach(function(el){
+      el.addEventListener('input',function(){readInputs();updateReadout();});
+      el.addEventListener('change',function(){readInputs();syncInputs();updateReadout();});
+    });
+    var steps=document.querySelectorAll('[data-e17step]');
+    for(var si=0;si<steps.length;si++){
+      steps[si].addEventListener('click',function(){
+        var which=this.getAttribute('data-e17step');
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        if(which==='M') st.m=clamp(+(st.m+dir*0.5).toFixed(1),LIM.M[0],LIM.M[1]);
+        else if(which==='A') st.a=clamp(+(st.a+dir*0.98).toFixed(2),LIM.A[0],LIM.A[1]);
+        syncInputs(); updateReadout();
+      });
+    }
+
+    return {
+      start:function(){ fit(); doReset(); syncInputs();
+        running=true; last=null; rafId=requestAnimationFrame(frame); },
+      stop:function(){ running=false; if(rafId) cancelAnimationFrame(rafId); },
+      resize:function(){ if(running) fit(); }
+    };
+  })();
+
+  /* =========================================================
+     \u4f8b\u984c18\uff1a\u52a0\u901f\u5ea6\u904b\u52d5\u3092\u3059\u308b\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc
+     ========================================================= */
+  var SIM_E18=(function(){
+    var cv=$('cvE18'), C=makeCanvas(cv), ctx=C.ctx;
+    var G=9.8;
+    var L={};
+    function layout(){
+      var w=C.width()||680;
+      if(w<560) L={ LW:460, LH:400 };
+      else      L={ LW:680, LH:400 };
+    }
+    function fit(){ layout(); C.fit(L); }
+
+    var BOOK={ m:2.0, a:2.0 };
+    /* caseKind: 'up'\uff08\u4e0a\u5411\u304d\u52a0\u901f\uff09/ 'const'\uff08\u7b49\u901f\uff09/ 'down'\uff08\u4e0b\u5411\u304d\u52a0\u901f\uff09 */
+    var st={ m:2.0, a:2.0, caseKind:'up',
+             phase:'idle', moveT:0, boxY:0, bgOff:0, vel:0,
+             playing:false, speed:0.5 };
+    var LIM={ M:[0.5,5.0], A:[0.5,5.0] };
+    var inpM=$('e18InpM'), inpA=$('e18InpA');
+
+    function weight(){ return st.m*G; }
+    /* \u6163\u6027\u529b\u306e\u5927\u304d\u3055\u3002\u7b49\u901f\u306e\u3068\u304d\u306f0 */
+    function inertiaMag(){ return (st.caseKind==='const')?0:st.m*st.a; }
+    /* \u5782\u76f4\u6297\u529b N */
+    function normalForce(){
+      if(st.caseKind==='up')   return st.m*(G+st.a);
+      if(st.caseKind==='down') return st.m*(G-st.a);
+      return st.m*G;
+    }
+    function scaleVal(){ return normalForce()/G; }
+
+    function syncInputs(){
+      if(document.activeElement!==inpM) inpM.value=st.m.toFixed(1);
+      if(document.activeElement!==inpA) inpA.value=st.a.toFixed(1);
+    }
+    function readInputs(){
+      var m=parseFloat(inpM.value), a=parseFloat(inpA.value);
+      if(!isNaN(m)) st.m=clamp(m,LIM.M[0],LIM.M[1]);
+      if(!isNaN(a)) st.a=clamp(a,LIM.A[0],LIM.A[1]);
+      /* \u4e0b\u5411\u304d\u52a0\u901f\u3067 a>g \u306b\u306a\u3089\u306a\u3044\u3088\u3046\u4fdd\u8b77 */
+      if(st.caseKind==='down' && st.a>G-0.5) st.a=G-0.5;
     }
 
     function arrow(x1,y1,x2,y2,color,w){
@@ -3009,14 +4126,360 @@
     }
 
     function draw(){
+      var LW=L.LW,LH=L.LH;
+      ctx.clearRect(0,0,LW,LH);
+
+      /* \u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u306e\u30b7\u30e3\u30d5\u30c8 */
+      var shaftX=LW/2-110, shaftW=220;
+      var shaftY=24, shaftH=LH-48;
+      /* \u30b7\u30e3\u30d5\u30c8\u306e\u80cc\u666f\uff08\u3046\u3059\u3044\u58c1\uff09 */
+      ctx.fillStyle='#efe9d8';
+      ctx.fillRect(shaftX-14,shaftY,shaftW+28,shaftH);
+      /* \u6d41\u308c\u308b\u968e\u5c64\u30de\u30fc\u30ab\u30fc\uff1a\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u306e\u52d5\u304d\u3068\u9006\u306b\u30b9\u30af\u30ed\u30fc\u30eb\u3057\u3066\u52d5\u3044\u3066\u898b\u3048\u3055\u305b\u308b */
+      var floorGap=84;
+      var fOff=((st.bgOff % floorGap)+floorGap)%floorGap;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(shaftX-14,shaftY,shaftW+28,shaftH);
+      ctx.clip();
+      for(var fy=shaftY-floorGap+fOff;fy<shaftY+shaftH+floorGap;fy+=floorGap){
+        /* \u968e\u306e\u533a\u5207\u308a\u7dda */
+        ctx.strokeStyle='#d6cdb0'; ctx.lineWidth=2;
+        ctx.beginPath();
+        ctx.moveTo(shaftX-14,fy); ctx.lineTo(shaftX-14+22,fy);
+        ctx.moveTo(shaftX+shaftW+14-22,fy); ctx.lineTo(shaftX+shaftW+14,fy);
+        ctx.stroke();
+        /* \u968e\u306e\u30c9\u30c3\u30c8\u6a21\u69d8 */
+        ctx.fillStyle='#ddd4b8';
+        ctx.beginPath(); ctx.arc(shaftX-14+11,fy+floorGap/2,4,0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(shaftX+shaftW+14-11,fy+floorGap/2,4,0,Math.PI*2); ctx.fill();
+      }
+      ctx.restore();
+      /* \u30b7\u30e3\u30d5\u30c8\u306e\u67a0 */
+      ctx.strokeStyle='#23221d'; ctx.lineWidth=2;
+      ctx.strokeRect(shaftX-14,shaftY,shaftW+28,shaftH);
+      /* \u30ac\u30a4\u30c9\u30ec\u30fc\u30eb */
+      ctx.strokeStyle='#cabf9f'; ctx.lineWidth=1.4;
+      ctx.setLineDash([4,5]);
+      ctx.beginPath();
+      ctx.moveTo(shaftX,shaftY); ctx.lineTo(shaftX,shaftY+shaftH);
+      ctx.moveTo(shaftX+shaftW,shaftY); ctx.lineTo(shaftX+shaftW,shaftY+shaftH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* \u304b\u3054\u306e\u4e0a\u4e0b\u4f4d\u7f6e\uff08\u30a2\u30cb\u30e1\uff1a\u898b\u304b\u3051\u3060\u3051\u5c11\u3057\u52d5\u304b\u3059\uff09 */
+      var bob=st.boxY;
+      var carY=shaftY+60+bob;
+      var carH=shaftH-150;
+      var carX=shaftX, carW=shaftW;
+
+      /* \u304b\u3054 */
+      ctx.fillStyle='#f1ede0';
+      ctx.fillRect(carX,carY,carW,carH);
+      ctx.strokeStyle='#23221d'; ctx.lineWidth=2.4;
+      ctx.strokeRect(carX,carY,carW,carH);
+
+      /* \u4f53\u91cd\u8a08\uff08\u304b\u3054\u306e\u5e8a\uff09 */
+      var scaleW=120, scaleH=26;
+      var scaleX=carX+carW/2-scaleW/2;
+      var scaleY=carY+carH-scaleH-6;
+      ctx.fillStyle='#e7ddc0';
+      ctx.fillRect(scaleX,scaleY,scaleW,scaleH);
+      ctx.strokeStyle='#23221d'; ctx.lineWidth=1.6;
+      ctx.strokeRect(scaleX,scaleY,scaleW,scaleH);
+      /* \u4f53\u91cd\u8a08\u306e\u8868\u793a\u5024 */
+      ctx.fillStyle='#bf3b2b';
+      ctx.font='900 15px "JetBrains Mono",monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      var showScale=(st.phase!=='idle')?
+        scaleVal():st.m;
+      ctx.fillText(showScale.toFixed(2)+' kg',scaleX+scaleW/2,scaleY+scaleH/2);
+
+      /* \u7269\u4f53\uff08\u7bb1\uff09 */
+      var boxW=70, boxH=64;
+      var boxX=carX+carW/2-boxW/2;
+      var boxYp=scaleY-boxH;
+      ctx.fillStyle='#d8541f';
+      ctx.fillRect(boxX,boxYp,boxW,boxH);
+      ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=2;
+      ctx.strokeRect(boxX,boxYp,boxW,boxH);
+      ctx.fillStyle='#fff';
+      ctx.font='700 13px "Zen Kaku Gothic New",sans-serif';
+      ctx.fillText('m',boxX+boxW/2,boxYp+boxH/2);
+
+      /* \u304b\u3054\u306e\u904b\u52d5\u65b9\u5411\u306e\u8868\u793a */
+      ctx.fillStyle='#15807a';
+      ctx.font='700 12px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      var label;
+      if(st.caseKind==='up') label='\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\uff1a\u4e0a\u5411\u304d\u306b\u52a0\u901f';
+      else if(st.caseKind==='down') label='\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\uff1a\u4e0b\u5411\u304d\u306b\u52a0\u901f';
+      else label='\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\uff1a\u7b49\u901f\u3067\u4e0a\u6607';
+      ctx.fillText(label,carX+4,carY-12);
+
+      /* \u529b\u306e\u30d9\u30af\u30c8\u30eb\uff08\u7269\u4f53\u306e\u4e2d\u5fc3\u304b\u3089\uff09 */
+      var cx=boxX+boxW/2, cy=boxYp+boxH/2;
+      var showForce=(st.phase!=='idle');
+      if(showForce){
+        var Fs=4.2;
+        /* \u91cd\u529b mg\uff08\u4e0b\u5411\u304d\uff09 */
+        var mgLen=weight()*Fs;
+        arrow(cx-16,cy,cx-16,cy+mgLen,'#2f6db0',3);
+        ctx.fillStyle='#2f6db0';
+        ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+        ctx.textAlign='right'; ctx.textBaseline='middle';
+        ctx.fillText('mg',cx-22,cy+mgLen*0.7);
+        /* \u5782\u76f4\u6297\u529b N\uff08\u4e0b\u7aef\u304b\u3089\u4e0a\u5411\u304d\uff09 */
+        var nLen=normalForce()*Fs;
+        arrow(cx+16,cy,cx+16,cy-nLen,'#15807a',3);
+        ctx.fillStyle='#15807a';
+        ctx.textAlign='left';
+        ctx.fillText('N',cx+22,cy-nLen*0.7);
+        /* \u6163\u6027\u529b\uff08\u52a0\u901f\u3068\u9006\u5411\u304d\uff09 */
+        if(st.caseKind!=='const'){
+          var iLen=inertiaMag()*Fs;
+          if(st.caseKind==='up'){
+            /* \u4e0a\u5411\u304d\u52a0\u901f \u2192 \u6163\u6027\u529b \u4e0b\u5411\u304d */
+            arrow(cx,cy,cx,cy+iLen,'#bf3b2b',3);
+            ctx.fillStyle='#bf3b2b'; ctx.textAlign='left';
+            ctx.fillText('ma',cx+6,cy+iLen+8);
+          }else{
+            /* \u4e0b\u5411\u304d\u52a0\u901f \u2192 \u6163\u6027\u529b \u4e0a\u5411\u304d */
+            arrow(cx,cy,cx,cy-iLen,'#bf3b2b',3);
+            ctx.fillStyle='#bf3b2b'; ctx.textAlign='left';
+            ctx.fillText('ma',cx+6,cy-iLen-8);
+          }
+        }
+      }
+
+      /* \u6ce8\u8a18 */
+      ctx.fillStyle='#23221d';
+      ctx.font='900 12px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      var note;
+      if(st.caseKind==='up') note='\u4e0a\u5411\u304d\u52a0\u901f\uff1a\u4f53\u91cd\u8a08\u306f\u91cd\u304f\u306a\u308b N=m(g+a)';
+      else if(st.caseKind==='down') note='\u4e0b\u5411\u304d\u52a0\u901f\uff1a\u4f53\u91cd\u8a08\u306f\u8efd\u304f\u306a\u308b N=m(g\u2212a)';
+      else note='\u7b49\u901f\uff1a\u6163\u6027\u529b\u306a\u3057 N=mg';
+      ctx.fillText(note,16,LH-16);
+
+      updateReadout();
+    }
+
+    function updateReadout(){
+      $('e18m').textContent=st.m.toFixed(1);
+      $('e18a').textContent=st.a.toFixed(1);
+      $('e18mg').textContent=weight().toFixed(1);
+      $('e18ma').textContent=inertiaMag().toFixed(1);
+      $('e18N').textContent=normalForce().toFixed(1);
+      $('e18scale').textContent=scaleVal().toFixed(2);
+      var nf;
+      if(st.caseKind==='up') nf='N = m(g+a)';
+      else if(st.caseKind==='down') nf='N = m(g\u2212a)';
+      else nf='N = mg';
+      $('e18Nf').textContent=nf;
+    }
+
+    var running=false, last=null, rafId=0;
+    var MOVE_DUR=0.7;
+    function frame(ts){
+      if(!running) return;
+      if(last==null) last=ts;
+      var dt=(ts-last)/1000; last=ts;
+      if(dt>0.05) dt=0.05;
+      if(st.playing && st.phase!=='idle'){
+        /* \u968e\u5c64\u30de\u30fc\u30ab\u30fc\u3092\u6d41\u3059\u3002\u4e0a\u6607\u306a\u3089\u30de\u30fc\u30ab\u30fc\u306f\u4e0b\u3078\u3001\u4e0b\u964d\u306a\u3089\u4e0a\u3078\u6d41\u308c\u308b\u3002
+           \u4e0a\u5411\u304d\u52a0\u901f/\u7b49\u901f\u4e0a\u6607\u306f\u4e0a\u3078\u3001\u4e0b\u5411\u304d\u52a0\u901f\u306f\u4e0b\u3078\u52d5\u304f\u3068\u3057\u3066\u63cf\u304f */
+        var goUp=(st.caseKind!=='down');
+        if(st.phase==='moving'){
+          st.moveT+=dt*st.speed/MOVE_DUR;
+          var p=st.moveT; if(p>1)p=1;
+          var ease=1-Math.pow(1-p,3);
+          var dir=goUp?-1:1;
+          st.boxY=dir*16*ease;
+          /* \u52a0\u901f\u4e2d\u306f\u901f\u5ea6\u304c\u5897\u3048\u3066\u3044\u304f\u3002\u7b49\u901f\u306f\u4e00\u5b9a */
+          if(st.caseKind==='const'){ st.vel=150; }
+          else{ st.vel+=st.a*55*dt*st.speed; }
+          if(st.moveT>=1){ st.phase='steady'; }
+        }else{
+          if(st.caseKind==='const'){ st.vel=150; }
+          else{ st.vel+=st.a*55*dt*st.speed; }
+        }
+        if(st.vel>700) st.vel=700;
+        /* \u30de\u30fc\u30ab\u30fc\u306f\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u306e\u9032\u884c\u3068\u9006\u5411\u304d\u306b\u6d41\u308c\u308b */
+        var flowDir=goUp?1:-1;
+        st.bgOff+=flowDir*st.vel*dt*st.speed;
+      }
+      draw();
+      syncInputs();
+      rafId=requestAnimationFrame(frame);
+    }
+
+    function doReset(){
+      st.phase='idle'; st.moveT=0; st.boxY=0; st.playing=false;
+      st.bgOff=0; st.vel=0;
+      var b=$('e18Play');
+      b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+      $('insightE18').innerHTML='\u25b6 \u518d\u751f\u3059\u308b\u3068\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u304c'+
+        '\u52d5\u304d\u3001\u4f53\u91cd\u8a08\u306e\u5024\u304c\u5909\u308f\u308a\u307e\u3059';
+      last=null; updateReadout();
+    }
+
+    $('e18Play').addEventListener('click',function(){
+      if(st.phase==='idle'){
+        st.phase='moving'; st.moveT=0; st.playing=true;
+        if(st.caseKind==='const'){
+          $('insightE18').innerHTML='\u7b49\u901f\u3067\u306f\u52a0\u901f\u5ea6\u304c0\u3002'+
+            '\u6163\u6027\u529b\u306f\u306f\u305f\u3089\u304a\u305a\u3001N=mg \u306e\u307e\u307e\u3067\u3059\u3002';
+        }else{
+          $('insightE18').innerHTML='\u52a0\u901f\u4e2d\u3001\u6163\u6027\u529b\u304c'+
+            '\u52a0\u308f\u308a\u3001\u4f53\u91cd\u8a08\u306e\u5024\u304c\u5909\u5316\u3057\u307e\u3059\u3002';
+        }
+      }else{
+        st.playing=!st.playing;
+      }
+      this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
+      this.classList.toggle('playing',st.playing);
+      last=null;
+    });
+    $('e18Reset').addEventListener('click',doReset);
+    $('e18Speed').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.speed=parseFloat(b.getAttribute('data-speed'));
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    $('e18Case').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.caseKind=b.getAttribute('data-case');
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+      readInputs();
+      doReset();
+    });
+    [inpM,inpA].forEach(function(el){
+      el.addEventListener('input',function(){readInputs();updateReadout();});
+      el.addEventListener('change',function(){readInputs();syncInputs();updateReadout();});
+    });
+    var steps=document.querySelectorAll('[data-e18step]');
+    for(var si=0;si<steps.length;si++){
+      steps[si].addEventListener('click',function(){
+        var which=this.getAttribute('data-e18step');
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        if(which==='M') st.m=clamp(+(st.m+dir*0.5).toFixed(1),LIM.M[0],LIM.M[1]);
+        else if(which==='A') st.a=clamp(+(st.a+dir*0.5).toFixed(1),LIM.A[0],LIM.A[1]);
+        readInputs();
+        syncInputs(); updateReadout();
+      });
+    }
+
+    return {
+      start:function(){ fit(); doReset(); syncInputs();
+        running=true; last=null; rafId=requestAnimationFrame(frame); },
+      stop:function(){ running=false; if(rafId) cancelAnimationFrame(rafId); },
+      resize:function(){ if(running) fit(); }
+    };
+  })();
+
+  /* =========================================================
+     \u4f8b\u984c19\uff1a\u5186\u9310\u632f\u308a\u5b50
+     ========================================================= */
+  var SIM_E19=(function(){
+    var cv=$('cvE19'), C=makeCanvas(cv), ctx=C.ctx;
+    var G=9.8;
+    var L={};
+    function layout(){
+      var w=C.width()||680;
+      if(w<560) L={ LW:460, LH:420, PX:230, PY:64, SCALE:210 };
+      else      L={ LW:680, LH:420, PX:340, PY:66, SCALE:280 };
+    }
+    function fit(){ layout(); C.fit(L); }
+
+    var BOOK={ m:0.20, ell:0.80, thDeg:40 };
+    /* view: 'rot'\uff08\u56de\u8ee2\u3059\u308b\u89b3\u6e2c\u8005\uff09/ 'ground'\uff08\u5730\u4e0a\u306e\u89b3\u6e2c\u8005\uff09 */
+    var st={ m:0.20, ell:0.80, thDeg:40, view:'rot',
+             angle:0, playing:false, speed:0.5 };
+    var LIM={ M:[0.10,0.50], L:[0.50,1.20], TH:[20,70] };
+    var inpM=$('e19InpM'), inpL=$('e19InpL'), inpTh=$('e19InpTh');
+
+    function theta(){ return st.thDeg*Math.PI/180; }
+    function radius(){ return st.ell*Math.sin(theta()); }
+    /* cos\u03b8 = g/(L\u03c9\u00b2) \u2192 \u03c9 = \u221a(g/(L cos\u03b8)) */
+    function omega(){ return Math.sqrt(G/(st.ell*Math.cos(theta()))); }
+    function period(){ return 2*Math.PI/omega(); }
+    function tension(){ return st.m*G/Math.cos(theta()); }
+    function weight(){ return st.m*G; }
+    function centripetal(){ return st.m*radius()*omega()*omega(); }
+
+    function syncInputs(){
+      if(document.activeElement!==inpM) inpM.value=st.m.toFixed(2);
+      if(document.activeElement!==inpL) inpL.value=st.ell.toFixed(2);
+      if(document.activeElement!==inpTh) inpTh.value=st.thDeg.toFixed(0);
+    }
+    function readInputs(){
+      var m=parseFloat(inpM.value), l=parseFloat(inpL.value), t=parseFloat(inpTh.value);
+      if(!isNaN(m)) st.m=clamp(m,LIM.M[0],LIM.M[1]);
+      if(!isNaN(l)) st.ell=clamp(l,LIM.L[0],LIM.L[1]);
+      if(!isNaN(t)) st.thDeg=clamp(t,LIM.TH[0],LIM.TH[1]);
+    }
+
+    function arrow(x1,y1,x2,y2,color,w){
+      ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=w;
+      ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      var ang=Math.atan2(y2-y1,x2-x1), hs=8+w;
+      ctx.beginPath();
+      ctx.moveTo(x2,y2);
+      ctx.lineTo(x2-hs*Math.cos(ang-0.42),y2-hs*Math.sin(ang-0.42));
+      ctx.lineTo(x2-hs*Math.cos(ang+0.42),y2-hs*Math.sin(ang+0.42));
+      ctx.closePath(); ctx.fill();
+      ctx.lineCap='butt';
+    }
+
+    /* \u68d2\u4eba\u9593\uff08cx,cy\uff1d\u8db3\u5143\u4e2d\u5fc3\u3001h\uff1d\u8eab\u9577\u3001col\uff1d\u8272\u3001face\uff1d\u5411\u304d\uff09 */
+    function stickFigure(cx,cy,h,col,face){
+      var head=h*0.22;
+      var headY=cy-h+head;
+      ctx.strokeStyle=col; ctx.fillStyle=col;
+      ctx.lineWidth=2.4; ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.beginPath(); ctx.arc(cx,headY,head,0,Math.PI*2); ctx.stroke();
+      var neck=headY+head, hip=cy-h*0.38;
+      ctx.beginPath(); ctx.moveTo(cx,neck); ctx.lineTo(cx,hip); ctx.stroke();
+      var sh=neck+h*0.12;
+      ctx.beginPath();
+      ctx.moveTo(cx,sh); ctx.lineTo(cx-h*0.20,sh+h*0.16);
+      ctx.moveTo(cx,sh); ctx.lineTo(cx+h*0.20,sh+h*0.16);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx,hip); ctx.lineTo(cx-h*0.16,cy);
+      ctx.moveTo(cx,hip); ctx.lineTo(cx+h*0.16,cy);
+      ctx.stroke();
+      ctx.fillStyle=col;
+      ctx.beginPath();
+      ctx.arc(cx+face*head*0.4,headY-head*0.1,1.8,0,Math.PI*2);
+      ctx.fill();
+      ctx.lineCap='butt'; ctx.lineJoin='miter';
+    }
+
+    function observerTag(cx,cy,text,col){
+      ctx.font='700 10.5px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      var w=ctx.measureText(text).width+14;
+      ctx.fillStyle='#fff';
+      ctx.fillRect(cx-w/2,cy-9,w,18);
+      ctx.strokeStyle=col; ctx.lineWidth=1.3;
+      ctx.strokeRect(cx-w/2,cy-9,w,18);
+      ctx.fillStyle=col;
+      ctx.fillText(text,cx,cy+1);
+    }
+
+    function draw(){
       var LW=L.LW,LH=L.LH,PX=L.PX,PY=L.PY,SCALE=L.SCALE;
       ctx.clearRect(0,0,LW,LH);
 
       var th=theta();
       var rPx=radius()*SCALE;
-      var hPx=st.ell*Math.cos(th)*SCALE;   /* \u925b\u76f4\u8ddd\u96e2 */
-      var ringY=PY+hPx;                    /* \u5186\u904b\u52d5\u306e\u9ad8\u3055 */
-      /* \u6955\u5186\uff08\u659c\u3081\u898b\u4e0b\u308d\u3057\uff09\u306e\u7e26\u3064\u3076\u3057\u7387 */
+      var hPx=st.ell*Math.cos(th)*SCALE;
+      var ringY=PY+hPx;
       var squash=0.34;
 
       /* \u5929\u4e95 */
@@ -3025,15 +4488,13 @@
       ctx.strokeStyle='#23221d'; ctx.lineWidth=1.4;
       for(var hx=-66;hx<=62;hx+=12){
         ctx.beginPath();
-        ctx.moveTo(PX+hx,PY-6);
-        ctx.lineTo(PX+hx-7,PY+2);
+        ctx.moveTo(PX+hx,PY-6); ctx.lineTo(PX+hx-7,PY+2);
         ctx.stroke();
       }
-      /* \u540a\u308a\u70b9 */
       ctx.fillStyle='#23221d';
       ctx.beginPath(); ctx.arc(PX,PY,4,0,Math.PI*2); ctx.fill();
 
-      /* \u7269\u4f53\u306e\u73fe\u5728\u4f4d\u7f6e\uff08\u6955\u5186\u8ecc\u9053\u4e0a\uff09 */
+      /* \u304a\u3082\u308a\u4f4d\u7f6e */
       var bx=PX+Math.cos(st.angle)*rPx;
       var by=ringY-Math.sin(st.angle)*rPx*squash;
 
@@ -3045,30 +4506,24 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      /* \u925b\u76f4\u306e\u4e2d\u5fc3\u7dda\uff08\u70b9\u7dda\uff09 */
+      /* \u925b\u76f4\u306e\u4e2d\u5fc3\u7dda */
       ctx.strokeStyle='#cabf9f'; ctx.lineWidth=1;
       ctx.setLineDash([3,4]);
-      ctx.beginPath();
-      ctx.moveTo(PX,PY); ctx.lineTo(PX,ringY+10);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(PX,PY); ctx.lineTo(PX,ringY+10); ctx.stroke();
       ctx.setLineDash([]);
 
-      /* \u534a\u5f84\u306e\u7dda\uff08\u4e2d\u5fc3\u2192\u7269\u4f53\u3001\u6955\u5186\u9762\u5185\uff09 */
+      /* \u534a\u5f84\u306e\u7dda */
       ctx.strokeStyle='#b3a986'; ctx.lineWidth=1.4;
-      ctx.beginPath();
-      ctx.moveTo(PX,ringY); ctx.lineTo(bx,by);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(PX,ringY); ctx.lineTo(bx,by); ctx.stroke();
 
-      /* \u7cf8\uff08\u540a\u308a\u70b9\u2192\u7269\u4f53\uff09 */
+      /* \u7cf8 */
       ctx.strokeStyle='#5c5849'; ctx.lineWidth=2.4; ctx.lineCap='round';
-      ctx.beginPath();
-      ctx.moveTo(PX,PY); ctx.lineTo(bx,by);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(PX,PY); ctx.lineTo(bx,by); ctx.stroke();
       ctx.lineCap='butt';
 
-      /* \u50be\u304d\u89d2\u03b8\u306e\u5186\u5f27 */
-      var aTo=Math.atan2(bx-PX,by-PY);   /* \u925b\u76f4\u304b\u3089\u306e\u89d2 */
+      /* \u50be\u304d\u89d2\u03b8\u306e\u5f27 */
       ctx.strokeStyle='#15807a'; ctx.lineWidth=1.6;
+      var aTo=Math.atan2(bx-PX,by-PY);
       ctx.beginPath();
       ctx.arc(PX,PY,26,Math.PI/2-aTo,Math.PI/2,aTo<0);
       ctx.stroke();
@@ -3078,60 +4533,67 @@
       ctx.fillText('\u03b8',PX+(bx>PX?17:-17),PY+24);
 
       /* \u529b\u306e\u30d9\u30af\u30c8\u30eb */
-      if(st.showForce){
-        var Fscale=26;
-        /* \u91cd\u529b mg\uff08\u4e0b\u5411\u304d\uff09 */
-        var mgLen=weight()*Fscale;
-        arrow(bx,by,bx,by+mgLen,'#2f6db0',3);
-        ctx.fillStyle='#2f6db0';
-        ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
-        ctx.textAlign='left'; ctx.textBaseline='middle';
-        ctx.fillText('mg',bx+6,by+mgLen);
+      var Fs=26;
+      /* \u91cd\u529b mg\uff08\u4e0b\u5411\u304d\uff09 */
+      var mgLen=weight()*Fs;
+      arrow(bx,by,bx,by+mgLen,'#2f6db0',3);
+      ctx.fillStyle='#2f6db0';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='middle';
+      ctx.fillText('mg',bx+6,by+mgLen);
 
-        /* \u5f35\u529b S\uff1a\u7cf8\u306b\u6cbf\u3063\u305f\u5411\u304d\u3002
-           \u6c34\u5e73\u6210\u5206 Ssin\u03b8\uff08\u4e2d\u5fc3\u5411\u304d\u30fb\u8ecc\u9053\u5e73\u9762\uff09\u3092\u6955\u5186\u5c04\u5f71\u3057\u3001
-           \u9244\u76f4\u6210\u5206 Scos\u03b8\uff08\u4e0a\u5411\u304d\uff09\u3092\u305d\u306e\u307e\u307e\u8db3\u3059\u3002
-           Hmag/Vmag=cos\u03b8/sin\u03b8 \u306a\u306e\u3067\u7cf8\u3068\u5b8c\u5168\u306b\u4e00\u81f4\u3059\u308b\u3002 */
-        var sH=tension()*Math.sin(th)*Fscale;
-        var sV=tension()*cosTheta()*Fscale;
-        var sex2=bx - Math.cos(st.angle)*sH;
-        var sey2=by + Math.sin(st.angle)*sH*squash - sV;
-        arrow(bx,by,sex2,sey2,'#15807a',3);
-        ctx.fillStyle='#15807a';
-        ctx.fillText('S',sex2+(sex2<bx?-14:6),sey2-4);
+      /* \u5f35\u529b S\uff08\u7cf8\u306b\u6cbf\u3063\u305f\u5411\u304d\uff1a\u6c34\u5e73\u6210\u5206squash\u5c04\u5f71\uff0b\u925b\u76f4\u6210\u5206\uff09 */
+      var sH=tension()*Math.sin(th)*Fs;
+      var sV=tension()*Math.cos(th)*Fs;
+      var sex=bx-Math.cos(st.angle)*sH;
+      var sey=by+Math.sin(st.angle)*sH*squash-sV;
+      arrow(bx,by,sex,sey,'#15807a',3);
+      ctx.fillStyle='#15807a';
+      ctx.fillText('S',sex+(sex<bx?-14:6),sey-4);
 
-        if(st.showSplit){
-          /* \u5f35\u529b S \u3092\u300c\u9244\u76f4\u6210\u5206\u300d\u3068\u300c\u6c34\u5e73\u6210\u5206\uff08\uff1d\u5411\u5fc3\u529b\uff09\u300d\u306b\u5206\u89e3\u3002
-             \u5f35\u529b\u77e2\u5370\uff08bx,by\uff09\u2192\uff08sex2,sey2\uff09\u3092\u3001\u9244\u76f4\u3068\u6c34\u5e73\u306e2\u8fba\u306b\u5206\u3051\u308b\u3002
-             2\u3064\u3092\u5408\u308f\u305b\u308b\u3068\u5f35\u529b\u77e2\u5370\u306b\u306a\u308b\uff08\u5e73\u884c\u56db\u8fba\u5f62\uff09\u3002 */
-          /* \u9244\u76f4\u6210\u5206\uff1a\u4e0a\u5411\u304d\u3001mg\u3068\u6253\u3061\u6d88\u3057\u5408\u3046 */
-          arrow(bx,by,bx,sey2,'rgba(21,128,122,.55)',2);
-          /* \u6c34\u5e73\u6210\u5206\uff1d\u5411\u5fc3\u529b\uff1a\u4e2d\u5fc3\u5411\u304d */
-          arrow(bx,by,sex2,by,'#bf3b2b',3);
-          ctx.fillStyle='#bf3b2b';
-          ctx.fillText('F',sex2+(sex2<bx?-12:6),by-8);
-          /* \u88dc\u52a9\u7dda\uff08\u5e73\u884c\u56db\u8fba\u5f62\u3092\u70b9\u7dda\u3067\uff09 */
-          ctx.strokeStyle='rgba(35,34,29,.25)'; ctx.lineWidth=1;
-          ctx.setLineDash([3,3]);
-          ctx.beginPath();
-          ctx.moveTo(sex2,by); ctx.lineTo(sex2,sey2);
-          ctx.moveTo(bx,sey2); ctx.lineTo(sex2,sey2);
-          ctx.stroke();
-          ctx.setLineDash([]);
-        }else{
-          /* \u5411\u5fc3\u529b\uff1a\u8ecc\u9053\u5e73\u9762\u3067\u4e00\u5b9a\u306e\u5927\u304d\u3055\u3092\u3082\u3061\u3001
-             \u305d\u308c\u3092\u3088\u305f\u30fc\u540c\u3058\u6955\u5186\u5c04\u5f71\uff08y\u306bsquash\uff09\u3067\u63cf\u304f\u3002
-             \u3060\u304b\u3089\u5de6\u53f3\u3067\u306f\u9577\u304f\u3001\u624b\u524d\u30fb\u5965\u3067\u306fsquash\u500d\u306b\u7e2e\u3093\u3067\u898b\u3048\u308b */
-          var fMag=Math.min(centripetal()*Fscale,96)+16;
-          var fex=bx-Math.cos(st.angle)*fMag;
-          var fey=by+Math.sin(st.angle)*fMag*squash;
-          arrow(bx,by,fex,fey,'#bf3b2b',3);
-          ctx.fillStyle='#bf3b2b';
-          ctx.fillText('F',fex+(fex<bx?-14:6),fey-7);
-        }
+      if(st.view==='rot'){
+        /* \u56de\u8ee2\u3059\u308b\u89b3\u6e2c\u8005\uff1a\u9060\u5fc3\u529b\uff08\u5916\u5411\u304d\uff09\u3002
+           \u5411\u5fc3\u529b\u3068\u540c\u3058\u300c\u8ecc\u9053\u5e73\u9762\u3067\u4e00\u5b9a\u306e\u5927\u304d\u3055\u2192\u6955\u5186\u5c04\u5f71\u300d\u65b9\u5f0f\u3002
+           \u5916\u5411\u304d\u306a\u306e\u3067\u7b26\u53f7\u306f +cos, \u2212sin\u3002\u53f3\u53f3\u3067\u9577\u304f\u3001\u624b\u524d\u30fb\u5965\u3067squash\u500d\u306b\u7e2e\u3080 */
+        var fcMag=Math.min(centripetal()*Fs,96)+16;
+        var fex=bx+Math.cos(st.angle)*fcMag;
+        var fey=by-Math.sin(st.angle)*fcMag*squash;
+        arrow(bx,by,fex,fey,'#bf3b2b',3);
+        ctx.fillStyle='#bf3b2b';
+        ctx.fillText('\u9060\u5fc3\u529b',fex+(fex>bx?6:-32),fey-7);
+        ctx.fillStyle='#23221d';
+        ctx.font='900 12px "Zen Kaku Gothic New",sans-serif';
+        ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+        ctx.fillText('\u56de\u8ee2\u3059\u308b\u89b3\u6e2c\u8005\uff1a\u9060\u5fc3\u529b\u3067\u3064\u308a\u3042\u3046',16,LH-16);
+      }else{
+        /* \u5730\u4e0a\u306e\u89b3\u6e2c\u8005\uff1a\u5411\u5fc3\u529b\uff08\u4e2d\u5fc3\u5411\u304d\uff09 */
+        var fMag=Math.min(centripetal()*Fs,96)+16;
+        var fex2=bx-Math.cos(st.angle)*fMag;
+        var fey2=by+Math.sin(st.angle)*fMag*squash;
+        arrow(bx,by,fex2,fey2,'#bf3b2b',3);
+        ctx.fillStyle='#bf3b2b';
+        ctx.fillText('\u5411\u5fc3\u529b F',fex2+(fex2<bx?-44:6),fey2-7);
+        ctx.fillStyle='#23221d';
+        ctx.font='900 12px "Zen Kaku Gothic New",sans-serif';
+        ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+        ctx.fillText('\u5730\u4e0a\u306e\u89b3\u6e2c\u8005\uff1a\u5408\u529b\u304c\u5411\u5fc3\u529b',16,LH-16);
       }
 
-      /* \u7269\u4f53 */
+      /* \u89b3\u6e2c\u8005\u306e\u4eba\u30a4\u30e9\u30b9\u30c8 */
+      if(st.view==='ground'){
+        /* \u5730\u4e0a\u306e\u89b3\u6e2c\u8005\uff1a\u753b\u9762\u5de6\u4e0b\u306e\u5e8a\u306b\u7acb\u3064 */
+        var gX=42, gY=LH-14;
+        stickFigure(gX,gY,58,'#2f6db0',1);
+        observerTag(gX+8,gY-66,'\u5730\u4e0a\u306e\u89b3\u6e2c\u8005','#2f6db0');
+      }else{
+        /* \u56de\u8ee2\u3059\u308b\u89b3\u6e2c\u8005\uff1a\u304a\u3082\u308a\u306e\u305d\u3070\u3067\u4e00\u7dd2\u306b\u56de\u308b\u5c0f\u3055\u306a\u4eba */
+        var rfX=bx+(bx>PX?40:-40);
+        var rfY=by+30;
+        stickFigure(rfX,rfY,46,'#2f6db0',(bx>PX?-1:1));
+        observerTag(rfX,rfY-54,'\u56de\u8ee2\u3059\u308b\u89b3\u6e2c\u8005','#2f6db0');
+      }
+
+      /* \u304a\u3082\u308a */
       ctx.fillStyle='#d8541f';
       ctx.beginPath(); ctx.arc(bx,by,12,0,Math.PI*2); ctx.fill();
       ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=2; ctx.stroke();
@@ -3140,25 +4602,20 @@
       ctx.textAlign='center'; ctx.textBaseline='middle';
       ctx.fillText('m',bx,by);
 
-      /* \u6ce8\u610f\u66f8\u304d\uff08\u89d2\u901f\u5ea6\u304c\u5c0f\u3055\u3059\u304e\u308b\u3068\u304d\uff09 */
-      if(st.ell*st.omega*st.omega <= G*1.02){
-        ctx.fillStyle='#bf3b2b';
-        ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
-        ctx.textAlign='left'; ctx.textBaseline='alphabetic';
-        ctx.fillText('\u203b \u89d2\u901f\u5ea6\u304c\u5c0f\u3055\u3044\u3068\u7cf8\u306f\u3042\u307e\u308a\u958b\u304d\u307e\u305b\u3093',16,LH-14);
-      }
       updateReadout();
     }
 
     function updateReadout(){
-      $('cnM').textContent=st.m.toFixed(2);
-      $('cnW').textContent=st.omega.toFixed(1);
-      $('cnL').textContent=st.ell.toFixed(2);
-      $('cnTh').textContent=(theta()*180/Math.PI).toFixed(0);
-      $('cnR').textContent=radius().toFixed(2);
-      $('cnS').textContent=tension().toFixed(2);
-      $('cnMg').textContent=weight().toFixed(2);
-      $('cnF').textContent=centripetal().toFixed(2);
+      $('e19m').textContent=st.m.toFixed(2);
+      $('e19L').textContent=st.ell.toFixed(2);
+      $('e19th').textContent=st.thDeg.toFixed(0);
+      $('e19r').textContent=radius().toFixed(2);
+      $('e19S').textContent=tension().toFixed(2);
+      $('e19T').textContent=period().toFixed(2);
+      var th=theta();
+      $('e19sol3').textContent='T = 2\u03c0\u221a(L cos\u03b8 / g) = 2\u03c0\u221a('+
+        st.ell.toFixed(2)+'\u00d7cos'+st.thDeg.toFixed(0)+'\u00b0 / 9.8) = '+
+        period().toFixed(2)+' s';
     }
 
     var running=false, last=null, rafId=0;
@@ -3168,7 +4625,7 @@
       var dt=(ts-last)/1000; last=ts;
       if(dt>0.05) dt=0.05;
       if(st.playing){
-        st.angle+=st.omega*dt*st.speed*0.5;
+        st.angle+=omega()*dt*st.speed*0.5;
       }
       draw();
       syncInputs();
@@ -3177,64 +4634,928 @@
 
     function doReset(){
       st.angle=0; st.playing=false;
-      var b=$('cnPlay');
+      var b=$('e19Play');
       b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
-      $('insightCone').innerHTML='\u25b6 \u518d\u751f\u3059\u308b\u3068\u7269\u4f53\u304c'+
-        '\u6c34\u5e73\u9762\u5185\u3067\u5186\u3092\u63cf\u304d\u307e\u3059\u3002'+
-        '\u8cea\u91cf\u30fb\u89d2\u901f\u5ea6\u3092\u5909\u3048\u3066\u307f\u3088\u3046';
-      last=null;
+      $('insightE19').innerHTML='\u25b6 \u518d\u751f\u3059\u308b\u3068\u304a\u3082\u308a\u304c'+
+        '\u6c34\u5e73\u9762\u5185\u3067\u5186\u3092\u63cf\u304d\u307e\u3059';
+      last=null; updateReadout();
     }
 
-    $('cnPlay').addEventListener('click',function(){
+    $('e19Play').addEventListener('click',function(){
       st.playing=!st.playing;
       this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
       this.classList.toggle('playing',st.playing);
       last=null;
     });
-    $('cnReset').addEventListener('click',doReset);
-    $('cnSpeed').addEventListener('click',function(e){
+    $('e19Reset').addEventListener('click',doReset);
+    $('e19Book').addEventListener('click',function(){
+      st.m=BOOK.m; st.ell=BOOK.ell; st.thDeg=BOOK.thDeg;
+      doReset(); syncInputs();
+      $('insightE19').innerHTML='\u6559\u79d1\u66f8\u306e\u6570\u5024\u306b\u623b\u3057\u307e\u3057\u305f'+
+        '\uff08L=0.80m\u3001\u03b8=40\u00b0\uff09\u3002';
+    });
+    $('e19Speed').addEventListener('click',function(e){
       var b=e.target.closest('button'); if(!b) return;
       st.speed=parseFloat(b.getAttribute('data-speed'));
       var kids=this.children;
       for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
     });
-    [inpM,inpW,inpL].forEach(function(el){
+    $('e19View').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.view=b.getAttribute('data-view');
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    [inpM,inpL,inpTh].forEach(function(el){
       el.addEventListener('input',function(){readInputs();updateReadout();});
       el.addEventListener('change',function(){readInputs();syncInputs();updateReadout();});
     });
-    var cnsteps=document.querySelectorAll('[data-cnstep]');
-    for(var ci=0;ci<cnsteps.length;ci++){
-      cnsteps[ci].addEventListener('click',function(){
-        var which=this.getAttribute('data-cnstep');
+    var steps=document.querySelectorAll('[data-e19step]');
+    for(var si=0;si<steps.length;si++){
+      steps[si].addEventListener('click',function(){
+        var which=this.getAttribute('data-e19step');
         var dir=parseInt(this.getAttribute('data-dir'),10);
-        if(which==='M'){
-          st.m=clamp(+(st.m+dir*0.05).toFixed(2),LIM.M[0],LIM.M[1]);
-        }else if(which==='W'){
-          st.omega=clamp(+(st.omega+dir*0.5).toFixed(1),LIM.W[0],LIM.W[1]);
-        }else if(which==='L'){
-          st.ell=clamp(+(st.ell+dir*0.10).toFixed(2),LIM.L[0],LIM.L[1]);
-        }
+        if(which==='M') st.m=clamp(+(st.m+dir*0.05).toFixed(2),LIM.M[0],LIM.M[1]);
+        else if(which==='L') st.ell=clamp(+(st.ell+dir*0.10).toFixed(2),LIM.L[0],LIM.L[1]);
+        else if(which==='TH') st.thDeg=clamp(+(st.thDeg+dir*5).toFixed(0),LIM.TH[0],LIM.TH[1]);
         syncInputs(); updateReadout();
       });
     }
-    $('cnChkForce').addEventListener('change',function(e){st.showForce=e.target.checked;});
-    $('cnChkSplit').addEventListener('change',function(e){st.showSplit=e.target.checked;});
 
     return {
-      start:function(){
-        fit();
-        doReset();
-        syncInputs();
-        running=true; last=null;
-        rafId=requestAnimationFrame(frame);
-      },
-      stop:function(){
-        running=false;
-        if(rafId) cancelAnimationFrame(rafId);
-      },
+      start:function(){ fit(); doReset(); syncInputs();
+        running=true; last=null; rafId=requestAnimationFrame(frame); },
+      stop:function(){ running=false; if(rafId) cancelAnimationFrame(rafId); },
       resize:function(){ if(running) fit(); }
     };
   })();
+
+  /* =========================================================
+     \u4f8b\u984c20\uff1a\u925b\u76f4\u9762\u5185\u306e\u5186\u904b\u52d5
+     ========================================================= */
+  var SIM_E20=(function(){
+    var cv=$('cvE20'), C=makeCanvas(cv), ctx=C.ctx;
+    var G=9.8;
+    var L={};
+    function layout(){
+      var w=C.width()||680;
+      if(w<560) L={ LW:460, LH:420 };
+      else      L={ LW:680, LH:420 };
+    }
+    function fit(){ layout(); C.fit(L); }
+
+    var BOOK={ h:1.0, r:0.30 };
+    var st={ h:1.0, r:0.30,
+             phase:'idle', t:0, playing:false, speed:0.5 };
+    var LIM={ H:[0.40,2.00], R:[0.20,0.60] };
+    var inpH=$('e20InpH'), inpR=$('e20InpR');
+
+    function canLoop(){ return st.h >= 2.5*st.r; }
+    function vTop2(){ return 2*G*(st.h-2*st.r); }   /* \u6700\u9ad8\u70b9speed\u00b2 */
+    function vTop(){ var v2=vTop2(); return v2>0?Math.sqrt(v2):0; }
+    function normalTop(){ return st.m_dummy; }
+    function hMin(){ return 2.5*st.r; }
+    /* \u8cea\u91cf\u306f1kg\u3068\u3057\u3066\u5782\u76f4\u6297\u529b\u3092\u8a08\u7b97\uff08\u6559\u79d1\u66f8\u306f\u8a18\u53f7\u306e\u307e\u307e\u3001\u3053\u3053\u306f\u5177\u4f53\u5024\u3067\u898b\u305b\u308b\uff09 */
+    var MASS=1.0;
+    function force(){ return MASS*G*(2*st.h/st.r-5); }
+
+    function syncInputs(){
+      if(document.activeElement!==inpH) inpH.value=st.h.toFixed(2);
+      if(document.activeElement!==inpR) inpR.value=st.r.toFixed(2);
+    }
+    function readInputs(){
+      var h=parseFloat(inpH.value), r=parseFloat(inpR.value);
+      if(!isNaN(h)) st.h=clamp(h,LIM.H[0],LIM.H[1]);
+      if(!isNaN(r)) st.r=clamp(r,LIM.R[0],LIM.R[1]);
+    }
+
+    function draw(){
+      var LW=L.LW,LH=L.LH;
+      ctx.clearRect(0,0,LW,LH);
+
+      /* \u30b9\u30b1\u30fc\u30eb\uff1a\u9ad8\u3055\u30fb\u534a\u5f84\u3092px\u306b\u3002\u753b\u9762\u306b\u53ce\u307e\u308b\u3088\u3046\u8abf\u6574 */
+      var groundY=LH-40;
+      var maxWorldH=st.h+0.3;
+      var SCALE=Math.min((groundY-40)/maxWorldH, 150);
+      var rPx=st.r*SCALE;
+      var hPx=st.h*SCALE;
+
+      /* \u5186\u306e\u4e2d\u5fc3\uff1a\u753b\u9762\u53f3\u5bc4\u308a\u3002\u5186\u306e\u6700\u4e0b\u70b9\u304c\u5730\u9762 */
+      var loopCX=LW*0.62;
+      var loopCY=groundY-rPx;
+
+      /* \u5730\u9762 */
+      ctx.strokeStyle='#8a8167'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(20,groundY); ctx.lineTo(LW-20,groundY); ctx.stroke();
+
+      /* \u30b9\u30ed\u30fc\u30d7\uff08\u51fa\u767a\u70b9\u304b\u3089\u5186\u306e\u6700\u4e0b\u70b9\u3078\uff09 */
+      var startX=70;
+      var startY=groundY-hPx;
+      var loopBottomX=loopCX, loopBottomY=groundY;
+      ctx.strokeStyle='#b3a986'; ctx.lineWidth=5; ctx.lineCap='round';
+      ctx.beginPath();
+      ctx.moveTo(startX,startY);
+      ctx.quadraticCurveTo(startX+40,groundY, loopBottomX-rPx,loopBottomY);
+      ctx.stroke();
+      ctx.lineCap='butt';
+
+      /* \u5186\u5f62\u30ec\u30fc\u30eb */
+      ctx.strokeStyle='#5c5849'; ctx.lineWidth=4;
+      ctx.beginPath(); ctx.arc(loopCX,loopCY,rPx,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle='#cdbf97'; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.arc(loopCX,loopCY,rPx,0,Math.PI*2); ctx.stroke();
+
+      /* \u51fa\u767a\u306e\u9ad8\u3055\u306e\u76ee\u5370\uff08\u70b9\u7dda\uff09 */
+      ctx.strokeStyle='#cabf9f'; ctx.lineWidth=1;
+      ctx.setLineDash([4,4]);
+      ctx.beginPath();
+      ctx.moveTo(20,startY); ctx.lineTo(LW-20,startY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#15807a';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      ctx.fillText('\u9ad8\u3055 h',24,startY-5);
+
+      /* \u6700\u9ad8\u70b9P\u306e\u76ee\u5370 */
+      var topY=loopCY-rPx;
+      ctx.fillStyle='#bf3b2b';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText('P',loopCX,topY-9);
+
+      /* \u53f0\u8eca\u306e\u4f4d\u7f6e\u3092\u6c42\u3081\u308b */
+      var cartX, cartY, onLoop=false, fellOff=false;
+      if(st.phase==='idle'){
+        cartX=startX; cartY=startY;
+      }else{
+        /* \u30a2\u30cb\u30e1\uff1at \u306f 0\u21921\u30020\u301c0.35 \u30b9\u30ed\u30fc\u30d7\u30010.35\u301c1.0 \u30eb\u30fc\u30d7 */
+        var p=st.t;
+        if(p<0.35){
+          var sp=p/0.35;
+          cartX=startX+(loopBottomX-rPx-startX)*sp;
+          cartY=startY+(groundY-startY)*(sp*sp);
+        }else{
+          onLoop=true;
+          var lp=(p-0.35)/0.65;  /* 0\u21921 \u3067\u30eb\u30fc\u30d7\u4e00\u5468 */
+          /* \u6700\u4e0b\u70b9\u304b\u3089\u53cd\u6642\u8a08\u56de\u308a\u3002\u89d2\u5ea6 -90\u00b0(\u4e0b) \u3092\u8d77\u70b9 */
+          var ang=-Math.PI/2 + lp*Math.PI*2;
+          cartX=loopCX+Math.cos(ang)*rPx;
+          cartY=loopCY+Math.sin(ang)*rPx;
+          /* \u4e00\u5468\u3067\u304d\u306a\u3044\u5834\u5408\u3001\u6700\u9ad8\u70b9\u4ed8\u8fd1\u3067\u843d\u4e0b */
+          if(!canLoop() && lp>0.5){
+            fellOff=true;
+            /* \u6700\u9ad8\u70b9\u3067\u96e2\u308c\u3066\u653e\u7269\u7dda */
+            var fall=(lp-0.5)*3;
+            cartX=loopCX - rPx*0.4 - fall*30;
+            cartY=topY + fall*fall*60;
+          }
+        }
+      }
+
+      /* \u53f0\u8eca */
+      ctx.fillStyle=fellOff?'#bf3b2b':'#d8541f';
+      ctx.beginPath(); ctx.arc(cartX,cartY,11,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=2; ctx.stroke();
+
+      /* \u6ce8\u8a18 */
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      ctx.font='900 12px "Zen Kaku Gothic New",sans-serif';
+      if(canLoop()){
+        ctx.fillStyle='#15807a';
+        ctx.fillText('h \u2267 5r/2 \u2192 \u4e00\u5468\u3067\u304d\u308b',16,LH-14);
+      }else{
+        ctx.fillStyle='#bf3b2b';
+        ctx.fillText('h < 5r/2 \u2192 \u6700\u9ad8\u70b9\u306e\u624b\u524d\u3067\u30ec\u30fc\u30eb\u304b\u3089\u96e2\u308c\u308b',16,LH-14);
+      }
+
+      updateReadout();
+    }
+
+    function updateReadout(){
+      $('e20h').textContent=st.h.toFixed(2);
+      $('e20r').textContent=st.r.toFixed(2);
+      var v2=vTop2();
+      $('e20vp').textContent=(v2>0?Math.sqrt(v2):0).toFixed(2);
+      $('e20N').textContent=force().toFixed(1);
+      $('e20hmin').textContent=hMin().toFixed(2);
+      var ok=canLoop();
+      $('e20ok').textContent=ok?'\u4e00\u5468\u3067\u304d\u308b':'\u4e00\u5468\u3067\u304d\u306a\u3044';
+      $('e20ok').style.color=ok?'#15807a':'#bf3b2b';
+      $('e20sol1').textContent='v\u00b2 = 2g(h\u22122r) = 2\u00d79.8\u00d7('+
+        st.h.toFixed(2)+'\u22122\u00d7'+st.r.toFixed(2)+') = '+
+        (v2>0?v2.toFixed(2):'\u8ca0\u306e\u5024')+(v2>0?' \u2192 v='+Math.sqrt(v2).toFixed(2)+' m/s':'');
+      $('e20sol2').textContent='N = mg(2h/r \u2212 5) = '+force().toFixed(1)+' N\uff08m=1.0kg\u3068\u3057\u3066\uff09';
+      $('e20sol3').textContent='h \u2267 5r/2 = 5\u00d7'+st.r.toFixed(2)+'/2 = '+hMin().toFixed(2)+' m';
+    }
+
+    var running=false, last=null, rafId=0;
+    var DUR=2.6;
+    function frame(ts){
+      if(!running) return;
+      if(last==null) last=ts;
+      var dt=(ts-last)/1000; last=ts;
+      if(dt>0.05) dt=0.05;
+      if(st.playing && st.phase==='run'){
+        st.t+=dt*st.speed/DUR;
+        if(st.t>=1){ st.t=1; st.phase='done'; st.playing=false;
+          var b=$('e20Play');
+          b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+        }
+      }
+      draw();
+      syncInputs();
+      rafId=requestAnimationFrame(frame);
+    }
+
+    function doReset(){
+      st.phase='idle'; st.t=0; st.playing=false;
+      var b=$('e20Play');
+      b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+      $('insightE20').innerHTML='\u25b6 \u518d\u751f\u3059\u308b\u3068\u53f0\u8eca\u304c'+
+        '\u52d5\u304d\u51fa\u3057\u307e\u3059\u3002\u4e00\u5468\u3067\u304d\u308b\u304b\u898b\u3066\u307f\u3088\u3046';
+      last=null; updateReadout();
+    }
+
+    $('e20Play').addEventListener('click',function(){
+      if(st.phase==='idle'||st.phase==='done'){
+        st.phase='run'; st.t=0; st.playing=true;
+        $('insightE20').innerHTML=canLoop()?
+          '\u53f0\u8eca\u306f\u30ec\u30fc\u30eb\u3092\u96e2\u308c\u305a\u4e00\u5468\u3067\u304d\u307e\u3059\u3002':
+          '\u9ad8\u3055\u304c\u8db3\u308a\u305a\u3001\u6700\u9ad8\u70b9\u306e\u624b\u524d\u3067\u30ec\u30fc\u30eb\u304b\u3089\u96e2\u308c\u307e\u3059\u3002';
+      }else{
+        st.playing=!st.playing;
+      }
+      this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
+      this.classList.toggle('playing',st.playing);
+      last=null;
+    });
+    $('e20Reset').addEventListener('click',doReset);
+    $('e20Book').addEventListener('click',function(){
+      st.h=BOOK.h; st.r=BOOK.r;
+      doReset(); syncInputs();
+      $('insightE20').innerHTML='\u6559\u79d1\u66f8\u306e\u4f8b\u306b\u623b\u3057\u307e\u3057\u305f\uff08h=1.0m\u3001r=0.30m\uff09\u3002';
+    });
+    $('e20Speed').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.speed=parseFloat(b.getAttribute('data-speed'));
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    [inpH,inpR].forEach(function(el){
+      el.addEventListener('input',function(){readInputs();updateReadout();});
+      el.addEventListener('change',function(){readInputs();syncInputs();updateReadout();});
+    });
+    var steps=document.querySelectorAll('[data-e20step]');
+    for(var si=0;si<steps.length;si++){
+      steps[si].addEventListener('click',function(){
+        var which=this.getAttribute('data-e20step');
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        if(which==='H') st.h=clamp(+(st.h+dir*0.10).toFixed(2),LIM.H[0],LIM.H[1]);
+        else if(which==='R') st.r=clamp(+(st.r+dir*0.05).toFixed(2),LIM.R[0],LIM.R[1]);
+        syncInputs(); updateReadout();
+      });
+    }
+
+    return {
+      start:function(){ fit(); doReset(); syncInputs();
+        running=true; last=null; rafId=requestAnimationFrame(frame); },
+      stop:function(){ running=false; if(rafId) cancelAnimationFrame(rafId); },
+      resize:function(){ if(running) fit(); }
+    };
+  })();
+
+  /* =========================================================
+     \u4f8b\u984c21\uff1a\u925b\u76f4\u3070\u306d\u632f\u308a\u5b50
+     ========================================================= */
+  var SIM_E21=(function(){
+    var cv=$('cvE21'), C=makeCanvas(cv), ctx=C.ctx;
+    var G=9.8;
+    var L={};
+    function layout(){
+      var w=C.width()||680;
+      if(w<560) L={ LW:460, LH:430 };
+      else      L={ LW:680, LH:430 };
+    }
+    function fit(){ layout(); C.fit(L); }
+
+    var BOOK={ k:9.8, m:0.050, A:0.020 };
+    var st={ k:9.8, m:0.050, A:0.020,
+             t:0, playing:false, speed:0.5 };
+    var LIM={ K:[4.9,19.6], M:[0.025,0.20], A:[0.010,0.050] };
+    var inpK=$('e21InpK'), inpM=$('e21InpM'), inpA=$('e21InpA');
+
+    function omega(){ return Math.sqrt(st.k/st.m); }
+    function period(){ return 2*Math.PI/omega(); }
+    function vmax(){ return st.A*omega(); }
+    /* \u3064\u308a\u3042\u3044\u3067\u306e\u3070\u306d\u306e\u4f38\u3073 x0 = mg/k */
+    function x0(){ return st.m*G/st.k; }
+
+    function syncInputs(){
+      if(document.activeElement!==inpK) inpK.value=st.k.toFixed(1);
+      if(document.activeElement!==inpM) inpM.value=st.m.toFixed(3);
+      if(document.activeElement!==inpA) inpA.value=st.A.toFixed(3);
+    }
+    function readInputs(){
+      var k=parseFloat(inpK.value), m=parseFloat(inpM.value), a=parseFloat(inpA.value);
+      if(!isNaN(k)) st.k=clamp(k,LIM.K[0],LIM.K[1]);
+      if(!isNaN(m)) st.m=clamp(m,LIM.M[0],LIM.M[1]);
+      if(!isNaN(a)) st.A=clamp(a,LIM.A[0],LIM.A[1]);
+    }
+
+    /* \u3070\u306d\u3092\u87ba\u65cb\u3067\u63cf\u304f */
+    function drawSpring(x,y1,y2,coils,wid){
+      ctx.strokeStyle='#5c5849'; ctx.lineWidth=2.2; ctx.lineCap='round';
+      ctx.beginPath();
+      ctx.moveTo(x,y1);
+      var len=y2-y1;
+      var seg=coils*2;
+      for(var i=0;i<=seg;i++){
+        var t=i/seg;
+        var yy=y1+len*t;
+        var xx=x+((i%2===0)?-wid:wid)*(i>0 && i<seg?1:0);
+        ctx.lineTo(xx,yy);
+      }
+      ctx.lineTo(x,y2);
+      ctx.stroke();
+      ctx.lineCap='butt';
+    }
+
+    function draw(){
+      var LW=L.LW,LH=L.LH;
+      ctx.clearRect(0,0,LW,LH);
+
+      var cx=LW/2;
+      var ceilY=46;
+
+      /* \u5929\u4e95 */
+      ctx.fillStyle='#23221d';
+      ctx.fillRect(cx-90,ceilY-12,180,9);
+      ctx.strokeStyle='#23221d'; ctx.lineWidth=1.4;
+      for(var hx=-84;hx<=80;hx+=13){
+        ctx.beginPath();
+        ctx.moveTo(cx+hx,ceilY-3); ctx.lineTo(cx+hx-8,ceilY+5);
+        ctx.stroke();
+      }
+
+      /* \u30b9\u30b1\u30fc\u30eb\uff1am\u5358\u4f4d\u2192px */
+      var SCALE=2400;
+      /* \u3064\u308a\u3042\u3044\u306e\u4f4d\u7f6e\uff08\u4e2d\u5fc3\uff09\u306e\u753b\u9762y */
+      var centerY=LH*0.54;
+      /* \u5358\u632f\u52d5\u306e\u5909\u4f4d x\uff08\u4e0a\u5411\u304d\u6b63\uff09\u3002t \u306f\u6642\u9593(\u79d2) */
+      var ph=st.playing?st.t*omega()*st.speed:0;
+      /* \u306f\u306a\u3057\u305f\u4f4d\u7f6e = \u4e2d\u5fc3\u304b\u3089\u4e0b\u306b A\u3002x = -A cos(\u03c9t) \u3067\u4e0a\u5411\u304d\u6b63 */
+      var disp=-st.A*Math.cos(ph);  /* m, \u4e0a\u5411\u304d\u6b63 */
+      var bobY=centerY - disp*SCALE;
+
+      /* \u3070\u306d\u306e\u81ea\u7136\u9577\u7aef\u2192\u304a\u3082\u308a\u3002\u3070\u306d\u4e0a\u7aef\u306f\u5929\u4e95\u3001\u4e0b\u7aef\u306f\u304a\u3082\u308a */
+      var coils=Math.max(6,Math.round(st.k/2));
+      drawSpring(cx,ceilY,bobY-13,coils,11);
+
+      /* \u4e2d\u5fc3\u7dda\uff08\u3064\u308a\u3042\u3044\u306e\u4f4d\u7f6e\uff09 */
+      ctx.strokeStyle='#15807a'; ctx.lineWidth=1.4;
+      ctx.setLineDash([6,4]);
+      ctx.beginPath();
+      ctx.moveTo(cx-130,centerY); ctx.lineTo(cx+130,centerY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#15807a';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='middle';
+      ctx.fillText('\u4e2d\u5fc3\uff08\u3064\u308a\u3042\u3044\u306e\u4f4d\u7f6e\uff09',cx+44,centerY);
+
+      /* \u632f\u5e45\u306e\u7bc4\u56f2\uff08\u4e0a\u7aef\u30fb\u4e0b\u7aef\uff09 */
+      var topY=centerY-st.A*SCALE;
+      var botY=centerY+st.A*SCALE;
+      ctx.strokeStyle='#cabf9f'; ctx.lineWidth=1;
+      ctx.setLineDash([3,4]);
+      [topY,botY].forEach(function(yy){
+        ctx.beginPath();
+        ctx.moveTo(cx-130,yy); ctx.lineTo(cx+130,yy);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+      /* \u632f\u5e45\u306e\u77e2\u5370 */
+      ctx.strokeStyle='#d8541f'; ctx.fillStyle='#d8541f'; ctx.lineWidth=1.6;
+      ctx.beginPath();
+      ctx.moveTo(cx-118,centerY); ctx.lineTo(cx-118,botY);
+      ctx.stroke();
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='right'; ctx.textBaseline='middle';
+      ctx.fillText('A',cx-122,(centerY+botY)/2);
+
+      /* \u304a\u3082\u308a */
+      ctx.fillStyle='#d8541f';
+      ctx.fillRect(cx-15,bobY-13,30,26);
+      ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=2;
+      ctx.strokeRect(cx-15,bobY-13,30,26);
+      ctx.fillStyle='#fff';
+      ctx.font='700 12px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('m',cx,bobY);
+
+      /* \u901f\u3055\u306e\u76ee\u5b89\u30d0\u30fc */
+      var spd=Math.abs(st.A*omega()*Math.sin(ph));
+      var vr=vmax()>0?spd/vmax():0;
+      ctx.fillStyle='#23221d';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      ctx.fillText('\u901f\u3055',20,LH-30);
+      ctx.strokeStyle='#b3a986'; ctx.lineWidth=1.4;
+      ctx.strokeRect(54,LH-40,150,12);
+      ctx.fillStyle='#15807a';
+      ctx.fillRect(54,LH-40,150*vr,12);
+      ctx.fillStyle='#23221d';
+      ctx.font='900 11px "JetBrains Mono",monospace';
+      ctx.fillText(spd.toFixed(3)+' m/s',212,LH-30);
+
+      updateReadout();
+    }
+
+    function updateReadout(){
+      $('e21k').textContent=st.k.toFixed(1);
+      $('e21m').textContent=st.m.toFixed(3);
+      $('e21A').textContent=st.A.toFixed(3);
+      $('e21T').textContent=period().toFixed(2);
+      $('e21vmax').textContent=vmax().toFixed(2);
+      $('e21sol2').textContent='T = 2\u03c0\u221a(m/k) = 2\u03c0\u221a('+
+        st.m.toFixed(3)+'/'+st.k.toFixed(1)+') = '+period().toFixed(2)+' s';
+      $('e21sol3').textContent='v = A\u03c9 = A\u00d7(2\u03c0/T) = '+
+        st.A.toFixed(3)+'\u00d7'+(2*Math.PI/period()).toFixed(2)+' = '+vmax().toFixed(2)+' m/s';
+    }
+
+    var running=false, last=null, rafId=0;
+    function frame(ts){
+      if(!running) return;
+      if(last==null) last=ts;
+      var dt=(ts-last)/1000; last=ts;
+      if(dt>0.05) dt=0.05;
+      if(st.playing){ st.t+=dt; }
+      draw();
+      syncInputs();
+      rafId=requestAnimationFrame(frame);
+    }
+
+    function doReset(){
+      st.t=0; st.playing=false;
+      var b=$('e21Play');
+      b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+      $('insightE21').innerHTML='\u25b6 \u518d\u751f\u3059\u308b\u3068\u304a\u3082\u308a\u304c'+
+        '\u3064\u308a\u3042\u3044\u306e\u4f4d\u7f6e\u3092\u4e2d\u5fc3\u306b\u5358\u632f\u52d5\u3057\u307e\u3059';
+      last=null; updateReadout();
+    }
+
+    $('e21Play').addEventListener('click',function(){
+      st.playing=!st.playing;
+      this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
+      this.classList.toggle('playing',st.playing);
+      last=null;
+    });
+    $('e21Reset').addEventListener('click',doReset);
+    $('e21Book').addEventListener('click',function(){
+      st.k=BOOK.k; st.m=BOOK.m; st.A=BOOK.A;
+      doReset(); syncInputs();
+      $('insightE21').innerHTML='\u6559\u79d1\u66f8\u306e\u6570\u5024\u306b\u623b\u3057\u307e\u3057\u305f'+
+        '\uff08k=9.8\u3001m=0.050\u3001A=0.020\uff09\u3002T\u22480.45s\u3002';
+    });
+    $('e21Speed').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.speed=parseFloat(b.getAttribute('data-speed'));
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    [inpK,inpM,inpA].forEach(function(el){
+      el.addEventListener('input',function(){readInputs();updateReadout();});
+      el.addEventListener('change',function(){readInputs();syncInputs();updateReadout();});
+    });
+    var steps=document.querySelectorAll('[data-e21step]');
+    for(var si=0;si<steps.length;si++){
+      steps[si].addEventListener('click',function(){
+        var which=this.getAttribute('data-e21step');
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        if(which==='K') st.k=clamp(+(st.k+dir*4.9).toFixed(1),LIM.K[0],LIM.K[1]);
+        else if(which==='M') st.m=clamp(+(st.m+dir*0.025).toFixed(3),LIM.M[0],LIM.M[1]);
+        else if(which==='A') st.A=clamp(+(st.A+dir*0.005).toFixed(3),LIM.A[0],LIM.A[1]);
+        syncInputs(); updateReadout();
+      });
+    }
+
+    return {
+      start:function(){ fit(); doReset(); syncInputs();
+        running=true; last=null; rafId=requestAnimationFrame(frame); },
+      stop:function(){ running=false; if(rafId) cancelAnimationFrame(rafId); },
+      resize:function(){ if(running) fit(); }
+    };
+  })();
+
+  /* =========================================================
+     \u4f8b\u984c22\uff1a\u7b2c1\u5b87\u5b99\u901f\u5ea6
+     ========================================================= */
+  var SIM_E22=(function(){
+    var cv=$('cvE22'), C=makeCanvas(cv), ctx=C.ctx;
+    var L={};
+    function layout(){
+      var w=C.width()||680;
+      if(w<560) L={ LW:460, LH:420 };
+      else      L={ LW:680, LH:420 };
+    }
+    function fit(){ layout(); C.fit(L); }
+
+    /* v1 = \u221a(gR) \u2252 7.9 km/s\u3002\u6559\u79d1\u66f8\u5024 */
+    var V1=7.9;
+    var BOOK={ v:7.9 };
+    var st={ v:7.9, t:0, playing:false, speed:0.5 };
+    var LIM={ V:[5.0,11.5] };
+    var inpV=$('e22InpV');
+
+    function syncInputs(){
+      if(document.activeElement!==inpV) inpV.value=st.v.toFixed(1);
+    }
+    function readInputs(){
+      var v=parseFloat(inpV.value);
+      if(!isNaN(v)) st.v=clamp(v,LIM.V[0],LIM.V[1]);
+    }
+    /* \u72b6\u614b\uff1afall\uff08\u843d\u4e0b\uff09/ circle\uff08\u5186\uff09/ ellipse\uff08\u6955\u5186\uff09 */
+    function regime(){
+      if(st.v < V1-0.4) return 'fall';
+      if(st.v > V1+0.4) return 'ellipse';
+      return 'circle';
+    }
+
+    function draw(){
+      var LW=L.LW,LH=L.LH;
+      ctx.clearRect(0,0,LW,LH);
+
+      var cx=LW/2, cy=LH/2;
+      var earthR=60;
+
+      /* \u5b87\u5b99\u306e\u80cc\u666f\uff08\u661f\uff09 */
+      ctx.fillStyle='#cdbf97';
+      var stars=[[80,60],[180,40],[300,90],[470,55],[560,120],[120,330],
+                 [260,360],[420,340],[540,300],[600,200],[60,200],[330,250]];
+      for(var i=0;i<stars.length;i++){
+        var sx=stars[i][0]*(LW/640), sy=stars[i][1]*(LH/420);
+        ctx.beginPath(); ctx.arc(sx,sy,1.4,0,Math.PI*2); ctx.fill();
+      }
+
+      /* \u5730\u7403 */
+      ctx.fillStyle='#2f6db0';
+      ctx.beginPath(); ctx.arc(cx,cy,earthR,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#1d4470'; ctx.lineWidth=2; ctx.stroke();
+      /* \u5927\u9678\u98a8\u306e\u6a21\u69d8 */
+      ctx.fillStyle='#15807a';
+      ctx.beginPath(); ctx.arc(cx-18,cy-14,16,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx+20,cy+18,13,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#23221d';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillStyle='#fff';
+      ctx.fillText('\u5730\u7403',cx,cy);
+
+      var reg=regime();
+      /* \u8ecc\u9053\u306e\u534a\u5f84\uff08\u5730\u8868\u3059\u308c\u3059\u308c\uff09 */
+      var orbR=earthR+14;
+
+      /* \u8ecc\u9053\u3092\u63cf\u304f */
+      ctx.lineWidth=2;
+      if(reg==='circle'){
+        ctx.strokeStyle='#15807a';
+        ctx.setLineDash([5,5]);
+        ctx.beginPath(); ctx.arc(cx,cy,orbR,0,Math.PI*2); ctx.stroke();
+        ctx.setLineDash([]);
+      }else if(reg==='ellipse'){
+        /* \u901f\u3044\u307b\u3069\u6955\u5186\u304c\u9577\u304f\u306a\u308b */
+        var ext=1+(st.v-V1)*0.5;
+        ctx.strokeStyle='#d8541f';
+        ctx.setLineDash([5,5]);
+        ctx.beginPath();
+        ctx.ellipse(cx+orbR*(ext-1),cy,orbR*ext,orbR,0,0,Math.PI*2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      /* \u885b\u661f\u306e\u4f4d\u7f6e */
+      var satX,satY;
+      if(reg==='circle'){
+        var a=st.t*st.speed*1.4;
+        satX=cx+Math.cos(a)*orbR;
+        satY=cy+Math.sin(a)*orbR;
+      }else if(reg==='ellipse'){
+        var ext2=1+(st.v-V1)*0.5;
+        var a2=st.t*st.speed*1.2;
+        satX=cx+orbR*(ext2-1)+Math.cos(a2)*orbR*ext2;
+        satY=cy+Math.sin(a2)*orbR;
+      }else{
+        /* \u843d\u4e0b\uff1a\u3089\u305b\u3093\u3092\u63cf\u3044\u3066\u5730\u7403\u3078 */
+        var p=Math.min(st.t*st.speed*0.5,1);
+        var a3=p*Math.PI*2.5;
+        var rr=orbR-(orbR-earthR+4)*p;
+        satX=cx+Math.cos(a3)*rr;
+        satY=cy+Math.sin(a3)*rr;
+      }
+
+      /* \u8ecc\u8de1\u306e\u8d77\u70b9\uff08\u5730\u8868\u306e\u6253\u3061\u51fa\u3057\u70b9\uff09 */
+      ctx.fillStyle='#bf3b2b';
+      ctx.beginPath(); ctx.arc(cx+orbR,cy,3,0,Math.PI*2); ctx.fill();
+
+      /* \u885b\u661f */
+      ctx.fillStyle='#d8541f';
+      ctx.beginPath(); ctx.arc(satX,satY,7,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=1.6; ctx.stroke();
+
+      /* \u901f\u5ea6\u30d9\u30af\u30c8\u30eb\uff08\u5411\u5fc3\u529b\uff1d\u4e07\u6709\u5f15\u529b\u306e\u56f3\u793a\uff09 */
+      if(reg==='circle' || st.t<0.1){
+        /* \u4e2d\u5fc3\u5411\u304d\u306e\u4e07\u6709\u5f15\u529b */
+        var gdx=cx-satX, gdy=cy-satY, gm=Math.hypot(gdx,gdy)||1;
+        ctx.strokeStyle='#bf3b2b'; ctx.fillStyle='#bf3b2b'; ctx.lineWidth=2.4;
+        var glen=30;
+        var gex=satX+gdx/gm*glen, gey=satY+gdy/gm*glen;
+        ctx.beginPath(); ctx.moveTo(satX,satY); ctx.lineTo(gex,gey); ctx.stroke();
+        var ga=Math.atan2(gey-satY,gex-satX);
+        ctx.beginPath();
+        ctx.moveTo(gex,gey);
+        ctx.lineTo(gex-9*Math.cos(ga-0.4),gey-9*Math.sin(ga-0.4));
+        ctx.lineTo(gex-9*Math.cos(ga+0.4),gey-9*Math.sin(ga+0.4));
+        ctx.closePath(); ctx.fill();
+      }
+
+      /* \u6ce8\u8a18 */
+      ctx.font='900 13px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      if(reg==='circle'){
+        ctx.fillStyle='#15807a';
+        ctx.fillText('v \u2252 v\u2081 \u2192 \u5186\u8ecc\u9053\u3067\u56de\u308a\u7d9a\u3051\u308b',16,LH-16);
+      }else if(reg==='ellipse'){
+        ctx.fillStyle='#d8541f';
+        ctx.fillText('v > v\u2081 \u2192 \u6955\u5186\u8ecc\u9053\u306b\u306a\u308b',16,LH-16);
+      }else{
+        ctx.fillStyle='#bf3b2b';
+        ctx.fillText('v < v\u2081 \u2192 \u5730\u8868\u306b\u843d\u4e0b\u3059\u308b',16,LH-16);
+      }
+
+      updateReadout();
+    }
+
+    function updateReadout(){
+      $('e22v').textContent=st.v.toFixed(1);
+      $('e22v1').textContent=V1.toFixed(1);
+      var reg=regime();
+      var label=(reg==='circle')?'\u5186\u8ecc\u9053':
+                (reg==='ellipse')?'\u6955\u5186\u8ecc\u9053':'\u843d\u4e0b\u3059\u308b';
+      var col=(reg==='circle')?'#15807a':(reg==='ellipse')?'#d8541f':'#bf3b2b';
+      $('e22state').textContent=label;
+      $('e22state').style.color=col;
+    }
+
+    var running=false, last=null, rafId=0;
+    function frame(ts){
+      if(!running) return;
+      if(last==null) last=ts;
+      var dt=(ts-last)/1000; last=ts;
+      if(dt>0.05) dt=0.05;
+      if(st.playing){ st.t+=dt; }
+      draw();
+      syncInputs();
+      rafId=requestAnimationFrame(frame);
+    }
+
+    function doReset(){
+      st.t=0; st.playing=false;
+      var b=$('e22Play');
+      b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+      $('insightE22').innerHTML='\u25b6 \u518d\u751f\uff1a\u3044\u307e\u306e\u901f\u3055\u3067'+
+        '\u885b\u661f\u304c\u3069\u3046\u306a\u308b\u304b\u898b\u3066\u307f\u3088\u3046';
+      last=null; updateReadout();
+    }
+
+    $('e22Play').addEventListener('click',function(){
+      st.playing=!st.playing;
+      this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
+      this.classList.toggle('playing',st.playing);
+      last=null;
+    });
+    $('e22Reset').addEventListener('click',doReset);
+    $('e22Book').addEventListener('click',function(){
+      st.v=BOOK.v;
+      doReset(); syncInputs();
+      $('insightE22').innerHTML='\u7b2c1\u5b87\u5b99\u901f\u5ea6 v\u2081=\u221a(gR)\u22487.9km/s '+
+        '\u306b\u5408\u308f\u305b\u307e\u3057\u305f\u3002';
+    });
+    $('e22Speed').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.speed=parseFloat(b.getAttribute('data-speed'));
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    inpV.addEventListener('input',function(){readInputs();updateReadout();});
+    inpV.addEventListener('change',function(){readInputs();syncInputs();updateReadout();doReset();});
+    var steps=document.querySelectorAll('[data-e22step]');
+    for(var si=0;si<steps.length;si++){
+      steps[si].addEventListener('click',function(){
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        st.v=clamp(+(st.v+dir*0.1).toFixed(1),LIM.V[0],LIM.V[1]);
+        syncInputs(); updateReadout(); doReset();
+      });
+    }
+
+    return {
+      start:function(){ fit(); doReset(); syncInputs();
+        running=true; last=null; rafId=requestAnimationFrame(frame); },
+      stop:function(){ running=false; if(rafId) cancelAnimationFrame(rafId); },
+      resize:function(){ if(running) fit(); }
+    };
+  })();
+
+  /* =========================================================
+     \u4f8b\u984c23\uff1a\u7b2c2\u5b87\u5b99\u901f\u5ea6
+     ========================================================= */
+  var SIM_E23=(function(){
+    var cv=$('cvE23'), C=makeCanvas(cv), ctx=C.ctx;
+    var L={};
+    function layout(){
+      var w=C.width()||680;
+      if(w<560) L={ LW:460, LH:420 };
+      else      L={ LW:680, LH:420 };
+    }
+    function fit(){ layout(); C.fit(L); }
+
+    /* v2 = \u221a(2gR) \u2252 11.2 km/s */
+    var V2=11.2;
+    var BOOK={ v:11.2 };
+    var st={ v:11.2, t:0, playing:false, speed:0.5 };
+    var LIM={ V:[7.0,14.0] };
+    var inpV=$('e23InpV');
+
+    function syncInputs(){
+      if(document.activeElement!==inpV) inpV.value=st.v.toFixed(1);
+    }
+    function readInputs(){
+      var v=parseFloat(inpV.value);
+      if(!isNaN(v)) st.v=clamp(v,LIM.V[0],LIM.V[1]);
+    }
+    /* \u72b6\u614b\uff1areturn\uff08\u623b\u308b\uff09/ escape\uff08\u98db\u3073\u53bb\u308b\uff09 */
+    function regime(){ return (st.v < V2-0.05) ? 'return' : 'escape'; }
+
+    function draw(){
+      var LW=L.LW,LH=L.LH;
+      ctx.clearRect(0,0,LW,LH);
+
+      /* \u5730\u7403\u306f\u5de6\u4e0b */
+      var cx=LW*0.26, cy=LH*0.72;
+      var earthR=52;
+
+      /* \u661f */
+      ctx.fillStyle='#cdbf97';
+      var stars=[[300,50],[420,90],[520,40],[580,150],[480,220],
+                 [360,180],[600,280],[260,120],[180,60],[540,330]];
+      for(var i=0;i<stars.length;i++){
+        var sx=stars[i][0]*(LW/640), sy=stars[i][1]*(LH/420);
+        ctx.beginPath(); ctx.arc(sx,sy,1.4,0,Math.PI*2); ctx.fill();
+      }
+
+      /* \u5730\u7403 */
+      ctx.fillStyle='#2f6db0';
+      ctx.beginPath(); ctx.arc(cx,cy,earthR,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#1d4470'; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle='#15807a';
+      ctx.beginPath(); ctx.arc(cx-14,cy-12,13,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx+16,cy+14,11,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.font='700 11px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('\u5730\u7403',cx,cy);
+
+      var reg=regime();
+      /* \u6253\u3061\u4e0a\u3052\u70b9\uff08\u5730\u7403\u306e\u4e0a\uff09 */
+      var launchX=cx, launchY=cy-earthR;
+
+      /* \u8ecc\u8de1\uff1a\u53f3\u4e0a\u65b9\u5411\u3078\u3002\u623b\u308b\u5834\u5408\u306f\u9014\u4e2d\u3067\u5f15\u304d\u8fd4\u3059\u5f27 */
+      var p=st.t*st.speed*0.45;
+      ctx.strokeStyle=(reg==='escape')?'#d8541f':'#bf3b2b';
+      ctx.lineWidth=2; ctx.setLineDash([5,5]);
+      ctx.beginPath();
+      ctx.moveTo(launchX,launchY);
+      var objX,objY;
+      if(reg==='escape'){
+        /* \u4e0a\u3078\u653e\u7269\u7dda\u7684\u306b\u98db\u3073\u53bb\u308b\uff08\u3060\u3093\u3060\u3093\u6e1b\u901f\u3059\u308b\u304c\u6b62\u307e\u3089\u306a\u3044\uff09 */
+        var maxd=Math.min(p,1);
+        for(var s=0;s<=maxd;s+=0.04){
+          var dd=s*(LW*0.78);
+          var xx=launchX+dd*0.92;
+          var yy=launchY-Math.sqrt(s)*(LH*0.62);
+          ctx.lineTo(xx,yy);
+        }
+        var dd2=maxd*(LW*0.78);
+        objX=launchX+dd2*0.92;
+        objY=launchY-Math.sqrt(maxd)*(LH*0.62);
+      }else{
+        /* \u4e0a\u304c\u3063\u3066\u623b\u308b\u5f27 */
+        var topReach=0.3+(st.v/V2)*0.55;  /* \u5230\u9054\u9ad8\u3055\u306e\u5272\u5408 */
+        var s2=Math.min(p,2);
+        var ph=(s2<=1)?s2:(2-s2);  /* 0\u21921\u21920 */
+        for(var s3=0;s3<=Math.min(s2,2);s3+=0.04){
+          var ph3=(s3<=1)?s3:(2-s3);
+          var xx3=launchX+ph3*(LW*0.4);
+          var yy3=launchY-Math.sin(ph3*Math.PI/2)*(LH*0.58)*topReach;
+          ctx.lineTo(xx3,yy3);
+        }
+        objX=launchX+ph*(LW*0.4);
+        objY=launchY-Math.sin(ph*Math.PI/2)*(LH*0.58)*topReach;
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* \u6253\u3061\u4e0a\u3052\u70b9\u30de\u30fc\u30af */
+      ctx.fillStyle='#bf3b2b';
+      ctx.beginPath(); ctx.arc(launchX,launchY,3,0,Math.PI*2); ctx.fill();
+
+      /* \u7269\u4f53 */
+      ctx.fillStyle=(reg==='escape')?'#d8541f':'#bf3b2b';
+      ctx.beginPath(); ctx.arc(objX,objY,7,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#7d2f0d'; ctx.lineWidth=1.6; ctx.stroke();
+
+      /* \u6ce8\u8a18 */
+      ctx.font='900 13px "Zen Kaku Gothic New",sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      if(reg==='escape'){
+        ctx.fillStyle='#d8541f';
+        ctx.fillText('v \u2267 v\u2082 \u2192 \u5730\u7403\u304b\u3089\u98db\u3073\u53bb\u308b',16,LH-16);
+      }else{
+        ctx.fillStyle='#bf3b2b';
+        ctx.fillText('v < v\u2082 \u2192 \u3044\u3064\u304b\u5730\u7403\u306b\u623b\u308b',16,LH-16);
+      }
+
+      updateReadout();
+    }
+
+    function updateReadout(){
+      $('e23v').textContent=st.v.toFixed(1);
+      $('e23v2').textContent=V2.toFixed(1);
+      var reg=regime();
+      $('e23state').textContent=(reg==='escape')?'\u98db\u3073\u53bb\u308b':'\u5730\u7403\u306b\u623b\u308b';
+      $('e23state').style.color=(reg==='escape')?'#d8541f':'#bf3b2b';
+    }
+
+    var running=false, last=null, rafId=0;
+    function frame(ts){
+      if(!running) return;
+      if(last==null) last=ts;
+      var dt=(ts-last)/1000; last=ts;
+      if(dt>0.05) dt=0.05;
+      if(st.playing){ st.t+=dt; }
+      draw();
+      syncInputs();
+      rafId=requestAnimationFrame(frame);
+    }
+
+    function doReset(){
+      st.t=0; st.playing=false;
+      var b=$('e23Play');
+      b.textContent='\u25b6 \u518d\u751f'; b.classList.remove('playing');
+      $('insightE23').innerHTML='\u25b6 \u518d\u751f\uff1a\u3044\u307e\u306e\u901f\u3055\u3067'+
+        '\u7269\u4f53\u304c\u98db\u3073\u53bb\u308c\u308b\u304b\u898b\u3066\u307f\u3088\u3046';
+      last=null; updateReadout();
+    }
+
+    $('e23Play').addEventListener('click',function(){
+      st.playing=!st.playing;
+      this.textContent=st.playing?'\u23f8 \u4e00\u6642\u505c\u6b62':'\u25b6 \u518d\u751f';
+      this.classList.toggle('playing',st.playing);
+      last=null;
+    });
+    $('e23Reset').addEventListener('click',doReset);
+    $('e23Book').addEventListener('click',function(){
+      st.v=BOOK.v;
+      doReset(); syncInputs();
+      $('insightE23').innerHTML='\u7b2c2\u5b87\u5b99\u901f\u5ea6 v\u2082=\u221a(2gR)\u224811.2km/s '+
+        '\u306b\u5408\u308f\u305b\u307e\u3057\u305f\u3002';
+    });
+    $('e23Speed').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      st.speed=parseFloat(b.getAttribute('data-speed'));
+      var kids=this.children;
+      for(var i=0;i<kids.length;i++) kids[i].classList.toggle('active',kids[i]===b);
+    });
+    inpV.addEventListener('input',function(){readInputs();updateReadout();});
+    inpV.addEventListener('change',function(){readInputs();syncInputs();updateReadout();doReset();});
+    var steps=document.querySelectorAll('[data-e23step]');
+    for(var si=0;si<steps.length;si++){
+      steps[si].addEventListener('click',function(){
+        var dir=parseInt(this.getAttribute('data-dir'),10);
+        st.v=clamp(+(st.v+dir*0.1).toFixed(1),LIM.V[0],LIM.V[1]);
+        syncInputs(); updateReadout(); doReset();
+      });
+    }
+
+    return {
+      start:function(){ fit(); doReset(); syncInputs();
+        running=true; last=null; rafId=requestAnimationFrame(frame); },
+      stop:function(){ running=false; if(rafId) cancelAnimationFrame(rafId); },
+      resize:function(){ if(running) fit(); }
+    };
+  })();
+
+
 
 
 
