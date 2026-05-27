@@ -405,38 +405,52 @@
   .sim-col-stage{display:block;}
   .sim-col-panel{display:block;}
 
-  /* --- 広い画面（PC・タブレット横）：左ステージ＋右パネルの2カラム --- */
-  @media (min-width:980px){
-    .screen.active{display:flex;flex-direction:column;height:calc(100vh - 0px);}
+  /* --- シミュレーション表示中はアプリ本体を画面幅いっぱいに --- */
+  body:has(.screen.active:not(#screen-hub)){
+    padding:14px 14px 14px;
+  }
+  .app:has(.screen.active:not(#screen-hub)){
+    max-width:none;
+  }
+
+  /* --- 2カラムにできる幅・向き（PC・スマホ横・タブレット） --- */
+  /* 横長（アスペクト比が横向き）または十分な幅があれば2カラム */
+  @media (min-width:760px), (min-aspect-ratio:13/10){
+    .screen.active{
+      display:flex;flex-direction:column;
+      height:calc(100vh - 34px);min-height:460px;
+    }
     .sim-head{flex:0 0 auto;}
     .sim-foot{flex:0 0 auto;}
     .sim-body{
       display:flex;flex:1 1 auto;min-height:0;align-items:stretch;
     }
     .sim-col-stage{
-      flex:1 1 60%;min-width:0;display:flex;flex-direction:column;
+      flex:1 1 62%;min-width:0;display:flex;flex-direction:column;
       border-right:1.5px solid var(--ink);overflow:hidden;
     }
     .sim-col-stage .stage{
       flex:1 1 auto;min-height:0;display:flex;align-items:center;
-      justify-content:center;padding:18px;
+      justify-content:center;padding:14px;
     }
     .sim-col-stage .stage canvas{
       width:auto;height:auto;max-width:100%;max-height:100%;
     }
+    .sim-col-stage .insight{flex:0 0 auto;}
     .sim-col-panel{
-      flex:1 1 40%;min-width:340px;max-width:520px;
+      flex:1 1 38%;min-width:300px;max-width:560px;
       overflow-y:auto;display:flex;flex-direction:column;
     }
     .sim-col-panel .controls{border-top:none;}
-    .panel-toggle,.mini-bar{display:none !important;}
+    .panel-grip{display:none;}
+    .mini-bar,.panel-scrim{display:none !important;}
   }
 
-  /* --- スマホ縦・狭い画面：操作パネルは下からスライド --- */
-  @media (max-width:979px){
+  /* --- スマホ縦向き（狭い・縦長）：操作パネルは下からスライド --- */
+  @media (max-width:759.9px) and (max-aspect-ratio:13/10){
     .sim-col-panel{
       position:fixed;left:0;right:0;bottom:0;z-index:60;
-      max-height:80vh;overflow-y:auto;
+      max-height:82vh;overflow-y:auto;
       background:var(--paper);border-top:2.5px solid var(--ink);
       box-shadow:0 -8px 0 rgba(35,34,29,.12),0 -8px 28px rgba(35,34,29,.22);
       transform:translateY(100%);
@@ -480,9 +494,7 @@
       flex:0 0 auto;background:var(--ink);color:var(--paper);
       font-size:13px;font-weight:900;
     }
-    /* シミュレーション画面の下に、ミニバーぶんの余白 */
     .screen.active{padding-bottom:78px;}
-    /* パネルが開いている間の暗幕 */
     .panel-scrim{
       position:fixed;inset:0;z-index:58;background:rgba(35,34,29,.42);
       opacity:0;pointer-events:none;transition:opacity .2s ease;
@@ -1576,10 +1588,18 @@
       scrim.classList.remove('show');
     }
 
+    /* CSS\u306e2\u30ab\u30e9\u30e0\u95be\u5024\u3068\u540c\u3058\u5224\u5b9a\uff08\u5e45760px\u4ee5\u4e0a\u307e\u305f\u306f\u6a2a\u9577\uff09 */
+    function isTwoColumn(){
+      if(window.matchMedia){
+        return window.matchMedia('(min-width:760px), (min-aspect-ratio:13/10)').matches;
+      }
+      return window.innerWidth>=760;
+    }
+
     /* \u30df\u30cb\u30d0\u30fc\u306e\u901f\u5ea6\u30dc\u30bf\u30f3\u3092\u3001\u73fe\u5728\u753b\u9762\u306e\u901f\u5ea6\u30b0\u30eb\u30fc\u30d7\u304b\u3089\u8907\u88fd\u3057\u3066\u4f5c\u308b */
     function syncMiniBar(){
       var sc=activeScreenEl();
-      if(!sc || window.innerWidth>=980){
+      if(!sc || isTwoColumn()){
         miniBar.classList.add('hidden');
         return;
       }
@@ -1658,7 +1678,7 @@
         miniBar.classList.add('hidden');
       },
       onResize:function(){
-        if(window.innerWidth>=980) closePanel();
+        if(isTwoColumn()) closePanel();
         syncMiniBar();
       },
       refreshPlay:refreshMiniPlay
